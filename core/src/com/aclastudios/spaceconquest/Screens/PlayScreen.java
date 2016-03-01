@@ -38,7 +38,6 @@ public class PlayScreen implements Screen {
     private World world;
     private Box2DDebugRenderer b2dr; //graphic representation of the body in the box 2d
 
-
     //Touchpad
     private OrthographicCamera camera;
     private Stage stage;
