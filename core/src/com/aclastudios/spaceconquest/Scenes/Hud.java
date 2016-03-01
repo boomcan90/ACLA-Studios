@@ -8,26 +8,28 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class Hud {
+public class Hud implements Disposable{
     public Stage stage;
     private Viewport viewport; //With the new viewport, when game world moves the hud stays the same
 
-    private Integer worldTimer;
-    private float timeCount;
-    private Integer score;
+    private static Integer worldTimer;
+    private static boolean timeUp;
+    private static float timeCount;
+    private static Integer score;
 
     Label countdownLabel;
-    Label scoreLabel;
+    static Label scoreLabel;
     Label timeLabel;
     Label worldLabel;
     Label levelLabel;
     Label titleLabel;
 
     public Hud(SpriteBatch sb){
-        worldTimer = 300;
+        worldTimer = 3;
         timeCount = 0;
         score = 0;
 
@@ -55,4 +57,31 @@ public class Hud {
 
         stage.addActor(table);
     }
+    public void update(float dt){
+        timeCount += dt;
+        if(timeCount >= 1){
+            if (worldTimer > 0) {
+                worldTimer--;
+            } else {
+                timeUp = true;
+            }
+            countdownLabel.setText(String.format("%03d", worldTimer));
+            timeCount = 0;
+        }
+    }
+
+    public static void addScore(int value){
+        score += value;
+        scoreLabel.setText(String.format("%06d", score));
+    }
+
+    @Override
+    public void dispose() { stage.dispose(); }
+
+    public static boolean isTimeUp() { return timeUp; }
+    public static void setTimeUp() { timeUp = false;
+    timeCount = 0;
+        worldTimer = 3;
+    }
+    public static float timeStart() { return timeCount; }
 }

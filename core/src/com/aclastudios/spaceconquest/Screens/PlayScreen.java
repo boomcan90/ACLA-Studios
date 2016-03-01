@@ -2,6 +2,7 @@ package com.aclastudios.spaceconquest.Screens;
 
 import com.aclastudios.spaceconquest.Scenes.Hud;
 import com.aclastudios.spaceconquest.SpaceConquest;
+import com.aclastudios.spaceconquest.Sprites.Space;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -31,6 +32,8 @@ public class PlayScreen implements Screen {
     private Viewport gamePort;
     private Hud hud;
 
+    private Space player;
+
     private TmxMapLoader maploader; //Load the map into the game
     private TiledMap map; //Reference to the map
     private OrthogonalTiledMapRenderer renderer; //Renders the map to the screen
@@ -49,15 +52,20 @@ public class PlayScreen implements Screen {
     private Texture blockTexture;
     private Sprite blockSprite;
     private float blockSpeed;
+    private boolean flagstart;
 
     public PlayScreen(SpaceConquest game){
         this.game = game;
+
+        flagstart = true;
+
+        //Background and Character assets
         texture = new Texture("planet.png");
         spaceman = new Texture("astronaut.png");
 
-
-        gamecam  = new OrthographicCamera(); //camera of the map
-
+        //Game map and Game View
+        //camera of the map
+        gamecam  = new OrthographicCamera();
         //create a FitViewport to maintain virtual aspect ratio
         gamePort = new FitViewport(SpaceConquest.V_WIDTH,SpaceConquest.V_HEIGHT,gamecam);
 
@@ -70,9 +78,9 @@ public class PlayScreen implements Screen {
         renderer = new OrthogonalTiledMapRenderer(map);
         gamecam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
 
+        player = new Space(this);
 
-
-        //touchpad
+        //touchpad setup
         //Create a touchpad skin
         touchpadSkin = new Skin();
         //Set background image
@@ -87,13 +95,10 @@ public class PlayScreen implements Screen {
         //Apply the Drawables to the TouchPad Style
         touchpadStyle.background = touchBackground;
         touchpadStyle.knob = touchKnob;
-
         //Create new TouchPad with the created style
         touchpad = new Touchpad(10, touchpadStyle);
         //setBounds(x,y,width,height)
         touchpad.setBounds(15, 15, 50, 50);
-
-
         //Create a Stage and add TouchPad
         stage = new Stage(gamePort, game.batch);
         stage.addActor(touchpad);
@@ -105,18 +110,22 @@ public class PlayScreen implements Screen {
     }
 
     public void handleInput(float dt){
+        //testing camera
 //        if (Gdx.input.isTouched()){
-//            gamecam.position.x += 100*dt; //testing
+//            gamecam.position.x += 100*dt;
 //        }
     }
 
     public void update(float dt){
+        //input updates
         handleInput(dt);
-
+        hud.update(dt);
+        player.update(dt);
+        //gamecam updates
         gamecam.update();
         renderer.setView(gamecam); //render only what the gamecam can see
 
-        //touchpad
+        //touchpad update
         gamecam.position.x+=touchpad.getKnobPercentX()*2;
         gamecam.position.y+=touchpad.getKnobPercentY()*2;
         touchpad.setPosition(gamecam.position.x-gamePort.getWorldWidth() / 2+10,gamecam.position.y-gamePort.getWorldHeight()/2+10);
@@ -124,27 +133,54 @@ public class PlayScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        //make sure that everything is updated
         update(delta);
+
+        //clear screen
         Gdx.gl.glClearColor(0, 0, 0, 1); //clear colour
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); //clear the screen
+
+//        if(Hud.timeStart()==0&&flagstart==true){
+//            flagstart = false;
+//            game.setScreen(new MenuScreen(game));
+//            dispose();
+//        }
+        //render the map
         renderer.render();
 
-        //temp backgroup
+        //backgroup and character image (Used for test)
         game.batch.setProjectionMatrix(gamecam.combined); //only render what the camera can see
         game.batch.begin(); //opens the "box"
         game.batch.draw(texture, 0, 0);
-        game.batch.draw(spaceman, gamecam.position.x-20, gamecam.position.y-20,50,50);
+        game.batch.draw(spaceman, gamecam.position.x - 20, gamecam.position.y - 20, 50, 50);
         game.batch.end(); //close the "box" and draw it on the screen
 
-
+        //Join/Combine hud camera to game batch
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
 
-
-        //touch pad
+        if(gameOver()){
+            game.setScreen(new GameOver(game));
+            dispose();
+        }
+        //Draw the touch pad
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
     }
+
+    public boolean gameOver(){
+        if(player.currentState == Space.State.DEAD){
+            return true;
+        }
+        return false;
+    }
+
+//    public boolean gameStart(){
+//        if(player.currentState == Space.State.BEGIN && player.getStateTimer()==0){
+//            return true;
+//        }
+//        return false;
+//    }
 
     @Override
     public void resize(int width, int height) {
