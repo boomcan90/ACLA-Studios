@@ -52,12 +52,14 @@ public class PlayScreen implements Screen {
 
     public PlayScreen(SpaceConquest game){
         this.game = game;
+
+        //Background and Character assets
         texture = new Texture("planet.png");
         spaceman = new Texture("astronaut.png");
 
-
-        gamecam  = new OrthographicCamera(); //camera of the map
-
+        //Game map and Game View
+        //camera of the map
+        gamecam  = new OrthographicCamera();
         //create a FitViewport to maintain virtual aspect ratio
         gamePort = new FitViewport(SpaceConquest.V_WIDTH,SpaceConquest.V_HEIGHT,gamecam);
 
@@ -72,7 +74,7 @@ public class PlayScreen implements Screen {
 
 
 
-        //touchpad
+        //touchpad setup
         //Create a touchpad skin
         touchpadSkin = new Skin();
         //Set background image
@@ -87,13 +89,10 @@ public class PlayScreen implements Screen {
         //Apply the Drawables to the TouchPad Style
         touchpadStyle.background = touchBackground;
         touchpadStyle.knob = touchKnob;
-
         //Create new TouchPad with the created style
         touchpad = new Touchpad(10, touchpadStyle);
         //setBounds(x,y,width,height)
         touchpad.setBounds(15, 15, 50, 50);
-
-
         //Create a Stage and add TouchPad
         stage = new Stage(gamePort, game.batch);
         stage.addActor(touchpad);
@@ -105,18 +104,21 @@ public class PlayScreen implements Screen {
     }
 
     public void handleInput(float dt){
+        //testing camera
 //        if (Gdx.input.isTouched()){
-//            gamecam.position.x += 100*dt; //testing
+//            gamecam.position.x += 100*dt;
 //        }
     }
 
     public void update(float dt){
+        //input updates
         handleInput(dt);
 
+        //gamecam updates
         gamecam.update();
         renderer.setView(gamecam); //render only what the gamecam can see
 
-        //touchpad
+        //touchpad update
         gamecam.position.x+=touchpad.getKnobPercentX()*2;
         gamecam.position.y+=touchpad.getKnobPercentY()*2;
         touchpad.setPosition(gamecam.position.x-gamePort.getWorldWidth() / 2+10,gamecam.position.y-gamePort.getWorldHeight()/2+10);
@@ -124,24 +126,28 @@ public class PlayScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        //make sure that everything is updated
         update(delta);
+
+        //clear screen
         Gdx.gl.glClearColor(0, 0, 0, 1); //clear colour
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); //clear the screen
+
+        //render the map
         renderer.render();
 
-        //temp backgroup
+        //backgroup and character image (Used for test)
         game.batch.setProjectionMatrix(gamecam.combined); //only render what the camera can see
         game.batch.begin(); //opens the "box"
         game.batch.draw(texture, 0, 0);
         game.batch.draw(spaceman, gamecam.position.x-20, gamecam.position.y-20,50,50);
         game.batch.end(); //close the "box" and draw it on the screen
 
-
+        //Join/Combine hud camera to game batch
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
 
-
-        //touch pad
+        //Draw the touch pad
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
     }
