@@ -30,7 +30,7 @@ public class MainCharacter extends Sprite {
 
         FixtureDef fdef = new FixtureDef();
         CircleShape shape = new CircleShape();
-        shape.setRadius(5);
+        shape.setRadius(8);
 
         //Collision Bit
         fdef.filter.categoryBits = SpaceConquest.CHARACTER_BIT; //what category is this fixture

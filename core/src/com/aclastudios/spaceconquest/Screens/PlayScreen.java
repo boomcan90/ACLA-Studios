@@ -4,8 +4,6 @@ import com.aclastudios.spaceconquest.Scenes.Hud;
 import com.aclastudios.spaceconquest.SpaceConquest;
 import com.aclastudios.spaceconquest.Sprites.Resource.Iron;
 import com.aclastudios.spaceconquest.Sprites.MainCharacter;
-import com.aclastudios.spaceconquest.Sprites.Resource.ResourceDef;
-import com.aclastudios.spaceconquest.Sprites.Resource.Resources;
 import com.aclastudios.spaceconquest.Tools.B2WorldCreator;
 import com.aclastudios.spaceconquest.Tools.WorldContactListener;
 import com.badlogic.gdx.Gdx;
@@ -147,7 +145,8 @@ public class PlayScreen implements Screen {
 //    }
 
     public void handleInput(float dt){
-        mainCharacter.b2body.applyLinearImpulse(new Vector2(touchpad.getKnobPercentX()*2,touchpad.getKnobPercentY()*2), mainCharacter.b2body.getWorldCenter(),true);
+        double speedreduction = Math.pow(0.8,Hud.getScore());
+        mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (touchpad.getKnobPercentX()*2*speedreduction), (float) (touchpad.getKnobPercentY()*2*speedreduction)), mainCharacter.b2body.getWorldCenter(),true);
     }
 
     public void update(float dt){
@@ -165,12 +164,17 @@ public class PlayScreen implements Screen {
         mainCharacter.update(dt);
         while (iron_count<=20){
             Random rand = new Random();
-            Iron iron = new Iron(this,rand.nextFloat()*1000,rand.nextFloat()*1000);
+            Iron iron = new Iron(this,rand.nextFloat()*400,rand.nextFloat()*400);
             iron_array.add(iron);
             iron_count++;
         }
-        for (Iron I:iron_array){
+        for (int n=0; n<iron_array.size();n++){
+            Iron I = iron_array.get(n);
             I.update(dt);
+            if (I.ifDestroyed()){
+                iron_array.remove(n);
+                iron_count--;
+            }
         }
 
         //gamecam updates

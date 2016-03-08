@@ -4,7 +4,6 @@ import com.aclastudios.spaceconquest.Screens.PlayScreen;
 import com.aclastudios.spaceconquest.Sprites.MainCharacter;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 
@@ -44,6 +43,9 @@ public abstract class Resources extends Sprite {
     }
     public void destroy(){
         toDestroy = true;
+    }
+    public boolean ifDestroyed(){
+        return destroyed;
     }
 
 }
