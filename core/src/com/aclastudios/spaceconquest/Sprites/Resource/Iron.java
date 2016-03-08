@@ -3,7 +3,6 @@ package com.aclastudios.spaceconquest.Sprites.Resource;
 import com.aclastudios.spaceconquest.Screens.PlayScreen;
 import com.aclastudios.spaceconquest.SpaceConquest;
 import com.aclastudios.spaceconquest.Sprites.MainCharacter;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -23,7 +22,7 @@ public class Iron extends Resources {
 
         FixtureDef fdef = new FixtureDef();
         CircleShape shape = new CircleShape();
-        shape.setRadius(5);
+        shape.setRadius(8);
 
         //Collision Bit
         fdef.filter.categoryBits = SpaceConquest.IRON_BIT; //what category is this fixture
@@ -48,4 +47,5 @@ public class Iron extends Resources {
         super.update(dt);
         setPosition(body.getPosition().x - getWidth() / 2, body.getPosition().y - getHeight() / 2);
     }
+
 }

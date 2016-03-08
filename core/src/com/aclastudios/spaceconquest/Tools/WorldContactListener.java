@@ -1,5 +1,6 @@
 package com.aclastudios.spaceconquest.Tools;
 
+import com.aclastudios.spaceconquest.Scenes.Hud;
 import com.aclastudios.spaceconquest.SpaceConquest;
 import com.aclastudios.spaceconquest.Sprites.MainCharacter;
 import com.aclastudios.spaceconquest.Sprites.Resource.Iron;
@@ -23,6 +24,7 @@ public class WorldContactListener implements ContactListener {
                     ((Iron)fixA.getUserData()).use((MainCharacter) fixB.getUserData());
                 else
                     ((Iron)fixB.getUserData()).use((MainCharacter) fixA.getUserData());
+                Hud.addScore(1);
                 break;
         }
     }
