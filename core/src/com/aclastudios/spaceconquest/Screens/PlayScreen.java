@@ -2,15 +2,21 @@ package com.aclastudios.spaceconquest.Screens;
 
 import com.aclastudios.spaceconquest.Scenes.Hud;
 import com.aclastudios.spaceconquest.SpaceConquest;
+import com.aclastudios.spaceconquest.Sprites.Resource.Iron;
+import com.aclastudios.spaceconquest.Sprites.MainCharacter;
+import com.aclastudios.spaceconquest.Sprites.Resource.ResourceDef;
+import com.aclastudios.spaceconquest.Sprites.Resource.Resources;
+import com.aclastudios.spaceconquest.Tools.B2WorldCreator;
+import com.aclastudios.spaceconquest.Tools.WorldContactListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -21,6 +27,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import java.util.ArrayList;
+import java.util.PriorityQueue;
+import java.util.Random;
 
 
 public class PlayScreen implements Screen {
@@ -46,9 +55,14 @@ public class PlayScreen implements Screen {
     private Skin touchpadSkin;
     private Drawable touchBackground;
     private Drawable touchKnob;
-    private Texture blockTexture;
-    private Sprite blockSprite;
-    private float blockSpeed;
+
+    //Sprites
+    private MainCharacter mainCharacter;
+//    private Iron iron;
+    private int iron_count;
+    private ArrayList<Iron> iron_array;
+//    private ArrayList<Resources> resources;
+//    private PriorityQueue<ResourceDef> ResourcesToSpawn;
 
     public PlayScreen(SpaceConquest game){
         this.game = game;
@@ -68,11 +82,28 @@ public class PlayScreen implements Screen {
 
         //Load our map and setup our map renderer
         maploader = new TmxMapLoader();
-        map = maploader.load("level1.tmx");
+        map = maploader.load("map.tmx");
         renderer = new OrthogonalTiledMapRenderer(map);
         gamecam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
 
+        //Creating the box 2d world
+        world = new World(new Vector2(0,0),true);
+        b2dr = new Box2DDebugRenderer();
 
+        //B2world
+        new B2WorldCreator(this);
+
+        //Sprites
+        mainCharacter = new MainCharacter(world);
+//        iron = new Iron(this,32f,32f);
+        iron_count=0;
+        iron_array=new ArrayList<Iron>();
+//        resources = new ArrayList<Resources>();
+//        ResourcesToSpawn = new PriorityQueue<ResourceDef>();
+
+
+        //set world listener
+        world.setContactListener(new WorldContactListener());
 
         //touchpad setup
         //Create a touchpad skin
@@ -103,24 +134,54 @@ public class PlayScreen implements Screen {
 
     }
 
-    public void handleInput(float dt){
-        //testing camera
-//        if (Gdx.input.isTouched()){
-//            gamecam.position.x += 100*dt;
+//    public void spawnIten(ResourceDef rdef){
+//        ResourcesToSpawn.add((rdef));
+//    }
+//    public void handleSpawningItem(){
+//        if(!ResourcesToSpawn.isEmpty()){
+//            ResourceDef rdef = ResourcesToSpawn.poll();
+//            if(rdef.type== Iron.class){
+//                resources.add(new Iron(this,rdef.position.x,rdef.position.y));
+//            }
 //        }
+//    }
+
+    public void handleInput(float dt){
+        mainCharacter.b2body.applyLinearImpulse(new Vector2(touchpad.getKnobPercentX()*2,touchpad.getKnobPercentY()*2), mainCharacter.b2body.getWorldCenter(),true);
     }
 
     public void update(float dt){
         //input updates
         handleInput(dt);
+//        handleSpawningItem();
+
+        //Allows box2d calculate the physics
+        world.step(1 / 60f, 6, 2);
+
+        //hud timer
+        hud.update(dt);
+
+        //sprites
+        mainCharacter.update(dt);
+        while (iron_count<=20){
+            Random rand = new Random();
+            Iron iron = new Iron(this,rand.nextFloat()*1000,rand.nextFloat()*1000);
+            iron_array.add(iron);
+            iron_count++;
+        }
+        for (Iron I:iron_array){
+            I.update(dt);
+        }
 
         //gamecam updates
         gamecam.update();
         renderer.setView(gamecam); //render only what the gamecam can see
 
         //touchpad update
-        gamecam.position.x+=touchpad.getKnobPercentX()*2;
-        gamecam.position.y+=touchpad.getKnobPercentY()*2;
+//        gamecam.position.x+=touchpad.getKnobPercentX()*2;
+//        gamecam.position.y+=touchpad.getKnobPercentY()*2;
+        gamecam.position.x = mainCharacter.b2body.getPosition().x;
+        gamecam.position.y = mainCharacter.b2body.getPosition().y;
         touchpad.setPosition(gamecam.position.x-gamePort.getWorldWidth() / 2+10,gamecam.position.y-gamePort.getWorldHeight()/2+10);
     }
 
@@ -133,15 +194,22 @@ public class PlayScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1); //clear colour
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); //clear the screen
 
-        //render the map
-        renderer.render();
+
 
         //backgroup and character image (Used for test)
         game.batch.setProjectionMatrix(gamecam.combined); //only render what the camera can see
         game.batch.begin(); //opens the "box"
         game.batch.draw(texture, 0, 0);
-        game.batch.draw(spaceman, gamecam.position.x-20, gamecam.position.y-20,50,50);
+        game.batch.draw(spaceman, gamecam.position.x - 20, gamecam.position.y - 20, 50, 50);
+//        mainCharacter.draw(game.batch);
+//        iron.draw(game.batch);
         game.batch.end(); //close the "box" and draw it on the screen
+
+        //render the map
+        renderer.render();
+
+        //render our Box2DDebugLines
+        b2dr.render(world, gamecam.combined);
 
         //Join/Combine hud camera to game batch
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
@@ -156,6 +224,15 @@ public class PlayScreen implements Screen {
     public void resize(int width, int height) {
         gamePort.update(width, height);
     }
+
+
+    public TiledMap getMap(){
+        return map;
+    }
+    public World getWorld(){
+        return world;
+    }
+
 
     @Override
     public void pause() {
@@ -174,6 +251,11 @@ public class PlayScreen implements Screen {
 
     @Override
     public void dispose() {
+        map.dispose();
+        renderer.dispose();
+        world.dispose();
+        b2dr.dispose();
+        hud.dispose();
 
     }
 }

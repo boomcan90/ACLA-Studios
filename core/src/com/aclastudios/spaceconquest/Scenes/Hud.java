@@ -8,10 +8,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class Hud {
+public class Hud implements Disposable {
     public Stage stage;
     private Viewport viewport; //With the new viewport, when game world moves the hud stays the same
 
@@ -54,5 +55,19 @@ public class Hud {
         table.add(countdownLabel).expandX();
 
         stage.addActor(table);
+    }
+    public void update(float dt){
+        timeCount += dt;
+        if (timeCount >=1){
+            worldTimer--;
+            countdownLabel.setText(String.format("%03d", worldTimer));
+            timeCount=0;
+        }
+    }
+
+
+    @Override
+    public void dispose() {
+        stage.dispose();
     }
 }
