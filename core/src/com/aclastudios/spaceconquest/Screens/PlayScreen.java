@@ -82,7 +82,7 @@ public class PlayScreen implements Screen {
 
         //Load our map and setup our map renderer
         maploader = new TmxMapLoader();
-        map = maploader.load("map.tmx");
+        map = maploader.load("level1.tmx");
         renderer = new OrthogonalTiledMapRenderer(map);
         gamecam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
 
@@ -94,7 +94,8 @@ public class PlayScreen implements Screen {
         new B2WorldCreator(this);
 
         //Sprites
-        mainCharacter = new MainCharacter(world);
+        mainCharacter = new MainCharacter(world,this);
+        mainCharacter.setOriginCenter();
 //        iron = new Iron(this,32f,32f);
         iron_count=0;
         iron_array=new ArrayList<Iron>();
@@ -148,6 +149,7 @@ public class PlayScreen implements Screen {
 
     public void handleInput(float dt){
         mainCharacter.b2body.applyLinearImpulse(new Vector2(touchpad.getKnobPercentX()*2,touchpad.getKnobPercentY()*2), mainCharacter.b2body.getWorldCenter(),true);
+        System.out.println("x is "+touchpad.getKnobPercentX()*2 + " y is " + touchpad.getKnobPercentY()*2);
     }
 
     public void update(float dt){

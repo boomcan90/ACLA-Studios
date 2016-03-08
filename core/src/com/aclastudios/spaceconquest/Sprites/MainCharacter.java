@@ -1,5 +1,6 @@
 package com.aclastudios.spaceconquest.Sprites;
 
+import com.aclastudios.spaceconquest.Screens.PlayScreen;
 import com.aclastudios.spaceconquest.SpaceConquest;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -17,7 +18,7 @@ public class MainCharacter extends Sprite {
     public Body b2body;
     protected Fixture fixture;
 
-    public MainCharacter(World world){
+    public MainCharacter(World world,PlayScreen screen){
         this.world = world;
         defineCharacter();
     }
