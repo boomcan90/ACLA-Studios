@@ -11,6 +11,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -32,12 +33,15 @@ import java.util.Random;
 
 public class PlayScreen implements Screen {
     private SpaceConquest game;
+    private TextureAtlas atlas;
     Texture texture;
     Texture spaceman;
     private OrthographicCamera gamecam;
     private Viewport gamePort;
     private Hud hud;
 
+    private float lastAngle = 0;
+    private float currentAngle;
     private TmxMapLoader maploader; //Load the map into the game
     private TiledMap map; //Reference to the map
     private OrthogonalTiledMapRenderer renderer; //Renders the map to the screen
@@ -63,6 +67,7 @@ public class PlayScreen implements Screen {
 //    private PriorityQueue<ResourceDef> ResourcesToSpawn;
 
     public PlayScreen(SpaceConquest game){
+        atlas = new TextureAtlas("Marios_and_Enemies.atlas");
         this.game = game;
 
         //Background and Character assets
@@ -80,7 +85,7 @@ public class PlayScreen implements Screen {
 
         //Load our map and setup our map renderer
         maploader = new TmxMapLoader();
-        map = maploader.load("level1.tmx");
+        map = maploader.load("map.tmx");
         renderer = new OrthogonalTiledMapRenderer(map);
         gamecam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
 
@@ -147,8 +152,13 @@ public class PlayScreen implements Screen {
 
     public void handleInput(float dt){
         double speedreduction = Math.pow(0.8,Hud.getScore());
-        mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (touchpad.getKnobPercentX()*2*speedreduction), (float) (touchpad.getKnobPercentY()*2*speedreduction)), mainCharacter.b2body.getWorldCenter(),true);
-        System.out.println("x is "+touchpad.getKnobPercentX()*2 + " y is " + touchpad.getKnobPercentY()*2);
+        mainCharacter.setxSpeed((float) (touchpad.getKnobPercentX() * 2 * speedreduction));
+        mainCharacter.setySpeed((float) (touchpad.getKnobPercentY() * 2 * speedreduction));
+        mainCharacter.b2body.applyLinearImpulse(new Vector2(mainCharacter.getxSpeed(), mainCharacter.getySpeed()), mainCharacter.b2body.getWorldCenter(), true);
+        currentAngle = getAngle(mainCharacter);
+        mainCharacter.setRotation(currentAngle);
+        System.out.println("x is "+touchpad.getKnobPercentX()+ " y is " + touchpad.getKnobPercentY()
+                + " angle is "+currentAngle);
     }
 
     public void update(float dt){
@@ -179,15 +189,15 @@ public class PlayScreen implements Screen {
             }
         }
 
-        //gamecam updates
-        gamecam.update();
-        renderer.setView(gamecam); //render only what the gamecam can see
-
         //touchpad update
 //        gamecam.position.x+=touchpad.getKnobPercentX()*2;
 //        gamecam.position.y+=touchpad.getKnobPercentY()*2;
         gamecam.position.x = mainCharacter.b2body.getPosition().x;
         gamecam.position.y = mainCharacter.b2body.getPosition().y;
+        //gamecam updates
+        gamecam.update();
+        renderer.setView(gamecam); //render only what the gamecam can see
+
         touchpad.setPosition(gamecam.position.x-gamePort.getWorldWidth() / 2+10,gamecam.position.y-gamePort.getWorldHeight()/2+10);
     }
 
@@ -199,15 +209,12 @@ public class PlayScreen implements Screen {
         //clear screen
         Gdx.gl.glClearColor(0, 0, 0, 1); //clear colour
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); //clear the screen
-
-
-
         //backgroup and character image (Used for test)
         game.batch.setProjectionMatrix(gamecam.combined); //only render what the camera can see
         game.batch.begin(); //opens the "box"
         game.batch.draw(texture, 0, 0);
-        game.batch.draw(spaceman, gamecam.position.x - 20, gamecam.position.y - 20, 50, 50);
-//        mainCharacter.draw(game.batch);
+        //game.batch.draw(spaceman, gamecam.position.x - 20, gamecam.position.y - 20, 50, 50);
+        mainCharacter.draw(game.batch);
 //        iron.draw(game.batch);
         game.batch.end(); //close the "box" and draw it on the screen
 
@@ -263,5 +270,25 @@ public class PlayScreen implements Screen {
         b2dr.dispose();
         hud.dispose();
 
+    }
+    public TextureAtlas getAtlas() {
+        return atlas;
+    }
+    public float getAngle(MainCharacter c){
+        float x =c.getxSpeed();
+        float y = c.getySpeed();
+        
+        if(x>0 && y>0){
+            lastAngle =(float)Math.toDegrees(Math.atan(y / x));
+            return lastAngle;
+        }
+        else if(x<0){
+            lastAngle =(float)Math.toDegrees(Math.atan(y / x));
+            return 180+lastAngle;
+        }
+        else if (x>0 && y<0){
+            lastAngle =(float)Math.toDegrees(Math.atan(y / x));
+            return 360+lastAngle;
+        }else return lastAngle;
     }
 }
