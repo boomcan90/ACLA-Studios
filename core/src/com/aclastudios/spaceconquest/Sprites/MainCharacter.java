@@ -21,6 +21,8 @@ public class MainCharacter extends Sprite {
     public Body b2body;
     protected Fixture fixture;
     private TextureRegion character;
+    private static Integer charWeight;
+    private static Integer charScore;
     public MainCharacter(World world,PlayScreen screen){
         super(screen.getAtlas().findRegion("little_mario"));
         this.world = world;
@@ -76,5 +78,22 @@ public class MainCharacter extends Sprite {
 
     public void setySpeed(float ySpeed) {
         this.ySpeed = ySpeed;
+    }
+
+
+    public Integer getCharWeight() {
+        return charWeight;
+    }
+
+    public int getCharScore() {
+        return charScore;
+    }
+
+//    public static void addCharWeight(Integer charWeight) {
+//        this.charWeight += charWeight;
+//    }
+
+    public void setCharScore(int charScore) {
+        this.charScore += charScore;
     }
 }

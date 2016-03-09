@@ -85,7 +85,7 @@ public class PlayScreen implements Screen {
 
         //Load our map and setup our map renderer
         maploader = new TmxMapLoader();
-        map = maploader.load("map.tmx");
+        map = maploader.load("level1.tmx");
         renderer = new OrthogonalTiledMapRenderer(map);
         gamecam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
 
@@ -99,11 +99,8 @@ public class PlayScreen implements Screen {
         //Sprites
         mainCharacter = new MainCharacter(world,this);
         mainCharacter.setOriginCenter();
-//        iron = new Iron(this,32f,32f);
         iron_count=0;
         iron_array=new ArrayList<Iron>();
-//        resources = new ArrayList<Resources>();
-//        ResourcesToSpawn = new PriorityQueue<ResourceDef>();
 
 
         //set world listener
@@ -152,13 +149,14 @@ public class PlayScreen implements Screen {
 
     public void handleInput(float dt){
         double speedreduction = Math.pow(0.8,Hud.getScore());
-        mainCharacter.setxSpeed((float) (touchpad.getKnobPercentX() * 2 * speedreduction));
-        mainCharacter.setySpeed((float) (touchpad.getKnobPercentY() * 2 * speedreduction));
+        mainCharacter.setScale((float)(Hud.getScore()/10.0)+1);
+        mainCharacter.setxSpeed((float) (touchpad.getKnobPercentX() * speedreduction));
+        mainCharacter.setySpeed((float) (touchpad.getKnobPercentY() * speedreduction));
         mainCharacter.b2body.applyLinearImpulse(new Vector2(mainCharacter.getxSpeed(), mainCharacter.getySpeed()), mainCharacter.b2body.getWorldCenter(), true);
         currentAngle = getAngle(mainCharacter);
         mainCharacter.setRotation(currentAngle);
-        System.out.println("x is "+touchpad.getKnobPercentX()+ " y is " + touchpad.getKnobPercentY()
-                + " angle is "+currentAngle);
+//        System.out.println("x is "+touchpad.getKnobPercentX()+ " y is " + touchpad.getKnobPercentY()
+//                + " angle is "+currentAngle);
     }
 
     public void update(float dt){
@@ -172,6 +170,10 @@ public class PlayScreen implements Screen {
         //hud timer
         hud.update(dt);
 
+
+        //stopping the character
+        slowDownCharacter();
+        System.out.println("x speed is " + mainCharacter.b2body.getLinearVelocity().x + "touch pad " + touchpad.isTouched());
         //sprites
         mainCharacter.update(dt);
         while (iron_count<=20){
@@ -211,16 +213,17 @@ public class PlayScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); //clear the screen
         //backgroup and character image (Used for test)
         game.batch.setProjectionMatrix(gamecam.combined); //only render what the camera can see
+
+        //render the map
+        renderer.render();
         game.batch.begin(); //opens the "box"
-        game.batch.draw(texture, 0, 0);
+        //game.batch.draw(texture, 0, 0);
         //game.batch.draw(spaceman, gamecam.position.x - 20, gamecam.position.y - 20, 50, 50);
         mainCharacter.draw(game.batch);
         for(int i=0;i<iron_array.size();i++)
             iron_array.get(i).draw(game.batch);
         game.batch.end(); //close the "box" and draw it on the screen
 
-        //render the map
-        renderer.render();
 
         //render our Box2DDebugLines
         b2dr.render(world, gamecam.combined);
@@ -292,4 +295,11 @@ public class PlayScreen implements Screen {
             return 360+lastAngle;
         }else return lastAngle;
     }
+
+    private void slowDownCharacter() {
+        if(!touchpad.isTouched()) {
+            mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.1), (float) (mainCharacter.b2body.getLinearVelocity().y * -0.1)), mainCharacter.b2body.getWorldCenter(), true);
+        }
+    }
+
 }

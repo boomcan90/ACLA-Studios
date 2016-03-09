@@ -24,7 +24,7 @@ public class B2WorldCreator {
 
 
         //Temp assume there the the third layer (2) is the ground
-        for (MapObject object: map.getLayers().get(1).getObjects().getByType(RectangleMapObject.class)){
+        for (MapObject object: map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)){
             Rectangle rect = ((RectangleMapObject) object).getRectangle();
             bdef.type = BodyDef.BodyType.StaticBody;
             //DynamicBody affected by gravity forces and velocity
