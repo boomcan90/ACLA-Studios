@@ -26,7 +26,7 @@ public class Iron extends Resources {
 
         //Collision Bit
         fdef.filter.categoryBits = SpaceConquest.IRON_BIT; //what category is this fixture
-        fdef.filter.maskBits = SpaceConquest.GROUND_BIT
+        fdef.filter.maskBits = SpaceConquest.OBSTACLE_BIT
                 |SpaceConquest.CHARACTER_BIT
                 |SpaceConquest.OBJECT_BIT; //What can the character collide with?
 

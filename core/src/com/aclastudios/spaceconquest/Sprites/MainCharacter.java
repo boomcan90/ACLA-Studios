@@ -2,7 +2,6 @@ package com.aclastudios.spaceconquest.Sprites;
 
 import com.aclastudios.spaceconquest.Screens.PlayScreen;
 import com.aclastudios.spaceconquest.SpaceConquest;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -45,7 +44,7 @@ public class MainCharacter extends Sprite {
         ySpeed = 0;
         //Collision Bit
         fdef.filter.categoryBits = SpaceConquest.CHARACTER_BIT; //what category is this fixture
-        fdef.filter.maskBits = SpaceConquest.GROUND_BIT
+        fdef.filter.maskBits = SpaceConquest.OBSTACLE_BIT
                 | SpaceConquest.IRON_BIT
                 |SpaceConquest.STATION_BIT
                 |SpaceConquest.OBJECT_BIT; //What can the character collide with?
@@ -57,7 +56,7 @@ public class MainCharacter extends Sprite {
     }
     public void update(float dt){
         setPosition(b2body.getPosition().x - getWidth()/2, b2body.getPosition().y - getHeight()/2);
-        System.out.println("My weight is "+charWeight);
+        System.out.println("My weight is " + charWeight);
     }
 
     public void setCategoryFilter(short filterBit){
