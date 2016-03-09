@@ -21,8 +21,8 @@ public class MainCharacter extends Sprite {
     public Body b2body;
     protected Fixture fixture;
     private TextureRegion character;
-    private static Integer charWeight;
-    private static Integer charScore;
+    private int charWeight;
+    private int charScore;
     public MainCharacter(World world,PlayScreen screen){
         super(screen.getAtlas().findRegion("little_mario"));
         this.world = world;
@@ -47,6 +47,7 @@ public class MainCharacter extends Sprite {
         fdef.filter.categoryBits = SpaceConquest.CHARACTER_BIT; //what category is this fixture
         fdef.filter.maskBits = SpaceConquest.GROUND_BIT
                 | SpaceConquest.IRON_BIT
+                |SpaceConquest.STATION_BIT
                 |SpaceConquest.OBJECT_BIT; //What can the character collide with?
 
         //Body
@@ -56,6 +57,7 @@ public class MainCharacter extends Sprite {
     }
     public void update(float dt){
         setPosition(b2body.getPosition().x - getWidth()/2, b2body.getPosition().y - getHeight()/2);
+        System.out.println("My weight is "+charWeight);
     }
 
     public void setCategoryFilter(short filterBit){
@@ -89,11 +91,11 @@ public class MainCharacter extends Sprite {
         return charScore;
     }
 
-//    public static void addCharWeight(Integer charWeight) {
-//        this.charWeight += charWeight;
-//    }
+    public void addCharWeight(int charWeight) {
+        this.charWeight += charWeight;
+    }
 
-    public void setCharScore(int charScore) {
-        this.charScore += charScore;
+    public void setCharWeight(int w){
+        this.charWeight=w;
     }
 }

@@ -104,7 +104,7 @@ public class PlayScreen implements Screen {
 
 
         //set world listener
-        world.setContactListener(new WorldContactListener());
+        world.setContactListener(new WorldContactListener(this));
 
         //touchpad setup
         //Create a touchpad skin
@@ -148,15 +148,14 @@ public class PlayScreen implements Screen {
 //    }
 
     public void handleInput(float dt){
-        double speedreduction = Math.pow(0.8,Hud.getScore());
-        mainCharacter.setScale((float)(Hud.getScore()/10.0)+1);
+
+        double speedreduction = Math.pow(0.8,mainCharacter.getCharWeight());
+        mainCharacter.setScale((float)(mainCharacter.getCharWeight()/10.0)+1);
         mainCharacter.setxSpeed((float) (touchpad.getKnobPercentX() * speedreduction));
         mainCharacter.setySpeed((float) (touchpad.getKnobPercentY() * speedreduction));
         mainCharacter.b2body.applyLinearImpulse(new Vector2(mainCharacter.getxSpeed(), mainCharacter.getySpeed()), mainCharacter.b2body.getWorldCenter(), true);
         currentAngle = getAngle(mainCharacter);
         mainCharacter.setRotation(currentAngle);
-//        System.out.println("x is "+touchpad.getKnobPercentX()+ " y is " + touchpad.getKnobPercentY()
-//                + " angle is "+currentAngle);
     }
 
     public void update(float dt){
@@ -173,7 +172,7 @@ public class PlayScreen implements Screen {
 
         //stopping the character
         slowDownCharacter();
-        System.out.println("x speed is " + mainCharacter.b2body.getLinearVelocity().x + "touch pad " + touchpad.isTouched());
+        //System.out.println("x speed is " + mainCharacter.b2body.getLinearVelocity().x + "touch pad " + touchpad.isTouched());
         //sprites
         mainCharacter.update(dt);
         while (iron_count<=20){
@@ -300,6 +299,15 @@ public class PlayScreen implements Screen {
         if(!touchpad.isTouched()) {
             mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.1), (float) (mainCharacter.b2body.getLinearVelocity().y * -0.1)), mainCharacter.b2body.getWorldCenter(), true);
         }
+    }
+
+    public void increaseCharWeight(int w){
+        mainCharacter.addCharWeight(w);
+    }
+    public int depositResource(){
+        int res = mainCharacter.getCharWeight();
+        mainCharacter.setCharWeight(0);
+        return res;
     }
 
 }

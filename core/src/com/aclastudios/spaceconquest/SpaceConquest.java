@@ -15,7 +15,9 @@ public class SpaceConquest extends Game {
 	public static final short CHARACTER_BIT = 2;
 	public static final short IRON_BIT = 4;
 	public static final short OBJECT_BIT = 8;
-	
+	public static final short STATION_BIT = 16;
+
+
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
