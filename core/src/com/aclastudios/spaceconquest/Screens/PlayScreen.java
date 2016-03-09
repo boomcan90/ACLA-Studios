@@ -215,7 +215,8 @@ public class PlayScreen implements Screen {
         game.batch.draw(texture, 0, 0);
         //game.batch.draw(spaceman, gamecam.position.x - 20, gamecam.position.y - 20, 50, 50);
         mainCharacter.draw(game.batch);
-//        iron.draw(game.batch);
+        for(int i=0;i<iron_array.size();i++)
+            iron_array.get(i).draw(game.batch);
         game.batch.end(); //close the "box" and draw it on the screen
 
         //render the map
@@ -277,7 +278,7 @@ public class PlayScreen implements Screen {
     public float getAngle(MainCharacter c){
         float x =c.getxSpeed();
         float y = c.getySpeed();
-        
+
         if(x>0 && y>0){
             lastAngle =(float)Math.toDegrees(Math.atan(y / x));
             return lastAngle;

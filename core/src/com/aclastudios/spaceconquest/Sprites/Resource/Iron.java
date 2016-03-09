@@ -10,7 +10,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 public class Iron extends Resources {
 
     public Iron(PlayScreen screen, float x, float y) {
-        super(screen, x, y);
+        super(screen,"mushroom", x, y);
     }
 
     @Override
