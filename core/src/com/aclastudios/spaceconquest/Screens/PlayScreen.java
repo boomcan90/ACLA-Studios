@@ -121,6 +121,7 @@ public class PlayScreen implements Screen {
         //touchpad update
         gamecam.position.x+=touchpad.getKnobPercentX()*2;
         gamecam.position.y+=touchpad.getKnobPercentY()*2;
+
         touchpad.setPosition(gamecam.position.x-gamePort.getWorldWidth() / 2+10,gamecam.position.y-gamePort.getWorldHeight()/2+10);
     }
 
