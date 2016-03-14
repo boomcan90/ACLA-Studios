@@ -115,9 +115,9 @@ public class Space extends Sprite {
         // the !isDead() method is used to prevent multiple invocation
         // of "die music" and jumping
         // there is probably better ways to do that but it works for now.
-        if (Hud.isTimeUp()) {
-            currentState = State.DEAD;
-        }
+//        if (Hud.isTimeUp()) {
+//            currentState = State.DEAD;
+//        }
 
 
     }

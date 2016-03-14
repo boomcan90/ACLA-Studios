@@ -20,12 +20,12 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 public class GameOver implements Screen {
     private Viewport viewport;
     private Stage stage;
-
-
+    private GameScreenManager gsm;
     private Game game;
 
-    public GameOver(Game game){
+    public GameOver(Game game, GameScreenManager gsm){
         this.game = game;
+        this.gsm = gsm;
         viewport = new FitViewport(SpaceConquest.V_WIDTH, SpaceConquest.V_HEIGHT, new OrthographicCamera());
         stage = new Stage(viewport, ((SpaceConquest) game).batch);
 
@@ -54,7 +54,7 @@ public class GameOver implements Screen {
     public void render(float delta) {
         if(Gdx.input.justTouched()) {
             //dispose();
-            game.setScreen(new PlayScreen((SpaceConquest) game));
+            gsm.set(new PlayScreen((SpaceConquest) game, gsm));
             dispose();
         }
         Gdx.gl.glClearColor(0, 0, 0, 1);

@@ -12,24 +12,24 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class Hud implements Disposable{
+public class Hud implements Disposable {
     public Stage stage;
     private Viewport viewport; //With the new viewport, when game world moves the hud stays the same
 
-    private static Integer worldTimer;
-    private static boolean timeUp;
-    private static float timeCount;
+    private Integer worldTimer;
+    private boolean timeUp; // true when the world timer reaches 0
+    private float timeCount;
     private static Integer score;
 
-    Label countdownLabel;
-    static Label scoreLabel;
-    Label timeLabel;
-    Label worldLabel;
-    Label levelLabel;
-    Label titleLabel;
+    private Label countdownLabel;
+    private static Label scoreLabel;
+    private Label timeLabel;
+    private Label worldLabel;
+    private Label levelLabel;
+    private Label KnapsackLabel;
 
     public Hud(SpriteBatch sb){
-        worldTimer = 3;
+        worldTimer = 300;
         timeCount = 0;
         score = 0;
 
@@ -43,11 +43,11 @@ public class Hud implements Disposable{
         countdownLabel = new Label(String.format("%03d", worldTimer), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         scoreLabel = new Label(String.format("%06d", score), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         timeLabel = new Label("TIME", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        levelLabel = new Label("1-1", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        worldLabel = new Label("WORLD", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        titleLabel = new Label("Space Conquest", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        levelLabel = new Label("Dooms Planet", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        worldLabel = new Label("SPACE CONQUEST", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        KnapsackLabel = new Label("KNAPSACK", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
-        table.add(titleLabel).expandX().padTop(10);
+        table.add(KnapsackLabel).expandX().padTop(10);
         table.add(worldLabel).expandX().padTop(10);
         table.add(timeLabel).expandX().padTop(10);
         table.row(); //new row
@@ -69,19 +69,19 @@ public class Hud implements Disposable{
             timeCount = 0;
         }
     }
-
     public static void addScore(int value){
-        score += value;
+        score+=value;
         scoreLabel.setText(String.format("%06d", score));
     }
+    public static int getScore(){
+        return score;
+    }
+
 
     @Override
-    public void dispose() { stage.dispose(); }
-
-    public static boolean isTimeUp() { return timeUp; }
-    public static void setTimeUp() { timeUp = false;
-    timeCount = 0;
-        worldTimer = 3;
+    public void dispose() {
+        stage.dispose();
     }
-    public static float timeStart() { return timeCount; }
+
+    public boolean isTimeUp() { return timeUp; }
 }
