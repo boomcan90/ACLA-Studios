@@ -22,10 +22,11 @@ public class MenuScreen implements Screen {
     private Viewport viewport;
     private Stage stage;
 
-
+    private GameScreenManager gsm;
     private Game menu;
 
-    public MenuScreen(Game menu){
+    public MenuScreen(Game menu, GameScreenManager gsm){
+        this.gsm = gsm;
         this.menu = menu;
         viewport = new FitViewport(SpaceConquest.V_WIDTH, SpaceConquest.V_HEIGHT, new OrthographicCamera());
         stage = new Stage(viewport, ((SpaceConquest) menu).batch);
@@ -54,8 +55,8 @@ public class MenuScreen implements Screen {
     @Override
     public void render(float delta) {
         if(Gdx.input.justTouched()) {
-
-            menu.setScreen(new PlayScreen((SpaceConquest) menu));
+            gsm.set(new PlayScreen((SpaceConquest) menu));
+            //menu.setScreen(new PlayScreen((SpaceConquest) menu));
             dispose();
         }
         Gdx.gl.glClearColor(0, 0, 0, 1);
