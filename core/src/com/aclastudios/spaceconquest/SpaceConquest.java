@@ -1,5 +1,6 @@
 package com.aclastudios.spaceconquest;
 //main class
+import com.aclastudios.spaceconquest.PlayGameService.PlayServices;
 import com.aclastudios.spaceconquest.Screens.PlayScreen;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -16,6 +17,13 @@ public class SpaceConquest extends Game {
 	public static final short IRON_BIT = 4;
 	public static final short OBJECT_BIT = 8;
 	public static final short STATION_BIT = 16;
+
+	public static PlayServices playServices;
+
+	public SpaceConquest(PlayServices playServices)
+	{
+		this.playServices = playServices;
+	}
 
 
 	@Override
