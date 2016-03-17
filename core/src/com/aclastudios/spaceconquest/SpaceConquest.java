@@ -20,6 +20,10 @@ public class SpaceConquest extends Game {
 
 	public static PlayServices playServices;
 
+	public SpaceConquest()
+	{
+
+	}
 	public SpaceConquest(PlayServices playServices)
 	{
 		this.playServices = playServices;
