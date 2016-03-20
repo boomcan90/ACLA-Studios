@@ -47,6 +47,11 @@ project(":android") {
     configurations { natives }
 
     dependencies {
+        compile 'com.google.android.gms:play-services-games:8.4.0'
+        // 8.4 is the latest as of now, keep it updated
+        compile project(':BaseGameUtils')
+
+
         compile project(":core")
         compile "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi"
