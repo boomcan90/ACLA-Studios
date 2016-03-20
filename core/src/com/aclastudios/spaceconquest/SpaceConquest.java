@@ -1,5 +1,6 @@
 package com.aclastudios.spaceconquest;
 //main class
+import com.aclastudios.spaceconquest.PlayGameService.PlayServices;
 import com.aclastudios.spaceconquest.Screens.GameScreenManager;
 import com.aclastudios.spaceconquest.Screens.MenuScreen;
 import com.aclastudios.spaceconquest.Screens.PlayScreen;
@@ -19,10 +20,21 @@ public class SpaceConquest extends Game {
 	private GameScreenManager gsm;
 
 	public static final short OBSTACLE_BIT = 1;
-	public static final short CHARACTER_BIT = 2;
+	public static final short MAIN_CHARACTER_BIT = 2;
 	public static final short IRON_BIT = 4;
 	public static final short OBJECT_BIT = 8;
 	public static final short STATION_BIT = 16;
+	public static final short CHARACTER_BIT = 32;
+
+	public static PlayServices playServices;
+
+	public SpaceConquest() {
+
+	}
+	public SpaceConquest(PlayServices playServices)
+	{
+		this.playServices = playServices;
+	}
 
 
 	@Override
