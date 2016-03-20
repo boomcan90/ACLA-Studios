@@ -4,11 +4,6 @@ import com.aclastudios.spaceconquest.Screens.PlayScreen;
 import com.aclastudios.spaceconquest.SpaceConquest;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.MapLayer;
-import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -16,55 +11,46 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Array;
 
-
-public class MainCharacter extends Sprite {
-    private float xSpeed,ySpeed;
+/**
+ * Created by User on 17/3/2016.
+ */
+public class Enemy extends Sprite{
+    //private float xSpeed,ySpeed;
     public World world;
     public Body b2body;
-    TiledMap map;
     protected Fixture fixture;
     private TextureRegion character;
-    private int charWeight;
-    private int charScore;
-    public MainCharacter(World world,PlayScreen screen){
-        super(screen.getAtlas().findRegion("little_mario"));
+    //private int charWeight;
+    //private int charScore;
+    public Enemy(World world, PlayScreen screen){
+        super(screen.getAtlas().findRegion("turtle"));
         this.world = world;
-        map =screen.getMap();
         defineCharacter();
-        character = new TextureRegion(getTexture(),0,0,16,16);
-        setBounds(0,0,16,16);
+        character = new TextureRegion(getTexture(),338,26,16,24);
+        setBounds(0,0,16,24);
         setRegion(character);
     }
 
     public void defineCharacter(){
         BodyDef bdef = new BodyDef();
-        //Array<RectangleMapObject> object = map.getLayers().get(7).getObjects().getByType(RectangleMapObject.class);
-        for (MapLayer layer : map.getLayers()) {
-            if (layer.getName().matches("spawn1")) {
-                Array<RectangleMapObject> mo = layer.getObjects().getByType(RectangleMapObject.class);
-                Rectangle rect = mo.get(0).getRectangle();
-                bdef.position.set(rect.getX(), rect.getY()); //temp set position
-
-            }
-        }
-//        bdef.position.set(150,150); //temp set position
+        bdef.position.set(300,300); //temp set position
         bdef.type = BodyDef.BodyType.DynamicBody;
         b2body = world.createBody(bdef);
 
         FixtureDef fdef = new FixtureDef();
         CircleShape shape = new CircleShape();
-        shape.setRadius(8);
-        xSpeed = 0;
-        ySpeed = 0;
+        shape.setRadius(20);
+        //xSpeed = 0;
+        //ySpeed = 0;
+
         //Collision Bit
-        fdef.filter.categoryBits = SpaceConquest.MAIN_CHARACTER_BIT; //what category is this fixture
+        fdef.filter.categoryBits = SpaceConquest.CHARACTER_BIT; //what category is this fixture
         fdef.filter.maskBits = SpaceConquest.OBSTACLE_BIT
                 | SpaceConquest.IRON_BIT
                 |SpaceConquest.STATION_BIT
                 |SpaceConquest.OBJECT_BIT
-                |SpaceConquest.CHARACTER_BIT; //What can the character collide with?
+                |SpaceConquest.MAIN_CHARACTER_BIT; //What can the character collide with?
 
         //Body
         fdef.shape = shape;
@@ -72,8 +58,8 @@ public class MainCharacter extends Sprite {
 //        fixture = b2body.createFixture(fdef);
     }
     public void update(float dt){
-        setPosition(b2body.getPosition().x - getWidth()/2, b2body.getPosition().y - getHeight()/2);
-        System.out.println("My weight is " + charWeight);
+        setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
+        //System.out.println("My weight is " + charWeight);
     }
 
     public void setCategoryFilter(short filterBit){
@@ -81,7 +67,7 @@ public class MainCharacter extends Sprite {
         filter.categoryBits = filterBit;
         fixture.setFilterData(filter);
     }
-
+/*
     public float getySpeed() {
         return ySpeed;
     }
@@ -98,7 +84,6 @@ public class MainCharacter extends Sprite {
         this.ySpeed = ySpeed;
     }
 
-
     public Integer getCharWeight() {
         return charWeight;
     }
@@ -114,4 +99,5 @@ public class MainCharacter extends Sprite {
     public void setCharWeight(int w){
         this.charWeight=w;
     }
+    */
 }
