@@ -10,7 +10,6 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
-import com.badlogic.gdx.physics.box2d.World;
 
 public class WorldContactListener implements ContactListener {
     private PlayScreen screen;
@@ -26,7 +25,7 @@ public class WorldContactListener implements ContactListener {
         int cDef = fixA.getFilterData().categoryBits | fixB.getFilterData().categoryBits;
 
         switch (cDef){
-            case SpaceConquest.CHARACTER_BIT | SpaceConquest.IRON_BIT:
+            case SpaceConquest.MAIN_CHARACTER_BIT | SpaceConquest.IRON_BIT:
                 if(fixA.getFilterData().categoryBits == SpaceConquest.IRON_BIT)
                     ((Iron)fixA.getUserData()).use((MainCharacter) fixB.getUserData());
                 else
@@ -34,7 +33,7 @@ public class WorldContactListener implements ContactListener {
                 //Hud.addScore(1);
                 screen.increaseCharWeight(2);
                 break;
-            case SpaceConquest.CHARACTER_BIT |SpaceConquest.STATION_BIT:
+            case SpaceConquest.MAIN_CHARACTER_BIT |SpaceConquest.STATION_BIT:
                 System.out.println("inside station");
                 int score =screen.depositResource();
                 Hud.addScore(score);

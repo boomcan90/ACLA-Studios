@@ -2,6 +2,7 @@ package com.aclastudios.spaceconquest.Screens;
 
 import com.aclastudios.spaceconquest.Scenes.Hud;
 import com.aclastudios.spaceconquest.SpaceConquest;
+import com.aclastudios.spaceconquest.Sprites.Enemy;
 import com.aclastudios.spaceconquest.Sprites.Resource.Iron;
 import com.aclastudios.spaceconquest.Sprites.MainCharacter;
 import com.aclastudios.spaceconquest.Tools.B2WorldCreator;
@@ -12,9 +13,12 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
@@ -25,6 +29,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.utils.Array;
 
 import java.util.ArrayList;
 import java.util.PriorityQueue;
@@ -40,6 +45,11 @@ public class PlayScreen implements Screen {
     private OrthographicCamera gamecam;
     private Viewport gamePort;
     private Hud hud;
+
+    private float x;
+    private float y;
+    private float width;
+    private float height;
 
     private float lastAngle = 0;
     private float currentAngle;
@@ -61,6 +71,7 @@ public class PlayScreen implements Screen {
 
     //Sprites
     private MainCharacter mainCharacter;
+    private Enemy enemy;
 //    private Iron iron;
     private int iron_count;
     private ArrayList<Iron> iron_array;
@@ -72,7 +83,7 @@ public class PlayScreen implements Screen {
         this.game = game;
 
         //Background and Character assets
-        texture = new Texture("planet.png");
+        texture = new Texture("map.png");
         spaceman = new Texture("astronaut.png");
 
         //Game map and Game View
@@ -86,7 +97,7 @@ public class PlayScreen implements Screen {
 
         //Load our map and setup our map renderer
         maploader = new TmxMapLoader();
-        map = maploader.load("level1.tmx");
+        map = maploader.load("map-orthogonal.tmx");
         renderer = new OrthogonalTiledMapRenderer(map);
         gamecam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
 
@@ -99,11 +110,21 @@ public class PlayScreen implements Screen {
 
         //Sprites
         mainCharacter = new MainCharacter(world,this);
+        enemy = new Enemy(world,this);
         mainCharacter.setOriginCenter();
+
         iron_count=0;
         iron_array=new ArrayList<Iron>();
-
-
+        for (MapLayer layer : map.getLayers()) {
+            if (layer.getName().matches("resourceSpawningArea")) {
+                Array<RectangleMapObject> mo = layer.getObjects().getByType(RectangleMapObject.class);
+                Rectangle rect = mo.get(0).getRectangle();
+                this.x = rect.getX();
+                this.y = rect.getY();
+                this.width = rect.getWidth();
+                this.height = rect.getHeight();
+            }
+        }
         //set world listener
         world.setContactListener(new WorldContactListener(this));
 
@@ -150,11 +171,12 @@ public class PlayScreen implements Screen {
 
     public void handleInput(float dt){
 
-        double speedreduction = Math.pow(0.8,mainCharacter.getCharWeight());
-        mainCharacter.setScale((float)(mainCharacter.getCharWeight()/10.0)+1);
+        double speedreduction = Math.pow(0.9,mainCharacter.getCharWeight()/2);
+        mainCharacter.setScale((float)(mainCharacter.getCharWeight()/20.0)+1);
         mainCharacter.setxSpeed((float) (touchpad.getKnobPercentX() * speedreduction));
         mainCharacter.setySpeed((float) (touchpad.getKnobPercentY() * speedreduction));
         mainCharacter.b2body.applyLinearImpulse(new Vector2(mainCharacter.getxSpeed(), mainCharacter.getySpeed()), mainCharacter.b2body.getWorldCenter(), true);
+
         currentAngle = getAngle(mainCharacter);
         mainCharacter.setRotation(currentAngle);
     }
@@ -176,9 +198,10 @@ public class PlayScreen implements Screen {
         //System.out.println("x speed is " + mainCharacter.b2body.getLinearVelocity().x + "touch pad " + touchpad.isTouched());
         //sprites
         mainCharacter.update(dt);
+        enemy.update(dt);
         while (iron_count<=20){
             Random rand = new Random();
-            Iron iron = new Iron(this,rand.nextFloat()*400,rand.nextFloat()*400);
+            Iron iron = new Iron(this,rand.nextInt((int)this.width) + this.x , rand.nextInt((int)this.height)+this.y);
             iron_array.add(iron);
             iron_count++;
         }
@@ -217,9 +240,10 @@ public class PlayScreen implements Screen {
         //render the map
         renderer.render();
         game.batch.begin(); //opens the "box"
-        //game.batch.draw(texture, 0, 0);
+        game.batch.draw(texture, 0, 0);
         //game.batch.draw(spaceman, gamecam.position.x - 20, gamecam.position.y - 20, 50, 50);
         mainCharacter.draw(game.batch);
+        enemy.draw(game.batch);
         for(int i=0;i<iron_array.size();i++)
             iron_array.get(i).draw(game.batch);
         game.batch.end(); //close the "box" and draw it on the screen
