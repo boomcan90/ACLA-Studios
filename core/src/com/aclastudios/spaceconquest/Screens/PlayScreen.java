@@ -202,7 +202,7 @@ public class PlayScreen implements Screen {
 
         touchpad.setPosition(gamecam.position.x-gamePort.getWorldWidth() / 2+10,gamecam.position.y-gamePort.getWorldHeight()/2+10);
     }
-
+    //render
     @Override
     public void render(float delta) {
         //make sure that everything is updated
