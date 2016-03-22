@@ -23,13 +23,13 @@ public class MenuScreen implements Screen {
     private Stage stage;
 
     private GameScreenManager gsm;
-    private Game menu;
+    private SpaceConquest game;
 
-    public MenuScreen(Game menu, GameScreenManager gsm){
+    public MenuScreen(SpaceConquest game, GameScreenManager gsm){
         this.gsm = gsm;
-        this.menu = menu;
+        this.game = game;
         viewport = new FitViewport(SpaceConquest.V_WIDTH, SpaceConquest.V_HEIGHT, new OrthographicCamera());
-        stage = new Stage(viewport, ((SpaceConquest) menu).batch);
+        stage = new Stage(viewport, (game).batch);
 
         Label.LabelStyle font = new Label.LabelStyle(new BitmapFont(), Color.WHITE);
 
@@ -55,9 +55,13 @@ public class MenuScreen implements Screen {
     @Override
     public void render(float delta) {
         if(Gdx.input.justTouched()) {
-            gsm.set(new PlayScreen((SpaceConquest) menu, gsm));
+            game.playServices.startQuickGame();
+            game.multiplayerSessionInfo.mState = game.multiplayerSessionInfo.ROOM_WAIT;
+            gsm.set(new WaitScreen(game, gsm));
             //menu.setScreen(new PlayScreen((SpaceConquest) menu));
             dispose();
+        } else {
+            game.playServices.loginGPGS();
         }
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
