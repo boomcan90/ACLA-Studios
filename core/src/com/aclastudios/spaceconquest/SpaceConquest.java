@@ -1,5 +1,6 @@
 package com.aclastudios.spaceconquest;
 //main class
+import com.aclastudios.spaceconquest.PlayGameService.MultiplayerSessionInfo;
 import com.aclastudios.spaceconquest.PlayGameService.PlayServices;
 import com.aclastudios.spaceconquest.Screens.GameScreenManager;
 import com.aclastudios.spaceconquest.Screens.MenuScreen;
@@ -26,14 +27,16 @@ public class SpaceConquest extends Game {
 	public static final short STATION_BIT = 16;
 	public static final short CHARACTER_BIT = 32;
 
-	public static PlayServices playServices;
+	public PlayServices playServices;
+	public MultiplayerSessionInfo multiplayerSessionInfo;
 
 	public SpaceConquest() {
 
 	}
-	public SpaceConquest(PlayServices playServices)
+	public SpaceConquest(PlayServices playServices, MultiplayerSessionInfo multiplayerSessionInfo)
 	{
 		this.playServices = playServices;
+		this.multiplayerSessionInfo=multiplayerSessionInfo;
 	}
 
 
