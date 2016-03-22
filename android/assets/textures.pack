@@ -1,0 +1,47 @@
+
+textures.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+PYRO
+  rotate: false
+  xy: 1, 443
+  size: 788, 167
+  orig: 788, 167
+  offset: 0, 0
+  index: -1
+DAACTAR
+  rotate: false
+  xy: 1, 278
+  size: 757, 163
+  orig: 757, 163
+  offset: 0, 0
+  index: -1
+KID
+  rotate: false
+  xy: 1, 67
+  size: 703, 209
+  orig: 703, 209
+  offset: 0, 0
+  index: -1
+gunpowder_ore
+  rotate: false
+  xy: 791, 460
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+oil_ore
+  rotate: false
+  xy: 943, 530
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+iron_ore
+  rotate: false
+  xy: 1, 1
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
