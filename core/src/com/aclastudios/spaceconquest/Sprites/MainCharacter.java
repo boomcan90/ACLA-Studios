@@ -45,7 +45,7 @@ public class MainCharacter extends Sprite {
             if (layer.getName().matches("spawn1")) {
                 Array<RectangleMapObject> mo = layer.getObjects().getByType(RectangleMapObject.class);
                 Rectangle rect = mo.get(0).getRectangle();
-                bdef.position.set(rect.getX(), rect.getY()); //temp set position
+                bdef.position.set(rect.getX()*SpaceConquest.MAP_SCALE, rect.getY()*SpaceConquest.MAP_SCALE); //temp set position
 
             }
         }

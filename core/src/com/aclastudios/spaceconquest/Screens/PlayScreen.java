@@ -5,6 +5,7 @@ import com.aclastudios.spaceconquest.SpaceConquest;
 import com.aclastudios.spaceconquest.Sprites.Enemy;
 import com.aclastudios.spaceconquest.Sprites.Resource.Iron;
 import com.aclastudios.spaceconquest.Sprites.MainCharacter;
+import com.aclastudios.spaceconquest.Sprites.Space;
 import com.aclastudios.spaceconquest.Tools.B2WorldCreator;
 import com.aclastudios.spaceconquest.Tools.WorldContactListener;
 import com.badlogic.gdx.Gdx;
@@ -84,6 +85,7 @@ public class PlayScreen implements Screen {
         this.gsm = gsm;
         //Background and Character assets
         texture = new Texture("map.png");
+
         spaceman = new Texture("astronaut.png");
 
         //Game map and Game View
@@ -201,7 +203,7 @@ public class PlayScreen implements Screen {
         enemy.update(dt);
         while (iron_count<=20){
             Random rand = new Random();
-            Iron iron = new Iron(this,rand.nextInt((int)this.width) + this.x , rand.nextInt((int)this.height)+this.y);
+            Iron iron = new Iron(this,(int)((rand.nextInt((int)this.width) + this.x)*SpaceConquest.MAP_SCALE) , (int)((rand.nextInt((int)(this.height*SpaceConquest.MAP_SCALE))+this.y)*SpaceConquest.MAP_SCALE));
             iron_array.add(iron);
             iron_count++;
         }
@@ -240,11 +242,12 @@ public class PlayScreen implements Screen {
         //render the map
         renderer.render();
         game.batch.begin(); //opens the "box"
-        game.batch.draw(texture, 0, 0);
+        game.batch.draw(texture, 0, 0, texture.getWidth() * SpaceConquest.MAP_SCALE, texture.getHeight() * SpaceConquest.MAP_SCALE);
         //game.batch.draw(spaceman, gamecam.position.x - 20, gamecam.position.y - 20, 50, 50);
         mainCharacter.draw(game.batch);
         enemy.draw(game.batch);
         for(int i=0;i<iron_array.size();i++)
+
             iron_array.get(i).draw(game.batch);
         game.batch.end(); //close the "box" and draw it on the screen
 
