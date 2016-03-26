@@ -3,8 +3,10 @@ package com.aclastudios.spaceconquest.Tools;
 import com.aclastudios.spaceconquest.Scenes.Hud;
 import com.aclastudios.spaceconquest.Screens.PlayScreen;
 import com.aclastudios.spaceconquest.SpaceConquest;
+import com.aclastudios.spaceconquest.Sprites.Enemy;
 import com.aclastudios.spaceconquest.Sprites.MainCharacter;
 import com.aclastudios.spaceconquest.Sprites.Resource.Iron;
+import com.aclastudios.spaceconquest.Weapons.FireBall;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -43,6 +45,22 @@ public class WorldContactListener implements ContactListener {
                     ((Iron)fixA.getUserData()).use((MainCharacter) fixB.getUserData());
                 else
                     ((Iron)fixB.getUserData()).use((MainCharacter) fixA.getUserData());
+                break;
+            case SpaceConquest.FIREBALL_BIT | SpaceConquest.OBSTACLE_BIT:
+                if(fixA.getFilterData().categoryBits == SpaceConquest.FIREBALL_BIT)
+                    ((FireBall)fixA.getUserData()).setToDestroy();
+                else
+                    ((FireBall)fixB.getUserData()).setToDestroy();
+                break;
+            case SpaceConquest.FIREBALL_BIT | SpaceConquest.CHARACTER_BIT:
+                if(fixA.getFilterData().categoryBits == SpaceConquest.FIREBALL_BIT) {
+                    ((FireBall) fixA.getUserData()).setToDestroy();
+                    ((Enemy) fixB.getUserData()).dead();
+                }
+                else {
+                    ((FireBall) fixB.getUserData()).setToDestroy();
+                    ((Enemy) fixA.getUserData()).dead();
+                }
                 break;
         }
     }

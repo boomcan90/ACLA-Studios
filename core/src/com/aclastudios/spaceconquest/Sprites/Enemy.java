@@ -4,6 +4,10 @@ import com.aclastudios.spaceconquest.Screens.PlayScreen;
 import com.aclastudios.spaceconquest.SpaceConquest;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -11,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 
 /**
  * Created by User on 17/3/2016.
@@ -18,23 +23,45 @@ import com.badlogic.gdx.physics.box2d.World;
 public class Enemy extends Sprite{
     //private float xSpeed,ySpeed;
     public World world;
+    TiledMap map;
     public Body b2body;
     protected Fixture fixture;
     private TextureRegion character;
+    float spawnX;
+    float spawnY;
+    private float stateTime;
+    private boolean setToDestroy;
+    private boolean destroyed;
+    private float deathCount;
+
     //private int charWeight;
     //private int charScore;
     public Enemy(World world, PlayScreen screen){
         super(screen.getAtlas().findRegion("turtle"));
         this.world = world;
+        map =screen.getMap();
         defineCharacter();
         character = new TextureRegion(getTexture(),338,26,16,24);
-        setBounds(0,0,16,24);
+        setBounds(0, 0, 16, 24);
         setRegion(character);
+        stateTime = 0;
+        setToDestroy = false;
+        destroyed = false;
+        deathCount = 0;
     }
 
     public void defineCharacter(){
         BodyDef bdef = new BodyDef();
-        bdef.position.set(300,300); //temp set position
+        for (MapLayer layer : map.getLayers()) {
+            if (layer.getName().matches("enemySpawn")) {
+                Array<RectangleMapObject> mo = layer.getObjects().getByType(RectangleMapObject.class);
+                Rectangle rect = mo.get(0).getRectangle();
+                spawnX = rect.getX()*SpaceConquest.MAP_SCALE;
+                spawnY = rect.getY()*SpaceConquest.MAP_SCALE;
+                bdef.position.set(spawnX, spawnY); //temp set position
+
+            }
+        }
         bdef.type = BodyDef.BodyType.DynamicBody;
         b2body = world.createBody(bdef);
 
@@ -50,16 +77,35 @@ public class Enemy extends Sprite{
                 | SpaceConquest.IRON_BIT
                 |SpaceConquest.STATION_BIT
                 |SpaceConquest.OBJECT_BIT
-                |SpaceConquest.MAIN_CHARACTER_BIT; //What can the character collide with?
+                |SpaceConquest.MAIN_CHARACTER_BIT
+                |SpaceConquest.FIREBALL_BIT; //What can the character collide with?
 
         //Body
         fdef.shape = shape;
         b2body.createFixture(fdef).setUserData(this);
+
 //        fixture = b2body.createFixture(fdef);
     }
-    public void update(float dt){
-        setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
-        //System.out.println("My weight is " + charWeight);
+    public void update(float dt) {
+        stateTime += dt;
+        if (setToDestroy ) {
+            System.out.println("destroying");
+            world.destroyBody(b2body);
+            destroyed = true;
+            setToDestroy = false;
+            stateTime = 0;
+            deathCount+=1;
+        }
+        if(destroyed){
+            if(stateTime>(deathCount*1.5)){
+                stateTime = 0;
+                destroyed = false;
+                defineCharacter();
+            }
+        }else {
+            setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
+            //System.out.println("My weight is " + charWeight);
+        }
     }
 
     public void setCategoryFilter(short filterBit){
@@ -67,7 +113,14 @@ public class Enemy extends Sprite{
         filter.categoryBits = filterBit;
         fixture.setFilterData(filter);
     }
-/*
+    public void dead(){
+        setToDestroy = true;
+    }
+
+    public boolean isDestroyed() {
+        return destroyed;
+    }
+    /*
     public float getySpeed() {
         return ySpeed;
     }
