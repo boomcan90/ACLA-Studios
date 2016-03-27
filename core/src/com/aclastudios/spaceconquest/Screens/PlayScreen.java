@@ -237,12 +237,13 @@ public class PlayScreen implements Screen {
         mainCharacter.update(dt);
         enemy.update(dt);
 
-        while ((resourceManager.getIron_count()+resourceManager.getGunpowder_count())<=20)
+        while ((resourceManager.getIron_count()+resourceManager.getGunpowder_count()+resourceManager.getOil_count())<=20)
             resourceManager.generateResources(this.x, this.y, this.width, this.height);
 
 
         resourceManager.updateIron(dt);
         resourceManager.updateGunPowder(dt);
+        resourceManager.updateOil(dt);
 
         gamecam.position.x = mainCharacter.b2body.getPosition().x;
         gamecam.position.y = mainCharacter.b2body.getPosition().y;
@@ -281,6 +282,8 @@ public class PlayScreen implements Screen {
             resourceManager.getIron_array(i).draw(game.batch);
         for(int i=0;i<resourceManager.getGunpowder_count();i++)
             resourceManager.getGunpowder_array(i).draw(game.batch);
+        for(int i=0;i<resourceManager.getOil_count();i++)
+            resourceManager.getOil_array(i).draw(game.batch);
 
         mainCharacter.draw(game.batch);
         if(!enemy.isDestroyed())
@@ -384,7 +387,7 @@ public class PlayScreen implements Screen {
         mainCharacter.addCharWeight(w);
     }
     public int depositResource(){
-        int res = mainCharacter.getIronCount();
+        int res = mainCharacter.getCharWeight();
         mainCharacter.depositResource();
         return res;
     }
