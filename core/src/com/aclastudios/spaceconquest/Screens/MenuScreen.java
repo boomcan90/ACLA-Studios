@@ -55,10 +55,10 @@ public class MenuScreen implements Screen {
     @Override
     public void render(float delta) {
         if(Gdx.input.justTouched()) {
-            //game.playServices.startQuickGame();
-            //game.multiplayerSessionInfo.mState = game.multiplayerSessionInfo.ROOM_WAIT;
-            //gsm.set(new WaitScreen(game, gsm));
-            gsm.set(new PlayScreen((SpaceConquest) game, gsm));
+            gsm.set(new PlayScreen(game, gsm));
+//            game.playServices.startQuickGame();
+//            game.multiplayerSessionInfo.mState = game.multiplayerSessionInfo.ROOM_WAIT;
+//            gsm.set(new WaitScreen(game, gsm));
             //menu.setScreen(new PlayScreen((SpaceConquest) menu));
             dispose();
         } else {

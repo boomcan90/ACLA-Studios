@@ -34,6 +34,9 @@ public class B2WorldCreator {
 
             float vertices[] = ((PolylineMapObject) object).getPolyline()
                     .getTransformedVertices();
+            for(int i = 0; i< vertices.length;i++){
+                vertices[i] *= SpaceConquest.MAP_SCALE;
+            }
             ChainShape shape2 = new ChainShape();
             shape2.createChain(vertices);
             bdef.position.set(0, 0);
@@ -44,6 +47,9 @@ public class B2WorldCreator {
         for (MapObject object : map.getLayers().get(5).getObjects().getByType(PolylineMapObject.class)) {
             float vertices[] = ((PolylineMapObject) object).getPolyline()
                     .getTransformedVertices();
+            for(int i = 0; i< vertices.length;i++){
+                vertices[i] *= SpaceConquest.MAP_SCALE;
+            }
             ChainShape shape2 = new ChainShape();
             shape2.createChain(vertices);
 
