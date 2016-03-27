@@ -3,8 +3,10 @@ package com.aclastudios.spaceconquest.Screens;
 import com.aclastudios.spaceconquest.Scenes.Hud;
 import com.aclastudios.spaceconquest.SpaceConquest;
 import com.aclastudios.spaceconquest.Sprites.Enemy;
+import com.aclastudios.spaceconquest.Sprites.Resource.GunPowder;
 import com.aclastudios.spaceconquest.Sprites.Resource.Iron;
 import com.aclastudios.spaceconquest.Sprites.MainCharacter;
+import com.aclastudios.spaceconquest.Sprites.ResourceManager;
 import com.aclastudios.spaceconquest.Tools.B2WorldCreator;
 import com.aclastudios.spaceconquest.Tools.WorldContactListener;
 import com.badlogic.gdx.Gdx;
@@ -35,6 +37,7 @@ import java.util.ArrayList;
 import java.util.PriorityQueue;
 import java.util.Random;
 
+import javax.annotation.Resource;
 
 
 public class PlayScreen implements Screen {
@@ -72,11 +75,8 @@ public class PlayScreen implements Screen {
     //Sprites
     private MainCharacter mainCharacter;
     private Enemy enemy;
-//    private Iron iron;
-    private int iron_count;
-    private ArrayList<Iron> iron_array;
-//    private ArrayList<Resources> resources;
-//    private PriorityQueue<ResourceDef> ResourcesToSpawn;
+
+    private ResourceManager resourceManager;
 
     public PlayScreen(SpaceConquest game, GameScreenManager gsm){
         atlas = new TextureAtlas("Marios_and_Enemies.atlas");
@@ -113,8 +113,8 @@ public class PlayScreen implements Screen {
         enemy = new Enemy(world,this);
         mainCharacter.setOriginCenter();
 
-        iron_count=0;
-        iron_array=new ArrayList<Iron>();
+        resourceManager = new ResourceManager(this);
+
         for (MapLayer layer : map.getLayers()) {
             if (layer.getName().matches("resourceSpawningArea")) {
                 Array<RectangleMapObject> mo = layer.getObjects().getByType(RectangleMapObject.class);
@@ -157,17 +157,6 @@ public class PlayScreen implements Screen {
 
     }
 
-//    public void spawnIten(ResourceDef rdef){
-//        ResourcesToSpawn.add((rdef));
-//    }
-//    public void handleSpawningItem(){
-//        if(!ResourcesToSpawn.isEmpty()){
-//            ResourceDef rdef = ResourcesToSpawn.poll();
-//            if(rdef.type== Iron.class){
-//                resources.add(new Iron(this,rdef.position.x,rdef.position.y));
-//            }
-//        }
-//    }
 
     public void handleInput(float dt){
 
@@ -184,7 +173,6 @@ public class PlayScreen implements Screen {
     public void update(float dt){
         //input updates
         handleInput(dt);
-//        handleSpawningItem();
 
         //Allows box2d calculate the physics
         world.step(1 / 60f, 6, 2);
@@ -199,24 +187,12 @@ public class PlayScreen implements Screen {
         //sprites
         mainCharacter.update(dt);
         enemy.update(dt);
-        while (iron_count<=20){
-            Random rand = new Random();
-            Iron iron = new Iron(this,rand.nextInt((int)this.width) + this.x , rand.nextInt((int)this.height)+this.y);
-            iron_array.add(iron);
-            iron_count++;
+        while ((resourceManager.getIron_count()+resourceManager.getGunpowder_count())<=20){
+            resourceManager.generateResources(this.x, this.y, this.width, this.height);
         }
-        for (int n=0; n<iron_array.size();n++){
-            Iron I = iron_array.get(n);
-            I.update(dt);
-            if (I.ifDestroyed()){
-                iron_array.remove(n);
-                iron_count--;
-            }
-        }
+        resourceManager.updateIron(dt);
+        resourceManager.updateGunPowder(dt);
 
-        //touchpad update
-//        gamecam.position.x+=touchpad.getKnobPercentX()*2;
-//        gamecam.position.y+=touchpad.getKnobPercentY()*2;
         gamecam.position.x = mainCharacter.b2body.getPosition().x;
         gamecam.position.y = mainCharacter.b2body.getPosition().y;
         //gamecam updates
@@ -228,6 +204,10 @@ public class PlayScreen implements Screen {
     //render
     @Override
     public void render(float delta) {
+        if(hud.isTimeUp()==true){
+            gsm.set(new GameOver(game, gsm));
+        }
+
         //make sure that everything is updated
         update(delta);
 
@@ -244,8 +224,10 @@ public class PlayScreen implements Screen {
         //game.batch.draw(spaceman, gamecam.position.x - 20, gamecam.position.y - 20, 50, 50);
         mainCharacter.draw(game.batch);
         enemy.draw(game.batch);
-        for(int i=0;i<iron_array.size();i++)
-            iron_array.get(i).draw(game.batch);
+        for(int i=0;i<resourceManager.getIron_count();i++)
+            resourceManager.getIron_array(i).draw(game.batch);
+        for(int i=0;i<resourceManager.getGunpowder_count();i++)
+            resourceManager.getGunpowder_array(i).draw(game.batch);
         game.batch.end(); //close the "box" and draw it on the screen
 
 
@@ -260,13 +242,13 @@ public class PlayScreen implements Screen {
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
 
-        if(hud.isTimeUp()==true){
-            gsm.set(new GameOver(game, gsm));
-        }
+
     }
 
     @Override
     public void resize(int width, int height) {
+
+        System.out.println("updating");
         gamePort.update(width, height);
     }
 
