@@ -1,5 +1,9 @@
 package com.aclastudios.spaceconquest.PlayGameService;
 
+import com.badlogic.gdx.Game;
+
+import java.io.BufferedReader;
+
 public interface PlayServices {
     public boolean getSignedInGPGS();
 
@@ -22,5 +26,11 @@ public interface PlayServices {
     public void sendInvitations();
 
     public void leaveRoom();
+
+    public void BroadcastMessage(String message);
+
+    public void BroadcastUnreliableMessage(String message);
+
+    public BufferedReader inputBuffer();
 
 }
