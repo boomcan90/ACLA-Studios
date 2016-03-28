@@ -1,6 +1,12 @@
 package com.aclastudios.spaceconquest;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -9,6 +15,7 @@ import android.util.Log;
 
 import com.aclastudios.spaceconquest.PlayGameService.MultiplayerSessionInfo;
 import com.aclastudios.spaceconquest.PlayGameService.PlayServices;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
@@ -17,13 +24,16 @@ import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesActivityResultCodes;
 import com.google.android.gms.games.multiplayer.Invitation;
 import com.google.android.gms.games.multiplayer.Multiplayer;
+import com.google.android.gms.games.multiplayer.Participant;
+import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
+import com.google.android.gms.games.multiplayer.realtime.RealTimeMessageReceivedListener;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.example.games.basegameutils.GameHelper;
 import com.google.example.games.basegameutils.GameHelper.GameHelperListener;
 
 
 
-public class AndroidLauncher extends AndroidApplication implements GameHelperListener, PlayServices{
+public class AndroidLauncher extends AndroidApplication implements GameHelperListener, PlayServices,RealTimeMessageReceivedListener {
 
 	private final String TAG = "SpaceConquest Andriod Launcher";
 	// Request codes for the UIs that we show with startActivityForResult:
@@ -35,9 +45,9 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 
 	public GameHelper gameHelper;
 	public GoogleApiClient mGoogleApiClient;
-	public RealTimeCommunication mRealTimeCom;
 	private GPSListeners mGooglePlayListeners;
 	public MultiplayerSessionInfo MultiplayerSession;
+	private BufferedReader bufferedReader;
 
 
 	@Override
@@ -62,9 +72,6 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		//Initialize listener helper class
 		if (mGooglePlayListeners == null) {
 			mGooglePlayListeners = new GPSListeners(mGoogleApiClient,this);
-		}
-		if (mRealTimeCom == null) {
-			mRealTimeCom = new RealTimeCommunication(mGoogleApiClient,this.MultiplayerSession);
 		}
 
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
@@ -208,11 +215,10 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 			Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(MIN_OPPONENTS,MAX_OPPONENTS, 0);
 
 			RoomConfig.Builder rtmConfigBuilder = RoomConfig.builder(mGooglePlayListeners);
-			rtmConfigBuilder.setMessageReceivedListener(mRealTimeCom);
+			rtmConfigBuilder.setMessageReceivedListener(this);
 			rtmConfigBuilder.setRoomStatusUpdateListener(mGooglePlayListeners);
 
 			rtmConfigBuilder.setAutoMatchCriteria(autoMatchCriteria);
-
 			Games.RealTimeMultiplayer.create(mGoogleApiClient, rtmConfigBuilder.build());
 		}
 		else if (!gameHelper.isConnecting()) {
@@ -295,7 +301,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		Log.d(TAG, "Creating room...");
 		RoomConfig.Builder rtmConfigBuilder = RoomConfig.builder(mGooglePlayListeners);
 		rtmConfigBuilder.addPlayersToInvite(invitees);
-		rtmConfigBuilder.setMessageReceivedListener(mRealTimeCom);
+		rtmConfigBuilder.setMessageReceivedListener(this);
 		rtmConfigBuilder.setRoomStatusUpdateListener(mGooglePlayListeners);
 		if (autoMatchCriteria != null) {
 			rtmConfigBuilder.setAutoMatchCriteria(autoMatchCriteria);
@@ -328,9 +334,68 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		Log.d(TAG, "Accepting invitation: " + invId);
 		RoomConfig.Builder roomConfigBuilder = RoomConfig.builder(mGooglePlayListeners);
 		roomConfigBuilder.setInvitationIdToAccept(invId)
-				.setMessageReceivedListener(mRealTimeCom)
+				.setMessageReceivedListener(this)
 				.setRoomStatusUpdateListener(mGooglePlayListeners);
 		Games.RealTimeMultiplayer.join(mGoogleApiClient, roomConfigBuilder.build());
 	}
+
+	//Sending messages
+	public void BroadcastMessage(String message){
+		byte[] bytes = message.getBytes(Charset.forName("UTF-8"));
+		for (Object o : MultiplayerSession.mParticipants) {
+			Participant p = (Participant) o;
+			if (!p.getParticipantId().equals(MultiplayerSession.mId)) {
+				Games.RealTimeMultiplayer.sendReliableMessage(mGoogleApiClient, null, bytes,
+						MultiplayerSession.mRoomId, p.getParticipantId());
+			}
+		}
+	}
+	public void BroadcastUnreliableMessage(String message){
+		byte[] bytes = message.getBytes(Charset.forName("UTF-8"));
+		Games.RealTimeMultiplayer.sendUnreliableMessageToOthers(mGoogleApiClient, bytes,
+				MultiplayerSession.mRoomId);
+	}
+
+	@Override
+	public void onRealTimeMessageReceived(RealTimeMessage rtm) {
+		byte[] buf = rtm.getMessageData();
+		String sender = rtm.getSenderParticipantId();
+		String Msg;
+		//testing
+		InputStream is = new ByteArrayInputStream(buf);
+		bufferedReader = new BufferedReader(new InputStreamReader(is));
+		//end
+		try{
+			String messageType = new String (Arrays.copyOfRange(buf, 0, 1),"UTF-8");
+			System.out.println("Listen to message: "+ new String (Arrays.copyOfRange(buf,0,buf.length),"UTF-8"));
+			Log.d(TAG, "MessageType: " + messageType);
+
+			if (messageType.equals("A")){
+				//Create a InetSocketAddress
+				byte[] addr = Arrays.copyOfRange(buf, 1, buf.length);
+				Msg = new String (addr,"UTF-8");
+				Log.d(TAG,"Address received: "+Msg);
+				MultiplayerSession.serverAddress=Msg;
+
+			}else if (messageType.equals("P")){
+				//Retrieve and store port number
+				byte[] port = Arrays.copyOfRange(buf, 1, buf.length);
+				Msg = new String (port,"UTF-8");
+				Log.d(TAG,"Port Number received: "+Msg);
+				MultiplayerSession.serverPort=Integer.parseInt(Msg);
+
+			}else{
+				Log.d(TAG, "Message type is not recognised.");
+			}
+
+		}catch (Exception e){
+			Log.d(TAG, "Error reading from received message: "+e.getMessage());
+		}
+	}
+	@Override
+	public BufferedReader inputBuffer() {
+		return bufferedReader;
+	}
+
 
 }

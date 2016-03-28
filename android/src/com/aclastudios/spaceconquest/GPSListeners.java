@@ -202,6 +202,7 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
 		if (room.getParticipants() != null) {
 			this.activity.MultiplayerSession.mParticipants = room.getParticipants();
 
+
 		}
 		if (this.activity.MultiplayerSession.mParticipants != null) {
 		}
