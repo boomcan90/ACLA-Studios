@@ -73,6 +73,7 @@ public class MainCharacter extends Sprite {
         fdef.filter.categoryBits = SpaceConquest.MAIN_CHARACTER_BIT; //what category is this fixture
         fdef.filter.maskBits = SpaceConquest.OBSTACLE_BIT
                 | SpaceConquest.IRON_BIT
+                |SpaceConquest.GUNPOWDER_BIT
                 |SpaceConquest.STATION_BIT
                 |SpaceConquest.CHARACTER_BIT; //What can the character collide with?
 

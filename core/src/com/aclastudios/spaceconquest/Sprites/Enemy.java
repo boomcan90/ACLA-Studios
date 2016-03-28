@@ -2,6 +2,7 @@ package com.aclastudios.spaceconquest.Sprites;
 
 import com.aclastudios.spaceconquest.Screens.PlayScreen;
 import com.aclastudios.spaceconquest.SpaceConquest;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
