@@ -5,6 +5,7 @@ import com.aclastudios.spaceconquest.SpaceConquest;
 import com.aclastudios.spaceconquest.Sprites.Enemy;
 import com.aclastudios.spaceconquest.Sprites.Resource.Iron;
 import com.aclastudios.spaceconquest.Sprites.MainCharacter;
+import com.aclastudios.spaceconquest.SupportThreads.ClientThread;
 import com.aclastudios.spaceconquest.Tools.B2WorldCreator;
 import com.aclastudios.spaceconquest.Tools.WorldContactListener;
 import com.badlogic.gdx.Gdx;
@@ -72,11 +73,12 @@ public class PlayScreen implements Screen {
     //Sprites
     private MainCharacter mainCharacter;
     private Enemy enemy;
-//    private Iron iron;
+    //private Iron iron;
     private int iron_count;
     private ArrayList<Iron> iron_array;
-//    private ArrayList<Resources> resources;
-//    private PriorityQueue<ResourceDef> ResourcesToSpawn;
+
+    //Threads
+    private ClientThread clientThread;
 
     public PlayScreen(SpaceConquest game, GameScreenManager gsm){
         atlas = new TextureAtlas("Marios_and_Enemies.atlas");
@@ -151,6 +153,10 @@ public class PlayScreen implements Screen {
         stage = new Stage(gamePort, game.batch);
         stage.addActor(touchpad);
         Gdx.input.setInputProcessor(stage);
+
+        //thread initialize
+        clientThread = new ClientThread(game);
+        clientThread.start();
     }
     @Override
     public void show() {
@@ -263,6 +269,9 @@ public class PlayScreen implements Screen {
         if(hud.isTimeUp()==true){
             gsm.set(new GameOver(game, gsm));
         }
+        float x = mainCharacter.b2body.getPosition().x;
+        float y = mainCharacter.b2body.getPosition().y;
+        game.playServices.BroadcastMessage(x + " " + y);
     }
 
     @Override
