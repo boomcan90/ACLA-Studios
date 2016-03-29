@@ -1,5 +1,6 @@
 package com.aclastudios.spaceconquest.Screens;
 
+import com.aclastudios.spaceconquest.PlayGameService.MultiplayerSessionInfo;
 import com.aclastudios.spaceconquest.Scenes.Hud;
 import com.aclastudios.spaceconquest.SpaceConquest;
 import com.aclastudios.spaceconquest.Sprites.Enemy;
@@ -100,8 +101,8 @@ public class PlayScreen implements Screen {
         atlas = new TextureAtlas("Mario_and_Enemies.pack");
         this.game = game;
         this.gsm = gsm;
-        this.userID = 1;
-        //Background and Character assets
+        this.userID = game.multiplayerSessionInfo.mParticipantsId.indexOf(game.multiplayerSessionInfo.mId);
+                //Background and Character assets
         texture = new Texture("map.png");
 
         spaceman = new Texture("astronaut.png");
@@ -401,7 +402,7 @@ public class PlayScreen implements Screen {
         mainCharacter.depositResource();
         return res;
     }
-    
+
     public void MessageListener(String string){
         System.out.println("Listening to incoming message in PlayScreen: " + string);
     }

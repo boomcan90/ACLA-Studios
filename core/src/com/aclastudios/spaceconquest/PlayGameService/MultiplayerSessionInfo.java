@@ -14,6 +14,7 @@ public class MultiplayerSessionInfo {
 	public String mIncomingInvitationId;
 	public String mRoomId;
 	public ArrayList mParticipants;
+	public ArrayList<String> mParticipantsId;
 	public String mName;
 	public int mState=1000;
 
@@ -30,21 +31,6 @@ public class MultiplayerSessionInfo {
 	public MultiplayerSessionInfo(){
 	}
 
-//	public MMServer getServer() {
-//		return server;
-//	}
-//
-//	public void setServer(MMServer server) {
-//		this.server = server;
-//	}
-//
-//	public MMClient getClient() {
-//		return client;
-//	}
-//
-//	public void setClient(MMClient client) {
-//		this.client = client;
-//	}
 	
 	public void endSession(){
 		mId=null;
@@ -57,9 +43,6 @@ public class MultiplayerSessionInfo {
 		isServer=false;
 		serverAddress=null;
 		serverPort=0;
-
-//		server=null;
-//		client=null;
 
 	}
 
