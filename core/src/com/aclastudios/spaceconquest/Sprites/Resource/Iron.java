@@ -47,6 +47,8 @@ public class Iron extends Resources {
     public void update(float dt){
         super.update(dt);
         setPosition(body.getPosition().x - getWidth() / 2, body.getPosition().y - getHeight() / 2);
+
     }
+
 
 }

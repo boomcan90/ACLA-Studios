@@ -7,6 +7,7 @@ import com.aclastudios.spaceconquest.Sprites.Enemy;
 import com.aclastudios.spaceconquest.Sprites.MainCharacter;
 import com.aclastudios.spaceconquest.Sprites.Resource.GunPowder;
 import com.aclastudios.spaceconquest.Sprites.Resource.Iron;
+import com.aclastudios.spaceconquest.Sprites.Resource.Oil;
 import com.aclastudios.spaceconquest.Weapons.FireBall;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -42,7 +43,15 @@ public class WorldContactListener implements ContactListener {
                 else
                     ((GunPowder)fixB.getUserData()).use((MainCharacter) fixA.getUserData());
                 //Hud.addScore(1);
-                screen.increaseCharWeight(10);
+                screen.increaseCharWeight(2);
+                break;
+            case SpaceConquest.MAIN_CHARACTER_BIT | SpaceConquest.OIL_BIT:
+                if(fixA.getFilterData().categoryBits == SpaceConquest.OIL_BIT)
+                    ((Oil)fixA.getUserData()).use((MainCharacter) fixB.getUserData());
+                else
+                    ((Oil)fixB.getUserData()).use((MainCharacter) fixA.getUserData());
+                //Hud.addScore(1);
+                screen.increaseCharWeight(2);
                 break;
             case SpaceConquest.MAIN_CHARACTER_BIT |SpaceConquest.STATION_BIT:
                 System.out.println("inside station");
