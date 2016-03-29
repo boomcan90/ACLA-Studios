@@ -252,7 +252,7 @@ public class PlayScreen implements Screen {
         while ((resourceManager.getIron_count()+resourceManager.getGunpowder_count()+resourceManager.getOil_count())<=20)
             resourceManager.generateResources(this.x, this.y, this.width, this.height);
 
-        
+
         resourceManager.updateIron(dt);
         resourceManager.updateGunPowder(dt);
         resourceManager.updateOil(dt);
@@ -284,6 +284,7 @@ public class PlayScreen implements Screen {
 
         //render the map
         renderer.render();
+        game.batch.setProjectionMatrix(gamecam.combined);
         game.batch.begin(); //opens the "box"
         game.batch.draw(texture, 0, 0, texture.getWidth() * SpaceConquest.MAP_SCALE, texture.getHeight() * SpaceConquest.MAP_SCALE);
         //game.batch.draw(spaceman, gamecam.position.x - 20, gamecam.position.y - 20, 50, 50);
