@@ -6,6 +6,7 @@ import com.aclastudios.spaceconquest.Sprites.Enemy;
 import com.aclastudios.spaceconquest.Sprites.Resource.GunPowder;
 import com.aclastudios.spaceconquest.Sprites.Resource.Iron;
 import com.aclastudios.spaceconquest.Sprites.MainCharacter;
+import com.aclastudios.spaceconquest.SupportThreads.ClientThread;
 import com.aclastudios.spaceconquest.Sprites.ResourceManager;
 import com.aclastudios.spaceconquest.Tools.B2WorldCreator;
 import com.aclastudios.spaceconquest.Tools.WorldContactListener;
@@ -44,6 +45,8 @@ import javax.annotation.Resource;
 
 
 public class PlayScreen implements Screen {
+
+    private int userID;
     private SpaceConquest game;
     private TextureAtlas atlas;
     Texture texture;
@@ -91,6 +94,8 @@ public class PlayScreen implements Screen {
     //Sprites
     private MainCharacter mainCharacter;
     private Enemy enemy;
+    //Threads
+    private ClientThread clientThread;
 
     private ResourceManager resourceManager;
 
@@ -98,6 +103,7 @@ public class PlayScreen implements Screen {
         atlas = new TextureAtlas("Mario_and_Enemies.pack");
         this.game = game;
         this.gsm = gsm;
+        this.userID = 1;
         //Background and Character assets
         texture = new Texture("map.png");
 
@@ -127,7 +133,7 @@ public class PlayScreen implements Screen {
 
         //Sprites
         mainCharacter = new MainCharacter(world,this);
-        enemy = new Enemy(world,this);
+        enemy = new Enemy(world,this,0);
         mainCharacter.setOriginCenter();
 
 
@@ -193,6 +199,9 @@ public class PlayScreen implements Screen {
         stage.addActor(button);
         Gdx.input.setInputProcessor(stage);
 
+        //thread initialize
+        clientThread = new ClientThread(game);
+        clientThread.start();
     }
     @Override
     public void show() {
@@ -240,7 +249,7 @@ public class PlayScreen implements Screen {
         while ((resourceManager.getIron_count()+resourceManager.getGunpowder_count()+resourceManager.getOil_count())<=20)
             resourceManager.generateResources(this.x, this.y, this.width, this.height);
 
-
+        
         resourceManager.updateIron(dt);
         resourceManager.updateGunPowder(dt);
         resourceManager.updateOil(dt);
@@ -308,6 +317,9 @@ public class PlayScreen implements Screen {
         if(hud.isTimeUp()==true){
             gsm.set(new GameOver(game, gsm));
         }
+        float x = mainCharacter.b2body.getPosition().x;
+        float y = mainCharacter.b2body.getPosition().y;
+//        game.playServices.BroadcastMessage(x + " " + y);
     }
 
     @Override
@@ -391,5 +403,7 @@ public class PlayScreen implements Screen {
         mainCharacter.depositResource();
         return res;
     }
-
+    public int getUserID() {
+        return userID;
+    }
 }

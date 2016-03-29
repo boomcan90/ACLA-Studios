@@ -28,6 +28,7 @@ public class SpaceConquest extends Game {
 	public static final short OIL_BIT = 10;
 	public static final short OBJECT_BIT = 8;
 	public static final short STATION_BIT = 16;
+	public static final short ENEMY_STATION_BIT = 17;
 	public static final short CHARACTER_BIT = 32;
 	public static final short FIREBALL_BIT = 1024;
 

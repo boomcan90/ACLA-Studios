@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.Array;
 
 
 public class MainCharacter extends Sprite {
+    public final String[] area = {"Team1Spawn","Team2Spawn"};
     private float xSpeed,ySpeed;
     public World world;
     public Body b2body;
@@ -52,7 +53,7 @@ public class MainCharacter extends Sprite {
         BodyDef bdef = new BodyDef();
         //Array<RectangleMapObject> object = map.getLayers().get(7).getObjects().getByType(RectangleMapObject.class);
         for (MapLayer layer : map.getLayers()) {
-            if (layer.getName().matches("spawn1")) {
+            if (layer.getName().matches(area[screen.getUserID()])) {
                 Array<RectangleMapObject> mo = layer.getObjects().getByType(RectangleMapObject.class);
                 Rectangle rect = mo.get(0).getRectangle();
                 bdef.position.set(rect.getX()*SpaceConquest.MAP_SCALE, rect.getY()*SpaceConquest.MAP_SCALE); //temp set position
@@ -75,6 +76,7 @@ public class MainCharacter extends Sprite {
                 |SpaceConquest.GUNPOWDER_BIT
                 |SpaceConquest.OIL_BIT
                 |SpaceConquest.STATION_BIT
+                |SpaceConquest.ENEMY_STATION_BIT
                 |SpaceConquest.CHARACTER_BIT; //What can the character collide with?
 
         //Body
