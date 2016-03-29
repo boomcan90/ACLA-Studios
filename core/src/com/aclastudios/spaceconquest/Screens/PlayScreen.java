@@ -44,6 +44,8 @@ import javax.annotation.Resource;
 
 
 public class PlayScreen implements Screen {
+
+    private int userID;
     private SpaceConquest game;
     private TextureAtlas atlas;
     Texture texture;
@@ -98,6 +100,7 @@ public class PlayScreen implements Screen {
         atlas = new TextureAtlas("Mario_and_Enemies.pack");
         this.game = game;
         this.gsm = gsm;
+        this.userID = 1;
         //Background and Character assets
         texture = new Texture("map.png");
 
@@ -127,7 +130,7 @@ public class PlayScreen implements Screen {
 
         //Sprites
         mainCharacter = new MainCharacter(world,this);
-        enemy = new Enemy(world,this);
+        enemy = new Enemy(world,this,0);
         mainCharacter.setOriginCenter();
 
 
@@ -314,6 +317,7 @@ public class PlayScreen implements Screen {
         try {
             game.playServices.BroadcastUnreliableMessage(x + " " + y);
         }catch (Exception e){}
+
     }
 
     @Override
@@ -397,8 +401,14 @@ public class PlayScreen implements Screen {
         mainCharacter.depositResource();
         return res;
     }
+    
     public void MessageListener(String string){
         System.out.println("Listening to incoming message in PlayScreen: " + string);
+    }
+
+
+    public int getUserID() {
+        return userID;
     }
 
 }
