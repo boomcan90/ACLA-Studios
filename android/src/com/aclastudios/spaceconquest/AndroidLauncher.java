@@ -1,9 +1,7 @@
 package com.aclastudios.spaceconquest;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,8 +13,9 @@ import android.util.Log;
 
 import com.aclastudios.spaceconquest.PlayGameService.MultiplayerSessionInfo;
 import com.aclastudios.spaceconquest.PlayGameService.PlayServices;
-import com.badlogic.gdx.Game;
+import com.aclastudios.spaceconquest.Screens.PlayScreen;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -47,7 +46,9 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 	public GoogleApiClient mGoogleApiClient;
 	private GPSListeners mGooglePlayListeners;
 	public MultiplayerSessionInfo MultiplayerSession;
-	private BufferedReader bufferedReader;
+
+	private PlayScreen screen;
+
 
 
 	@Override
@@ -77,7 +78,6 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		config.useImmersiveMode = true;
 		initialize(new SpaceConquest(this, MultiplayerSession), config);
-
 
 	}
 
@@ -352,49 +352,34 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 	}
 	public void BroadcastUnreliableMessage(String message){
 		byte[] bytes = message.getBytes(Charset.forName("UTF-8"));
+//		byte[] bytes = message.getBytes();
 		Games.RealTimeMultiplayer.sendUnreliableMessageToOthers(mGoogleApiClient, bytes,
 				MultiplayerSession.mRoomId);
+
 	}
 
 	@Override
 	public void onRealTimeMessageReceived(RealTimeMessage rtm) {
 		byte[] buf = rtm.getMessageData();
 		String sender = rtm.getSenderParticipantId();
-		String Msg;
 		//testing
-		InputStream is = new ByteArrayInputStream(buf);
-		bufferedReader = new BufferedReader(new InputStreamReader(is));
+//		InputStream is = new ByteArrayInputStream(buf);
+//		bufferedReader = new BufferedReader(new InputStreamReader(is));
+
 		//end
 		try{
 			String messageType = new String (Arrays.copyOfRange(buf, 0, 1),"UTF-8");
-			System.out.println("Listen to message: "+ new String (Arrays.copyOfRange(buf,0,buf.length),"UTF-8"));
-			Log.d(TAG, "MessageType: " + messageType);
-
-			if (messageType.equals("A")){
-				//Create a InetSocketAddress
-				byte[] addr = Arrays.copyOfRange(buf, 1, buf.length);
-				Msg = new String (addr,"UTF-8");
-				Log.d(TAG,"Address received: "+Msg);
-				MultiplayerSession.serverAddress=Msg;
-
-			}else if (messageType.equals("P")){
-				//Retrieve and store port number
-				byte[] port = Arrays.copyOfRange(buf, 1, buf.length);
-				Msg = new String (port,"UTF-8");
-				Log.d(TAG,"Port Number received: "+Msg);
-				MultiplayerSession.serverPort=Integer.parseInt(Msg);
-
-			}else{
-				Log.d(TAG, "Message type is not recognised.");
-			}
+			String Msg = new String (Arrays.copyOfRange(buf,0,buf.length),"UTF-8");
+			System.out.println("Listen to message: "+ Msg);
+			screen.MessageListener(Msg);
 
 		}catch (Exception e){
 			Log.d(TAG, "Error reading from received message: "+e.getMessage());
 		}
 	}
 	@Override
-	public BufferedReader inputBuffer() {
-		return bufferedReader;
+	public void setScreen(PlayScreen screen) {
+		this.screen = screen;
 	}
 
 

@@ -6,7 +6,6 @@ import com.aclastudios.spaceconquest.Sprites.Enemy;
 import com.aclastudios.spaceconquest.Sprites.Resource.GunPowder;
 import com.aclastudios.spaceconquest.Sprites.Resource.Iron;
 import com.aclastudios.spaceconquest.Sprites.MainCharacter;
-import com.aclastudios.spaceconquest.SupportThreads.ClientThread;
 import com.aclastudios.spaceconquest.Sprites.ResourceManager;
 import com.aclastudios.spaceconquest.Tools.B2WorldCreator;
 import com.aclastudios.spaceconquest.Tools.WorldContactListener;
@@ -92,8 +91,6 @@ public class PlayScreen implements Screen {
     //Sprites
     private MainCharacter mainCharacter;
     private Enemy enemy;
-    //Threads
-    private ClientThread clientThread;
 
     private ResourceManager resourceManager;
 
@@ -196,9 +193,10 @@ public class PlayScreen implements Screen {
         stage.addActor(button);
         Gdx.input.setInputProcessor(stage);
 
-        //thread initialize
-        clientThread = new ClientThread(game);
-        clientThread.start();
+        //Setscreen in androidLauncher
+        game.playServices.setScreen(this);
+
+
     }
     @Override
     public void show() {
@@ -313,7 +311,9 @@ public class PlayScreen implements Screen {
         }
         float x = mainCharacter.b2body.getPosition().x;
         float y = mainCharacter.b2body.getPosition().y;
-        game.playServices.BroadcastMessage(x + " " + y);
+        try {
+            game.playServices.BroadcastUnreliableMessage(x + " " + y);
+        }catch (Exception e){}
     }
 
     @Override
@@ -396,6 +396,9 @@ public class PlayScreen implements Screen {
         int res = mainCharacter.getIronCount();
         mainCharacter.depositResource();
         return res;
+    }
+    public void MessageListener(String string){
+        System.out.println("Listening to incoming message in PlayScreen: " + string);
     }
 
 }
