@@ -32,7 +32,6 @@ public class MainCharacter extends Sprite {
     private TextureRegion character;
     private int charWeight = 0;
     private float radius = 8;
-    private int ironCount = 0;
     private int charScore;
     private Array<FireBall> fireballs;
     private float scale = (float) (1.0/20);
@@ -75,6 +74,7 @@ public class MainCharacter extends Sprite {
         fdef.filter.maskBits = SpaceConquest.OBSTACLE_BIT
                 | SpaceConquest.IRON_BIT
                 |SpaceConquest.GUNPOWDER_BIT
+                |SpaceConquest.OIL_BIT
                 |SpaceConquest.STATION_BIT
                 |SpaceConquest.ENEMY_STATION_BIT
                 |SpaceConquest.CHARACTER_BIT; //What can the character collide with?
@@ -126,14 +126,17 @@ public class MainCharacter extends Sprite {
     }
 
     public void addCharWeight(float charWeight) {
-        this.ironCount += (int) charWeight;
         this.charWeight += charWeight;
         Array<Fixture> fix = b2body.getFixtureList();
         Shape shape = fix.get(0).getShape();
         shape.setRadius( radius + (this.charWeight*scale*5));
         System.out.println(shape.getRadius());
+
+        System.out.println("charweight: "+this.charWeight);
+
+
         //stop user from collecting resource
-        if(this.charWeight>30){
+        if(this.charWeight>=30){
             Filter filter = fix.get(0).getFilterData();
             filter.maskBits =  SpaceConquest.OBSTACLE_BIT
                     |SpaceConquest.STATION_BIT
@@ -142,9 +145,7 @@ public class MainCharacter extends Sprite {
         }
 
     }
-    public int getIronCount() {
-        return ironCount;
-    }
+
     public void setCharWeight(int w){
         this.charWeight=w;
     }
@@ -159,15 +160,16 @@ public class MainCharacter extends Sprite {
     }
 
     public void depositResource() {
-        ironCount = 0;
         charWeight = 0;
         Array<Fixture> fix = b2body.getFixtureList();
         Shape shape = fix.get(0).getShape();
         shape.setRadius(radius);
-        //player can now collide with iron resource
+        //player can now collide with resource
         Filter filter = fix.get(0).getFilterData();
         filter.maskBits =  SpaceConquest.OBSTACLE_BIT
                 | SpaceConquest.IRON_BIT
+                |SpaceConquest.GUNPOWDER_BIT
+                |SpaceConquest.OIL_BIT
                 |SpaceConquest.STATION_BIT
                 |SpaceConquest.CHARACTER_BIT;
         fix.get(0).setFilterData(filter);
