@@ -58,12 +58,12 @@ public class WorldContactListener implements ContactListener {
                 int score =screen.depositResource();
                 Hud.addScore(score);
                 break;
-            case SpaceConquest.OBJECT_BIT| SpaceConquest.IRON_BIT:
-                if(fixA.getFilterData().categoryBits == SpaceConquest.IRON_BIT)
-                    ((Iron)fixA.getUserData()).use((MainCharacter) fixB.getUserData());
-                else
-                    ((Iron)fixB.getUserData()).use((MainCharacter) fixA.getUserData());
-                break;
+//            case SpaceConquest.OBJECT_BIT| SpaceConquest.IRON_BIT:
+//                if(fixA.getFilterData().categoryBits == SpaceConquest.IRON_BIT)
+//                    ((Iron)fixA.getUserData()).use((MainCharacter) fixB.getUserData());
+//                else
+//                    ((Iron)fixB.getUserData()).use((MainCharacter) fixA.getUserData());
+//                break;
             case SpaceConquest.FIREBALL_BIT | SpaceConquest.OBSTACLE_BIT:
                 if(fixA.getFilterData().categoryBits == SpaceConquest.FIREBALL_BIT)
                     ((FireBall)fixA.getUserData()).setToDestroy();

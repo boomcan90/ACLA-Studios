@@ -136,7 +136,7 @@ public class MainCharacter extends Sprite {
 
 
         //stop user from collecting resource
-        if(this.charWeight>=30){
+        if(this.charWeight>=10){
             Filter filter = fix.get(0).getFilterData();
             filter.maskBits =  SpaceConquest.OBSTACLE_BIT
                     |SpaceConquest.STATION_BIT

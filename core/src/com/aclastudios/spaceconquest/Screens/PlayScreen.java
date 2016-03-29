@@ -246,7 +246,7 @@ public class PlayScreen implements Screen {
         mainCharacter.update(dt);
         enemy.update(dt);
 
-        while ((resourceManager.getIron_count()+resourceManager.getGunpowder_count()+resourceManager.getOil_count())<=20)
+        while ((resourceManager.getIron_count()+resourceManager.getGunpowder_count()+resourceManager.getOil_count())<21)
             resourceManager.generateResources(this.x, this.y, this.width, this.height);
 
         
