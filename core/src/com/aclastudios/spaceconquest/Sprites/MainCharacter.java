@@ -36,6 +36,10 @@ public class MainCharacter extends Sprite {
     private int charScore;
     private Array<FireBall> fireballs;
     private float scale = (float) (1.0/20);
+    private float stateTime;
+    private boolean setToDestroy;
+    private boolean destroyed;
+    private float deathCount;
 
     public MainCharacter(World world,PlayScreen screen){
         super(screen.getAtlas().findRegion("little_mario"));
@@ -48,6 +52,10 @@ public class MainCharacter extends Sprite {
         setRegion(character);
         fireballs = new Array<FireBall>();
 
+        stateTime = 0;
+        setToDestroy = false;
+        destroyed = false;
+        deathCount = 0;
     }
 
     public void defineCharacter(){
@@ -85,8 +93,26 @@ public class MainCharacter extends Sprite {
 //        fixture = b2body.createFixture(fdef);
     }
     public void update(float dt){
-        setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
-        //System.out.println("My weight is " + charWeight);
+        stateTime += dt;
+        if (setToDestroy ) {
+            System.out.println("destroying");
+            world.destroyBody(b2body);
+            destroyed = true;
+            setToDestroy = false;
+            stateTime = 0;
+            deathCount+=1;
+        }
+        if(destroyed) {
+            if (stateTime > (deathCount * 1.5)) {
+                stateTime = 0;
+                destroyed = false;
+                defineCharacter();
+            }
+        }else {
+            setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
+            //System.out.println("My weight is " + charWeight);
+        }
+
         for(FireBall  ball : fireballs) {
             ball.update(dt);
             if(ball.isDestroyed())
@@ -176,5 +202,13 @@ public class MainCharacter extends Sprite {
     public float getCharacterScale() {
 
         return ((float)1+ (charWeight*scale));
+    }
+
+    public void dead(){
+        setToDestroy = true;
+    }
+
+    public boolean isDestroyed() {
+        return destroyed;
     }
 }
