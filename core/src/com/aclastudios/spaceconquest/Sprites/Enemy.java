@@ -3,6 +3,7 @@ package com.aclastudios.spaceconquest.Sprites;
 import com.aclastudios.spaceconquest.Screens.PlayScreen;
 import com.aclastudios.spaceconquest.SpaceConquest;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
@@ -23,6 +24,8 @@ import com.badlogic.gdx.utils.Array;
  */
 public class Enemy extends Sprite{
     //private float xSpeed,ySpeed;
+    public final String[] area = {"Team1Spawn","Team2Spawn"};
+    private int enemyID;
     public World world;
     TiledMap map;
     public Body b2body;
@@ -37,9 +40,10 @@ public class Enemy extends Sprite{
 
     //private int charWeight;
     //private int charScore;
-    public Enemy(World world, PlayScreen screen){
+    public Enemy(World world, PlayScreen screen,int ID){
         super(screen.getAtlas().findRegion("turtle"));
         this.world = world;
+        this.enemyID = ID;
         map =screen.getMap();
         defineCharacter();
         character = new TextureRegion(getTexture(),338,26,16,24);
@@ -54,7 +58,7 @@ public class Enemy extends Sprite{
     public void defineCharacter(){
         BodyDef bdef = new BodyDef();
         for (MapLayer layer : map.getLayers()) {
-            if (layer.getName().matches("enemySpawn")) {
+            if (layer.getName().matches(area[enemyID])) {
                 Array<RectangleMapObject> mo = layer.getObjects().getByType(RectangleMapObject.class);
                 Rectangle rect = mo.get(0).getRectangle();
                 spawnX = rect.getX()*SpaceConquest.MAP_SCALE;
@@ -87,6 +91,13 @@ public class Enemy extends Sprite{
 
 //        fixture = b2body.createFixture(fdef);
     }
+
+    @Override
+    public void draw(Batch batch) {
+        if(!this.isDestroyed())
+            super.draw(batch);
+    }
+
     public void update(float dt) {
         stateTime += dt;
         if (setToDestroy ) {
