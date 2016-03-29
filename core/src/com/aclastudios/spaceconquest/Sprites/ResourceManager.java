@@ -30,6 +30,7 @@ public class ResourceManager {
         gunpowder_array=new ArrayList<GunPowder>();
         oil_count = 0;
         oil_array = new ArrayList<Oil>();
+
     }
 
     public int getIron_count() {
@@ -112,11 +113,23 @@ public class ResourceManager {
         }
     }
 
-    public String[] coordinatesR (){
-        String iron = "Ri";
+    public String coordinatesR (){
+        String iron = "Ri- ";
+        for (int i=0;i<iron_array.size();i++){
+            iron += iron_array.get(i).getX() + ":" + iron_array.get(i).getY() + ",";    // Ri- x1 coord : y1 coord , x2 coord : y2 coord , so on
+        }
+        String gunpowder = " g- ";
+        for (int i=0;i<gunpowder_array.size();i++){
+            gunpowder += gunpowder_array.get(i).getX() + ":" + gunpowder_array.get(i).getY() + ",";    // g- x1 coord : y1 coord , x2 coord : y2 coord , so on
+        }
+        String oil = " o- ";
+        for (int i=0;i<oil_array.size();i++){
+            oil += oil_array.get(i).getX() + ":" + oil_array.get(i).getY() + ",";    // o- x1 coord : y1 coord , x2 coord : y2 coord , so on
+        }
 
+        String resourceCoodinates = iron + gunpowder + oil;
 
-        return null;
+        return resourceCoodinates;
     }
 
 }
