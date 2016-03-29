@@ -14,7 +14,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 public class GunPowder extends Resources {
 
     public GunPowder(PlayScreen screen, float x, float y) {
-        super(screen,"mushroom", x, y);
+        super(screen,"gunpoweder_ore", x, y);
     }
 
     @Override

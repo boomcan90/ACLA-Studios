@@ -37,7 +37,7 @@ public class MainCharacter extends Sprite {
     private float scale = (float) (1.0/20);
 
     public MainCharacter(World world,PlayScreen screen){
-        super(screen.getAtlas().findRegion("little_mario"));
+        super(screen.getAtlas().findRegion("PYRO"));
         this.screen = screen;
         this.world = world;
         map =screen.getMap();
