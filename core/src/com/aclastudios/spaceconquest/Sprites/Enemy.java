@@ -3,6 +3,7 @@ package com.aclastudios.spaceconquest.Sprites;
 import com.aclastudios.spaceconquest.Screens.PlayScreen;
 import com.aclastudios.spaceconquest.SpaceConquest;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -39,6 +40,14 @@ public class Enemy extends Sprite{
     private boolean setToDestroy;
     private boolean destroyed;
     private float deathCount;
+    private enum State { STANDING, RUNNING };
+    private State currentState;
+    private State previousState;
+    private Animation running;
+    private float stateTimer;
+    private float x_value;
+    private float y_value;
+    private float last_x_coord;
 
     //private int charWeight;
     //private int charScore;
@@ -58,6 +67,17 @@ public class Enemy extends Sprite{
         x=0;
         y=0;
         angle=0;
+        Array<TextureRegion> frames = new Array<TextureRegion>();
+        // animation for walking
+        frames.add(new TextureRegion(getTexture(), getRegionX(), getRegionY(), 168, 190));
+        frames.add(new TextureRegion(getTexture(), getRegionX() + 195 , getRegionY(), 168, 190));
+        frames.add(new TextureRegion(getTexture(), getRegionX() + 195*2, getRegionY(), 168, 190));
+        frames.add(new TextureRegion(getTexture(), getRegionX() + 195*3, getRegionY(), 168, 190));
+        running =new Animation(0.2f, frames);
+
+        defineCharacter();
+        character = new TextureRegion(getTexture(), getRegionX() + 190, getRegionY(), 170, 190);
+        setBounds(0, 0, 16, 16);
     }
 
     public void defineCharacter(){
@@ -123,6 +143,35 @@ public class Enemy extends Sprite{
             b2body.setTransform(this.x, this.y,angle);
             setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
             //System.out.println("My weight is " + charWeight);
+            setRegion(getFrame(dt));
+        }
+    }
+
+    public TextureRegion getFrame(float dt){
+        currentState = getState();
+
+        TextureRegion region;
+        switch (currentState) {
+            case RUNNING:
+                region = running.getKeyFrame(stateTimer, true);
+                break;
+            default:
+                region = character;
+                break;
+        }
+
+        stateTimer = currentState == previousState ? stateTimer + dt : 0;
+        previousState = currentState;
+        return region;
+    }
+
+    public State getState(){
+//        System.out.println("X: " + b2body.getLinearVelocity().x);
+//        System.out.println("Y: " + b2body.getLinearVelocity().y);
+        if (b2body.getLinearVelocity().x > 5 || b2body.getLinearVelocity().x < -5 || b2body.getLinearVelocity().y > 5 || b2body.getLinearVelocity().y < -5) {
+            return State.RUNNING;
+        } else {
+            return State.STANDING;
         }
     }
 
