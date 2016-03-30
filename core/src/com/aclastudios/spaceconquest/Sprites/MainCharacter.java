@@ -3,6 +3,7 @@ package com.aclastudios.spaceconquest.Sprites;
 import com.aclastudios.spaceconquest.Screens.PlayScreen;
 import com.aclastudios.spaceconquest.SpaceConquest;
 import com.aclastudios.spaceconquest.Weapons.FireBall;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -32,7 +33,6 @@ public class MainCharacter extends Sprite {
     private TextureRegion character;
     private int charWeight = 0;
     private float radius = 8;
-    private int ironCount = 0;
     private int charScore;
 
     private Array<FireBall> fireballs;
@@ -44,14 +44,34 @@ public class MainCharacter extends Sprite {
     private boolean destroyed;
     private float deathCount;
 
+    // for animating the sprite
+    private enum State { STANDING, RUNNING };
+    private State currentState;
+    private State previousState;
+    private Animation running;
+    private float stateTimer;
+
     public MainCharacter(World world,PlayScreen screen){
-        super(screen.getAtlas().findRegion("little_mario"));
+        super(screen.getAtlas().findRegion("PYRO"));
         this.screen = screen;
         this.world = world;
         map =screen.getMap();
+
+        // initializing variables for animation:
+        currentState = State.STANDING;
+        previousState = State.STANDING;
+        stateTimer = 0;
+
+        Array<TextureRegion> frames = new Array<TextureRegion>();
+        for (int i = 0; i < 4; i++) {
+            frames.add(new TextureRegion(getTexture(), i*195, getRegionY(), 200, 200));
+        }
+
+        running =new Animation(0.1f, frames);
+
         defineCharacter();
-        character = new TextureRegion(getTexture(),0,8,16,16);
-        setBounds(0,0, 16, 16);
+        character = new TextureRegion(getTexture(), getRegionX() + 195, getRegionY(), 200, 200);
+        setBounds(0, 0, 16, 16);
         setRegion(character);
         fireballs = new Array<FireBall>();
 
@@ -86,6 +106,7 @@ public class MainCharacter extends Sprite {
         fdef.filter.maskBits = SpaceConquest.OBSTACLE_BIT
                 | SpaceConquest.IRON_BIT
                 |SpaceConquest.GUNPOWDER_BIT
+                |SpaceConquest.OIL_BIT
                 |SpaceConquest.STATION_BIT
                 |SpaceConquest.ENEMY_STATION_BIT
                 |SpaceConquest.CHARACTER_BIT; //What can the character collide with?
@@ -113,6 +134,7 @@ public class MainCharacter extends Sprite {
             }
         }else {
             setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
+            setRegion(getFrame(dt));
             //System.out.println("My weight is " + charWeight);
         }
 
@@ -120,6 +142,32 @@ public class MainCharacter extends Sprite {
             ball.update(dt);
             if(ball.isDestroyed())
                 fireballs.removeValue(ball, true);
+        }
+    }
+
+    public TextureRegion getFrame(float dt){
+        currentState = getState();
+
+        TextureRegion region;
+        switch (currentState) {
+            case RUNNING:
+                region = running.getKeyFrame(stateTimer, true);
+                break;
+            default:
+                region = character;
+                break;
+        }
+
+        stateTimer = currentState == previousState ? stateTimer + dt : 0;
+        previousState = currentState;
+        return region;
+    }
+
+    public State getState(){
+        if (b2body.getLinearVelocity().x != 0 || b2body.getLinearVelocity().y != 0) {
+            return State.RUNNING;
+        } else {
+            return State.STANDING;
         }
     }
 
@@ -155,14 +203,17 @@ public class MainCharacter extends Sprite {
     }
 
     public void addCharWeight(float charWeight) {
-        this.ironCount += (int) charWeight;
         this.charWeight += charWeight;
         Array<Fixture> fix = b2body.getFixtureList();
         Shape shape = fix.get(0).getShape();
         shape.setRadius( radius + (this.charWeight*scale*5));
         System.out.println(shape.getRadius());
+
+        System.out.println("charweight: "+this.charWeight);
+
+
         //stop user from collecting resource
-        if(this.charWeight>30){
+        if(this.charWeight>=30){
             Filter filter = fix.get(0).getFilterData();
             filter.maskBits =  SpaceConquest.OBSTACLE_BIT
                     |SpaceConquest.STATION_BIT
@@ -171,9 +222,7 @@ public class MainCharacter extends Sprite {
         }
 
     }
-    public int getIronCount() {
-        return ironCount;
-    }
+
     public void setCharWeight(int w){
         this.charWeight=w;
     }
@@ -190,15 +239,16 @@ public class MainCharacter extends Sprite {
     }
 
     public void depositResource() {
-        ironCount = 0;
         charWeight = 0;
         Array<Fixture> fix = b2body.getFixtureList();
         Shape shape = fix.get(0).getShape();
         shape.setRadius(radius);
-        //player can now collide with iron resource
+        //player can now collide with resource
         Filter filter = fix.get(0).getFilterData();
         filter.maskBits =  SpaceConquest.OBSTACLE_BIT
                 | SpaceConquest.IRON_BIT
+                |SpaceConquest.GUNPOWDER_BIT
+                |SpaceConquest.OIL_BIT
                 |SpaceConquest.STATION_BIT
                 |SpaceConquest.CHARACTER_BIT;
         fix.get(0).setFilterData(filter);
