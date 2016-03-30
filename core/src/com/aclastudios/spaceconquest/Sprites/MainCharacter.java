@@ -51,6 +51,12 @@ public class MainCharacter extends Sprite {
     private float stateTimer;
     private float x_value;
     private float y_value;
+    private float last_x_coord;
+
+
+
+
+    private float last_y_coord;
 
     public MainCharacter(World world,PlayScreen screen){
         super(screen.getAtlas().findRegion("PYRO"));
@@ -89,7 +95,9 @@ public class MainCharacter extends Sprite {
             if (layer.getName().matches(area[screen.getUserID()])) {
                 Array<RectangleMapObject> mo = layer.getObjects().getByType(RectangleMapObject.class);
                 Rectangle rect = mo.get(0).getRectangle();
-                bdef.position.set(rect.getX()*SpaceConquest.MAP_SCALE, rect.getY()*SpaceConquest.MAP_SCALE); //temp set position
+                last_x_coord = rect.getX()*SpaceConquest.MAP_SCALE;
+                last_y_coord = rect.getY()*SpaceConquest.MAP_SCALE;
+                bdef.position.set(last_x_coord,last_y_coord); //temp set position
 
             }
         }
@@ -121,20 +129,22 @@ public class MainCharacter extends Sprite {
         stateTime += dt;
         if (setToDestroy ) {
             System.out.println("destroying");
-            world.destroyBody(b2body);
             destroyed = true;
             setToDestroy = false;
             stateTime = 0;
             deathCount+=1;
+            world.destroyBody(b2body);
         }
         if(destroyed) {
             if (stateTime > (deathCount * 1.5)) {
                 stateTime = 0;
-                destroyed = false;
                 defineCharacter();
+                destroyed = false;
             }
         }else {
-            setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
+            last_x_coord = b2body.getPosition().x;
+            last_y_coord = b2body.getPosition().y;
+            setPosition(last_x_coord - getWidth() / 2, last_y_coord - getHeight() / 2);
             setRegion(getFrame(dt));
             //System.out.println("My weight is " + charWeight);
         }
@@ -278,6 +288,9 @@ public class MainCharacter extends Sprite {
 //            String s1 ={f.getX(),f.getY(),}
 //        }
 //    }
+    public float[] getLast_xy_coord() {
+        return new float[]{last_x_coord, last_y_coord};
+    }
     public float getX_value(){
         return x_value;
     }
