@@ -13,7 +13,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 public class Oil extends Resources {
 
     public Oil(PlayScreen screen, float x, float y) {
-        super(screen,"mushroom", x, y);
+        super(screen,"oil_ore", x, y);
     }
 
     @Override

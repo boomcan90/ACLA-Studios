@@ -30,6 +30,7 @@ public class ResourceManager {
         gunpowder_array=new ArrayList<GunPowder>();
         oil_count = 0;
         oil_array = new ArrayList<Oil>();
+
     }
 
     public int getIron_count() {
@@ -58,15 +59,24 @@ public class ResourceManager {
 
     public void generateResources(float x, float y, float width, float height){
         Random rand = new Random();
-        Iron iron = new Iron(screen, (int)((rand.nextInt((int) width) + x)*SpaceConquest.MAP_SCALE) , (int)((rand.nextInt((int)(height*SpaceConquest.MAP_SCALE))+y)*SpaceConquest.MAP_SCALE));
-        iron_array.add(iron);
-        iron_count++;
-        GunPowder gunpd = new GunPowder(screen, (int)((rand.nextInt((int) width) + x)*SpaceConquest.MAP_SCALE) , (int)((rand.nextInt((int)(height*SpaceConquest.MAP_SCALE))+y)*SpaceConquest.MAP_SCALE));
-        gunpowder_array.add(gunpd);
-        gunpowder_count++;
-        Oil oil = new Oil(screen, (int)((rand.nextInt((int) width) + x)*SpaceConquest.MAP_SCALE) , (int)((rand.nextInt((int)(height*SpaceConquest.MAP_SCALE))+y)*SpaceConquest.MAP_SCALE));
-        oil_array.add(oil);
-        oil_count++;
+        if (iron_count<7) {
+            Iron iron = new Iron(screen, (int) ((rand.nextInt((int) width) + x) * SpaceConquest.MAP_SCALE), (int) ((rand.nextInt((int) (height * SpaceConquest.MAP_SCALE)) + y) * SpaceConquest.MAP_SCALE));
+            System.out.println("IRON: " + iron.getX() + ", " + iron.getY());
+            iron_array.add(iron);
+            iron_count++;
+        }
+        if (gunpowder_count<7) {
+            GunPowder gunpd = new GunPowder(screen, (int) ((rand.nextInt((int) width) + x) * SpaceConquest.MAP_SCALE), (int) ((rand.nextInt((int) (height * SpaceConquest.MAP_SCALE)) + y) * SpaceConquest.MAP_SCALE));
+            System.out.println("GUNPD: " + gunpd.getX() + ", " + gunpd.getY());
+            gunpowder_array.add(gunpd);
+            gunpowder_count++;
+        }
+        if (oil_count<7) {
+            Oil oil = new Oil(screen, (int) ((rand.nextInt((int) width) + x) * SpaceConquest.MAP_SCALE), (int) ((rand.nextInt((int) (height * SpaceConquest.MAP_SCALE)) + y) * SpaceConquest.MAP_SCALE));
+            System.out.println("OIL: " + oil.getX() + ", " + oil.getY());
+            oil_array.add(oil);
+            oil_count++;
+        }
     }
 
     public void updateIron(float dt){
@@ -103,9 +113,23 @@ public class ResourceManager {
         }
     }
 
-//    public String[] coordinatesR (){
-//        String iron = "Ri";
-//
-//    }
+    public String coordinatesR (){
+        String iron = "Ri- ";
+        for (int i=0;i<iron_array.size();i++){
+            iron += iron_array.get(i).getX() + ":" + iron_array.get(i).getY() + ",";    // Ri- x1 coord : y1 coord , x2 coord : y2 coord , so on
+        }
+        String gunpowder = " g- ";
+        for (int i=0;i<gunpowder_array.size();i++){
+            gunpowder += gunpowder_array.get(i).getX() + ":" + gunpowder_array.get(i).getY() + ",";    // g- x1 coord : y1 coord , x2 coord : y2 coord , so on
+        }
+        String oil = " o- ";
+        for (int i=0;i<oil_array.size();i++){
+            oil += oil_array.get(i).getX() + ":" + oil_array.get(i).getY() + ",";    // o- x1 coord : y1 coord , x2 coord : y2 coord , so on
+        }
+
+        String resourceCoodinates = iron + gunpowder + oil;
+
+        return resourceCoodinates;
+    }
 
 }

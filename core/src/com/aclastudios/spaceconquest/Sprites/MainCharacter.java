@@ -3,6 +3,7 @@ package com.aclastudios.spaceconquest.Sprites;
 import com.aclastudios.spaceconquest.Screens.PlayScreen;
 import com.aclastudios.spaceconquest.SpaceConquest;
 import com.aclastudios.spaceconquest.Weapons.FireBall;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -33,22 +34,53 @@ public class MainCharacter extends Sprite {
     private int charWeight = 0;
     private float radius = 8;
     private int charScore;
+
     private Array<FireBall> fireballs;
+    private Array<FireBall> networkFireballs;
+
     private float scale = (float) (1.0/20);
+    private float stateTime;
+    private boolean setToDestroy;
+    private boolean destroyed;
+    private float deathCount;
+
+    // for animating the sprite
+    private enum State { STANDING, RUNNING };
+    private State currentState;
+    private State previousState;
+    private Animation running;
+    private float stateTimer;
     private float x_value;
     private float y_value;
 
     public MainCharacter(World world,PlayScreen screen){
-        super(screen.getAtlas().findRegion("little_mario"));
+        super(screen.getAtlas().findRegion("PYRO"));
         this.screen = screen;
         this.world = world;
         map =screen.getMap();
+
+        // initializing variables for animation:
+        currentState = State.STANDING;
+        previousState = State.STANDING;
+        stateTimer = 0;
+
+        Array<TextureRegion> frames = new Array<TextureRegion>();
+        for (int i = 0; i < 4; i++) {
+            frames.add(new TextureRegion(getTexture(), i*195, getRegionY(), 200, 200));
+        }
+
+        running =new Animation(0.1f, frames);
+
         defineCharacter();
-        character = new TextureRegion(getTexture(),0,8,16,16);
-        setBounds(0,0, 16, 16);
+        character = new TextureRegion(getTexture(), getRegionX() + 195, getRegionY(), 200, 200);
+        setBounds(0, 0, 16, 16);
         setRegion(character);
         fireballs = new Array<FireBall>();
 
+        stateTime = 0;
+        setToDestroy = false;
+        destroyed = false;
+        deathCount = 0;
     }
 
     public void defineCharacter(){
@@ -87,6 +119,27 @@ public class MainCharacter extends Sprite {
 //        fixture = b2body.createFixture(fdef);
     }
     public void update(float dt){
+        stateTime += dt;
+        if (setToDestroy ) {
+            System.out.println("destroying");
+            world.destroyBody(b2body);
+            destroyed = true;
+            setToDestroy = false;
+            stateTime = 0;
+            deathCount+=1;
+        }
+        if(destroyed) {
+            if (stateTime > (deathCount * 1.5)) {
+                stateTime = 0;
+                destroyed = false;
+                defineCharacter();
+            }
+        }else {
+            setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
+            setRegion(getFrame(dt));
+            //System.out.println("My weight is " + charWeight);
+        }
+
         x_value=b2body.getPosition().x - getWidth() / 2;
         y_value=b2body.getPosition().y - getHeight() / 2;
         setPosition(x_value, y_value);
@@ -95,6 +148,32 @@ public class MainCharacter extends Sprite {
             ball.update(dt);
             if(ball.isDestroyed())
                 fireballs.removeValue(ball, true);
+        }
+    }
+
+    public TextureRegion getFrame(float dt){
+        currentState = getState();
+
+        TextureRegion region;
+        switch (currentState) {
+            case RUNNING:
+                region = running.getKeyFrame(stateTimer, true);
+                break;
+            default:
+                region = character;
+                break;
+        }
+
+        stateTimer = currentState == previousState ? stateTimer + dt : 0;
+        previousState = currentState;
+        return region;
+    }
+
+    public State getState(){
+        if (b2body.getLinearVelocity().x != 0 || b2body.getLinearVelocity().y != 0) {
+            return State.RUNNING;
+        } else {
+            return State.STANDING;
         }
     }
 
@@ -140,7 +219,7 @@ public class MainCharacter extends Sprite {
 
 
         //stop user from collecting resource
-        if(this.charWeight>=30){
+        if(this.charWeight>=10){
             Filter filter = fix.get(0).getFilterData();
             filter.maskBits =  SpaceConquest.OBSTACLE_BIT
                     |SpaceConquest.STATION_BIT
@@ -155,7 +234,9 @@ public class MainCharacter extends Sprite {
     }
 
     public void fire(float xSpd, float ySpd){
-        fireballs.add(new FireBall(screen, b2body.getPosition().x, b2body.getPosition().y, xSpd, ySpd));
+        FireBall f = new FireBall(screen, b2body.getPosition().x, b2body.getPosition().y, xSpd, ySpd);
+        fireballs.add(f);
+        networkFireballs.add(f);
     }
     public void draw(Batch batch){
         super.draw(batch);
@@ -183,6 +264,20 @@ public class MainCharacter extends Sprite {
 
         return ((float)1+ (charWeight*scale));
     }
+    public void dead(){
+        setToDestroy = true;
+    }
+
+    public boolean isDestroyed() {
+        return destroyed;
+    }
+
+//    public String[] getFireballData(){
+//        String s;
+//        for(FireBall f: networkFireballs){
+//            String s1 ={f.getX(),f.getY(),}
+//        }
+//    }
     public float getX_value(){
         return x_value;
     }

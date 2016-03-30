@@ -94,12 +94,12 @@ public class PlayScreen implements Screen {
     private String[] positionvalues;
 
     private ResourceManager resourceManager;
-
     //Server
     Server server;
 
     public PlayScreen(SpaceConquest game, GameScreenManager gsm){
-        atlas = new TextureAtlas("Mario_and_Enemies.pack");
+        // atlas = new TextureAtlas("Mario_and_Enemies.pack");
+        atlas = new TextureAtlas("textures.atlas");
         this.game = game;
         this.gsm = gsm;
         this.userID = game.multiplayerSessionInfo.mParticipantsId.indexOf(game.multiplayerSessionInfo.mId);
@@ -257,10 +257,10 @@ public class PlayScreen implements Screen {
                     Float.parseFloat(positionvalues[3]));
         }
 
-        while ((resourceManager.getIron_count()+resourceManager.getGunpowder_count()+resourceManager.getOil_count())<=20)
+        while ((resourceManager.getIron_count()+resourceManager.getGunpowder_count()+resourceManager.getOil_count())<21)
             resourceManager.generateResources(this.x, this.y, this.width, this.height);
 
-        
+
         resourceManager.updateIron(dt);
         resourceManager.updateGunPowder(dt);
         resourceManager.updateOil(dt);
@@ -300,6 +300,7 @@ public class PlayScreen implements Screen {
 
         //render the map
         renderer.render();
+        game.batch.setProjectionMatrix(gamecam.combined);
         game.batch.begin(); //opens the "box"
         game.batch.draw(texture, 0, 0, texture.getWidth() * SpaceConquest.MAP_SCALE, texture.getHeight() * SpaceConquest.MAP_SCALE);
         //game.batch.draw(spaceman, gamecam.position.x - 20, gamecam.position.y - 20, 50, 50);

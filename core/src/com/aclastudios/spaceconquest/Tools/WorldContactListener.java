@@ -64,12 +64,12 @@ public class WorldContactListener implements ContactListener {
                     Hud.addBlueScore(score);
                 }
                 break;
-            case SpaceConquest.OBJECT_BIT| SpaceConquest.IRON_BIT:
-                if(fixA.getFilterData().categoryBits == SpaceConquest.IRON_BIT)
-                    ((Iron)fixA.getUserData()).use((MainCharacter) fixB.getUserData());
-                else
-                    ((Iron)fixB.getUserData()).use((MainCharacter) fixA.getUserData());
-                break;
+//            case SpaceConquest.OBJECT_BIT| SpaceConquest.IRON_BIT:
+//                if(fixA.getFilterData().categoryBits == SpaceConquest.IRON_BIT)
+//                    ((Iron)fixA.getUserData()).use((MainCharacter) fixB.getUserData());
+//                else
+//                    ((Iron)fixB.getUserData()).use((MainCharacter) fixA.getUserData());
+//                break;
             case SpaceConquest.FIREBALL_BIT | SpaceConquest.OBSTACLE_BIT:
                 if(fixA.getFilterData().categoryBits == SpaceConquest.FIREBALL_BIT)
                     ((FireBall)fixA.getUserData()).setToDestroy();
@@ -84,6 +84,16 @@ public class WorldContactListener implements ContactListener {
                 else {
                     ((FireBall) fixB.getUserData()).setToDestroy();
                     ((Enemy) fixA.getUserData()).dead();
+                }
+                break;
+            case SpaceConquest.FIREBALL_BIT | SpaceConquest.MAIN_CHARACTER_BIT:
+                if(fixA.getFilterData().categoryBits == SpaceConquest.FIREBALL_BIT) {
+                    ((FireBall) fixA.getUserData()).setToDestroy();
+                    ((MainCharacter) fixB.getUserData()).dead();
+                }
+                else {
+                    ((FireBall) fixB.getUserData()).setToDestroy();
+                    ((MainCharacter) fixA.getUserData()).dead();
                 }
                 break;
         }

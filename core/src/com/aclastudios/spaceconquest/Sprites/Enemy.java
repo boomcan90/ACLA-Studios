@@ -43,7 +43,7 @@ public class Enemy extends Sprite{
     //private int charWeight;
     //private int charScore;
     public Enemy(World world, PlayScreen screen,int ID){
-        super(screen.getAtlas().findRegion("turtle"));
+        super(screen.getAtlas().findRegion("DAACTAR"));
         this.world = world;
         this.enemyID = ID;
         map =screen.getMap();
