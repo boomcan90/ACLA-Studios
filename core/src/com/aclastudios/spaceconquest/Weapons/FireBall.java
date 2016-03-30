@@ -59,8 +59,9 @@ public class FireBall extends Sprite {
         CircleShape shape = new CircleShape();
         shape.setRadius(3 );
         fdef.filter.categoryBits = SpaceConquest.FIREBALL_BIT;
-        fdef.filter.maskBits = SpaceConquest.CHARACTER_BIT |
-                SpaceConquest.OBSTACLE_BIT;
+        fdef.filter.maskBits = SpaceConquest.CHARACTER_BIT
+                |SpaceConquest.OBSTACLE_BIT
+                |SpaceConquest.MAIN_CHARACTER_BIT;
 
         fdef.shape = shape;
         fdef.restitution = 1;
