@@ -113,6 +113,7 @@ public class MainCharacter extends Sprite {
         //Collision Bit
         fdef.filter.categoryBits = SpaceConquest.MAIN_CHARACTER_BIT; //what category is this fixture
         fdef.filter.maskBits = SpaceConquest.OBSTACLE_BIT
+                |SpaceConquest.FIREBALL_BIT
                 | SpaceConquest.IRON_BIT
                 |SpaceConquest.GUNPOWDER_BIT
                 |SpaceConquest.OIL_BIT
@@ -136,11 +137,11 @@ public class MainCharacter extends Sprite {
             world.destroyBody(b2body);
         }
         if(destroyed) {
-            if (stateTime > (deathCount * 1.5)) {
+//            if (stateTime > (deathCount * 1.5)) {
                 stateTime = 0;
                 defineCharacter();
                 destroyed = false;
-            }
+            //}
         }else {
             last_x_coord = b2body.getPosition().x;
             last_y_coord = b2body.getPosition().y;
@@ -232,7 +233,8 @@ public class MainCharacter extends Sprite {
             Filter filter = fix.get(0).getFilterData();
             filter.maskBits =  SpaceConquest.OBSTACLE_BIT
                     |SpaceConquest.STATION_BIT
-                    |SpaceConquest.CHARACTER_BIT;
+                    |SpaceConquest.CHARACTER_BIT
+                    |SpaceConquest.FIREBALL_BIT;
             fix.get(0).setFilterData(filter);
         }
 
@@ -244,7 +246,7 @@ public class MainCharacter extends Sprite {
 
     public float[] fire(float xSpd, float ySpd){
         float[] s = {b2body.getPosition().x,b2body.getPosition().y};
-        FireBall f = new FireBall(screen, s[0], s[1], xSpd, ySpd);
+        FireBall f = new FireBall(screen, s[0], s[1], xSpd , ySpd);
         fireballs.add(f);
         return s;
     }
@@ -266,7 +268,8 @@ public class MainCharacter extends Sprite {
                 |SpaceConquest.GUNPOWDER_BIT
                 |SpaceConquest.OIL_BIT
                 |SpaceConquest.STATION_BIT
-                |SpaceConquest.CHARACTER_BIT;
+                |SpaceConquest.CHARACTER_BIT
+                |SpaceConquest.FIREBALL_BIT;
         fix.get(0).setFilterData(filter);
     }
 

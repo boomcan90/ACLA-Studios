@@ -43,13 +43,15 @@ public class Enemy extends Sprite{
     //private int charWeight;
     //private int charScore;
     public Enemy(World world, PlayScreen screen,int ID){
-        super(screen.getAtlas().findRegion("DAACTAR"));
+        super(screen.getAtlas().findRegion("PYRO"));
         this.world = world;
         this.enemyID = ID;
         map =screen.getMap();
         defineCharacter();
-        character = new TextureRegion(getTexture(),338,26,16,24);
-        setBounds(0, 0, 16, 24);
+        //character = new TextureRegion(getTexture(),338,26,16,24);
+        character = new TextureRegion(getTexture(), getRegionX() + 195, getRegionY(), 200, 200);
+        //setBounds(0, 0, 16, 24);
+        setBounds(0, 0, 16, 16);
         setRegion(character);
         stateTime = 0;
         setToDestroy = false;
@@ -77,7 +79,7 @@ public class Enemy extends Sprite{
 
         FixtureDef fdef = new FixtureDef();
         CircleShape shape = new CircleShape();
-        shape.setRadius(20);
+        shape.setRadius(8);
         //xSpeed = 0;
         //ySpeed = 0;
 
@@ -114,11 +116,11 @@ public class Enemy extends Sprite{
             deathCount+=1;
         }
         if(destroyed){
-            if(stateTime>(deathCount*1.5)){
+            //if(stateTime>(deathCount*1.5)){
                 stateTime = 0;
                 destroyed = false;
                 defineCharacter();
-            }
+            //}
         }else {
             b2body.setTransform(this.x, this.y,angle);
             setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
