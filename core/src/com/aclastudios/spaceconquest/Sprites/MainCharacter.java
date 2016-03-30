@@ -50,6 +50,8 @@ public class MainCharacter extends Sprite {
     private State previousState;
     private Animation running;
     private float stateTimer;
+    private float x_value;
+    private float y_value;
 
     public MainCharacter(World world,PlayScreen screen){
         super(screen.getAtlas().findRegion("PYRO"));
@@ -138,6 +140,10 @@ public class MainCharacter extends Sprite {
             //System.out.println("My weight is " + charWeight);
         }
 
+        x_value=b2body.getPosition().x - getWidth() / 2;
+        y_value=b2body.getPosition().y - getHeight() / 2;
+        setPosition(x_value, y_value);
+        //System.out.println("My weight is " + charWeight);
         for(FireBall  ball : fireballs) {
             ball.update(dt);
             if(ball.isDestroyed())
@@ -213,7 +219,7 @@ public class MainCharacter extends Sprite {
 
 
         //stop user from collecting resource
-        if(this.charWeight>=30){
+        if(this.charWeight>=10){
             Filter filter = fix.get(0).getFilterData();
             filter.maskBits =  SpaceConquest.OBSTACLE_BIT
                     |SpaceConquest.STATION_BIT
@@ -258,7 +264,6 @@ public class MainCharacter extends Sprite {
 
         return ((float)1+ (charWeight*scale));
     }
-
     public void dead(){
         setToDestroy = true;
     }
@@ -273,4 +278,10 @@ public class MainCharacter extends Sprite {
 //            String s1 ={f.getX(),f.getY(),}
 //        }
 //    }
+    public float getX_value(){
+        return x_value;
+    }
+    public float getY_value(){
+        return y_value;
+    }
 }
