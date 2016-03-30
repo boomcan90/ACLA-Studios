@@ -34,7 +34,10 @@ public class MainCharacter extends Sprite {
     private float radius = 8;
     private int ironCount = 0;
     private int charScore;
+
     private Array<FireBall> fireballs;
+    private Array<FireBall> networkFireballs;
+
     private float scale = (float) (1.0/20);
     private float stateTime;
     private boolean setToDestroy;
@@ -176,7 +179,9 @@ public class MainCharacter extends Sprite {
     }
 
     public void fire(float xSpd, float ySpd){
-        fireballs.add(new FireBall(screen, b2body.getPosition().x, b2body.getPosition().y, xSpd, ySpd));
+        FireBall f = new FireBall(screen, b2body.getPosition().x, b2body.getPosition().y, xSpd, ySpd);
+        fireballs.add(f);
+        networkFireballs.add(f);
     }
     public void draw(Batch batch){
         super.draw(batch);
@@ -211,4 +216,11 @@ public class MainCharacter extends Sprite {
     public boolean isDestroyed() {
         return destroyed;
     }
+
+//    public String[] getFireballData(){
+//        String s;
+//        for(FireBall f: networkFireballs){
+//            String s1 ={f.getX(),f.getY(),}
+//        }
+//    }
 }
