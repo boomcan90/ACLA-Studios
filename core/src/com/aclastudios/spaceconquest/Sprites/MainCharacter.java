@@ -179,7 +179,9 @@ public class MainCharacter extends Sprite {
     }
 
     public State getState(){
-        if (b2body.getLinearVelocity().x != 0 || b2body.getLinearVelocity().y != 0) {
+        System.out.println("X: " + b2body.getLinearVelocity().x);
+        System.out.println("Y: " + b2body.getLinearVelocity().y);
+        if (b2body.getLinearVelocity().x > 5 || b2body.getLinearVelocity().x < -5 || b2body.getLinearVelocity().y > 5 || b2body.getLinearVelocity().y < -5) {
             return State.RUNNING;
         } else {
             return State.STANDING;

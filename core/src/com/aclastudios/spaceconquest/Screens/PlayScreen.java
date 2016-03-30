@@ -105,8 +105,8 @@ public class PlayScreen implements Screen {
         atlas = new TextureAtlas("textures.atlas");
         this.game = game;
         this.gsm = gsm;
-        this.userID = game.multiplayerSessionInfo.mParticipantsId.indexOf(game.multiplayerSessionInfo.mId);
-        game.multiplayerSessionInfo.mId_num=this.userID;
+//        this.userID = game.multiplayerSessionInfo.mParticipantsId.indexOf(game.multiplayerSessionInfo.mId);
+//        game.multiplayerSessionInfo.mId_num=this.userID;
                 //Background and Character assets
         texture = new Texture("map.png");
 
@@ -224,7 +224,7 @@ public class PlayScreen implements Screen {
             coolDown = 0;
             //start of fire ball
             float[] s=mainCharacter.fire(lastX, lastY);
-            game.playServices.BroadcastMessage("fire:"+userID+":"+s[0]+":"+s[1]+":"+lastX+":"+lastY);
+//            game.playServices.BroadcastMessage("fire:"+userID+":"+s[0]+":"+s[1]+":"+lastX+":"+lastY);
             //end of fireball
 
             mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.9),
@@ -291,10 +291,10 @@ public class PlayScreen implements Screen {
             gamecam.position.y = mainCharacter.getLast_xy_coord()[1];
         }
 
-        //SendMessage
-        try {
-            game.playServices.BroadcastUnreliableMessage(userID + ":" + x + ":" + y + ":" + angle + ":"+!mainCharacter.isDestroyed());
-        }catch (Exception e){}
+        // //SendMessage
+        // try {
+        //     game.playServices.BroadcastUnreliableMessage(userID + ":" + x + ":" + y + ":" + angle + ":"+!mainCharacter.isDestroyed());
+        // }catch (Exception e){}
 
         //gamecam updates
         gamecam.update();
