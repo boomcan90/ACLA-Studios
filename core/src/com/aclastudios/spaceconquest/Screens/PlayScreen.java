@@ -461,6 +461,7 @@ public class PlayScreen implements Screen {
         try {
             String message = new String (Arrays.copyOfRange(bytes, 0, bytes.length),"UTF-8");
             String[] data = message.split(":");
+
             if (data[0].equals("0") || data[0].equals("1")){
                 positionvalues = data.clone();
             } else {

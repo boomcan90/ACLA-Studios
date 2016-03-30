@@ -279,6 +279,7 @@ public class MainCharacter extends Sprite {
     }
     public void dead(){
         setToDestroy = true;
+
     }
 
     public boolean isDestroyed() {
