@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
@@ -48,17 +49,22 @@ public class Enemy extends Sprite{
     private float x_value;
     private float y_value;
     private float last_x_coord;
+    private float weight;
+    private float radius = 8;
+    private float scale = (float) (1.0/20);
 
     //private int charWeight;
     //private int charScore;
     public Enemy(World world, PlayScreen screen,int ID){
-        super(screen.getAtlas().findRegion("DAACTAR"));
+        super(screen.getAtlas().findRegion("PYRO"));
         this.world = world;
         this.enemyID = ID;
         map =screen.getMap();
         defineCharacter();
-        character = new TextureRegion(getTexture(),338,26,16,24);
-        setBounds(0, 0, 16, 24);
+        //character = new TextureRegion(getTexture(),338,26,16,24);
+        character = new TextureRegion(getTexture(), getRegionX() + 195, getRegionY(), 200, 200);
+        //setBounds(0, 0, 16, 24);
+        setBounds(0, 0, 16, 16);
         setRegion(character);
         stateTime = 0;
         setToDestroy = false;
@@ -97,7 +103,7 @@ public class Enemy extends Sprite{
 
         FixtureDef fdef = new FixtureDef();
         CircleShape shape = new CircleShape();
-        shape.setRadius(20);
+        shape.setRadius(radius);
         //xSpeed = 0;
         //ySpeed = 0;
 
@@ -134,11 +140,11 @@ public class Enemy extends Sprite{
             deathCount+=1;
         }
         if(destroyed){
-            if(stateTime>(deathCount*1.5)){
+            //if(stateTime>(deathCount*1.5)){
                 stateTime = 0;
                 destroyed = false;
                 defineCharacter();
-            }
+            //}
         }else {
             b2body.setTransform(this.x, this.y,angle);
             setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
@@ -187,10 +193,15 @@ public class Enemy extends Sprite{
     public boolean isDestroyed() {
         return destroyed;
     }
-    public void updateEnemy(float x,float y, float angle){
+    public void updateEnemy(float x,float y, float angle,float weight){
         this.x=x;
         this.y=y;
         this.angle = angle;
+        this.weight = weight;
+        Array<Fixture> fix = b2body.getFixtureList();
+        Shape shape = fix.get(0).getShape();
+        shape.setRadius( radius + (this.weight*scale*5));
+        System.out.println(shape.getRadius());
     }
     /*
     public float getySpeed() {

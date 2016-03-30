@@ -250,8 +250,16 @@ public class PlayScreen implements Screen {
         else {
             double speedreduction = Math.pow(0.9, mainCharacter.getCharWeight()*0.5);
             mainCharacter.setScale(mainCharacter.getCharacterScale());
-            mainCharacter.setxSpeed((float) (touchpad.getKnobPercentX() * speedreduction));
-            mainCharacter.setySpeed((float) (touchpad.getKnobPercentY() * speedreduction));
+            float counterMomentumX = 0;
+            if((touchpad.getKnobPercentX()*mainCharacter.b2body.getLinearVelocity().x)<=0){
+                counterMomentumX = 2;
+            }
+            float counterMomentumY = 0;
+            if((touchpad.getKnobPercentY()*mainCharacter.b2body.getLinearVelocity().y)<=0){
+                counterMomentumY = 2;
+            }
+            mainCharacter.setxSpeed((float) (touchpad.getKnobPercentX() * speedreduction * counterMomentumX));
+            mainCharacter.setySpeed((float) (touchpad.getKnobPercentY() * speedreduction * counterMomentumY));
             mainCharacter.b2body.applyLinearImpulse(new Vector2(mainCharacter.getxSpeed(), mainCharacter.getySpeed()), mainCharacter.b2body.getWorldCenter(), true);
         }
         //System.out.println("last x is " + lastX + " last y is " + lastY);
@@ -275,19 +283,25 @@ public class PlayScreen implements Screen {
         //sprites
         mainCharacter.update(dt);
         enemy.update(dt);
-        if (positionvalues !=null) {
+        if (positionvalues != null) {
             enemy.updateEnemy(Float.parseFloat(positionvalues[1]),
                     Float.parseFloat(positionvalues[2]),
-                    Float.parseFloat(positionvalues[3]));
+                    Float.parseFloat(positionvalues[3]),
+                    Float.parseFloat(positionvalues[5]));
+            if (positionvalues[4].equals("false")) {
+                enemy.dead();
+            }
         }
+
 
         //check if fireballs is destroyed or not
-        for(FireBall  ball : networkFireballs) {
-            ball.update(dt);
-            if(ball.isDestroyed())
-                networkFireballs.removeValue(ball, true);
+        synchronized (networkFireballs) {
+            for (FireBall ball : networkFireballs) {
+                ball.update(dt);
+                if (ball.isDestroyed())
+                    networkFireballs.removeValue(ball, true);
+            }
         }
-
         while ((resourceManager.getIron_count()+resourceManager.getGunpowder_count()+resourceManager.getOil_count())<21)
             resourceManager.generateResources(this.x, this.y, this.width, this.height);
 
@@ -308,10 +322,12 @@ public class PlayScreen implements Screen {
             gamecam.position.y = mainCharacter.getLast_xy_coord()[1];
         }
 
-        // //SendMessage
-        // try {
-        //     game.playServices.BroadcastUnreliableMessage(userID + ":" + x + ":" + y + ":" + angle + ":"+!mainCharacter.isDestroyed());
-        // }catch (Exception e){}
+
+        //SendMessage
+        try {
+            game.playServices.BroadcastUnreliableMessage(userID + ":" + x + ":" + y + ":" + angle + ":"+
+                    String.valueOf(!mainCharacter.isDestroyed())+":" +mainCharacter.getCharWeight());
+        }catch (Exception e){}
 
         //gamecam updates
         gamecam.update();
@@ -324,65 +340,67 @@ public class PlayScreen implements Screen {
     //render
     @Override
     public void render(float delta) {
-        if(hud.isTimeUp()==true){
-            gsm.set(new GameOver(game, gsm));
-        }
+        try {
+            if (hud.isTimeUp() == true) {
+                gsm.set(new GameOver(game, gsm));
+            }
 
-        //make sure that everything is updated
-        update(delta);
+            //make sure that everything is updated
+            update(delta);
 
-        //clear screen
-        Gdx.gl.glClearColor(0, 0, 0, 1); //clear colour
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); //clear the screen
-        //backgroup and character image (Used for test)
-        game.batch.setProjectionMatrix(gamecam.combined); //only render what the camera can see
+            //clear screen
+            Gdx.gl.glClearColor(0, 0, 0, 1); //clear colour
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); //clear the screen
+            //backgroup and character image (Used for test)
+            game.batch.setProjectionMatrix(gamecam.combined); //only render what the camera can see
 
-        //render the map
-        renderer.render();
-        game.batch.setProjectionMatrix(gamecam.combined);
-        game.batch.begin(); //opens the "box"
-        game.batch.draw(texture, 0, 0, texture.getWidth() * SpaceConquest.MAP_SCALE, texture.getHeight() * SpaceConquest.MAP_SCALE);
-        //game.batch.draw(spaceman, gamecam.position.x - 20, gamecam.position.y - 20, 50, 50);
+            //render the map
+            renderer.render();
+            game.batch.setProjectionMatrix(gamecam.combined);
+            game.batch.begin(); //opens the "box"
+            game.batch.draw(texture, 0, 0, texture.getWidth() * SpaceConquest.MAP_SCALE, texture.getHeight() * SpaceConquest.MAP_SCALE);
+            //game.batch.draw(spaceman, gamecam.position.x - 20, gamecam.position.y - 20, 50, 50);
 
-        mainCharacter.draw(game.batch);
-        enemy.draw(game.batch);
-        for(int i=0;i<resourceManager.getIron_count();i++)
-            resourceManager.getIron_array(i).draw(game.batch);
-        for(int i=0;i<resourceManager.getGunpowder_count();i++)
-            resourceManager.getGunpowder_array(i).draw(game.batch);
-        for(int i=0;i<resourceManager.getOil_count();i++)
-            resourceManager.getOil_array(i).draw(game.batch);
-
-        mainCharacter.draw(game.batch);
-
-        //render the fireballs over the network
-        for(FireBall ball : networkFireballs)
-            ball.draw(game.batch);
-
-        if(!enemy.isDestroyed())
+            mainCharacter.draw(game.batch);
             enemy.draw(game.batch);
+            for (int i = 0; i < resourceManager.getIron_count(); i++)
+                resourceManager.getIron_array(i).draw(game.batch);
+            for (int i = 0; i < resourceManager.getGunpowder_count(); i++)
+                resourceManager.getGunpowder_array(i).draw(game.batch);
+            for (int i = 0; i < resourceManager.getOil_count(); i++)
+                resourceManager.getOil_array(i).draw(game.batch);
 
-        game.batch.end(); //close the "box" and draw it on the screen
+            mainCharacter.draw(game.batch);
+
+            //render the fireballs over the network
+            for (FireBall ball : networkFireballs)
+                ball.draw(game.batch);
+
+            if (!enemy.isDestroyed())
+                enemy.draw(game.batch);
+
+            game.batch.end(); //close the "box" and draw it on the screen
 
 
-        //render our Box2DDebugLines
-        b2dr.render(world, gamecam.combined);
+            //render our Box2DDebugLines
+            b2dr.render(world, gamecam.combined);
 
-        //Join/Combine hud camera to game batch
-        game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
-        hud.stage.draw();
+            //Join/Combine hud camera to game batch
+            game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
+            hud.stage.draw();
 
-        //Draw the touch pad
-        stage.act(Gdx.graphics.getDeltaTime());
-        stage.draw();
+            //Draw the touch pad
+            stage.act(Gdx.graphics.getDeltaTime());
+            stage.draw();
 
 
+            if (hud.isTimeUp() == true) {
+                gsm.set(new GameOver(game, gsm));
+            }
 
-        if(hud.isTimeUp()==true){
-            gsm.set(new GameOver(game, gsm));
+        }catch (Exception e){
+            e.printStackTrace();
         }
-
-
     }
 
     @Override
@@ -477,15 +495,17 @@ public class PlayScreen implements Screen {
                 System.out.println("Blaaa"+data[0]+":"+data[1]+":"+data[2]);
             }
             if (data[0].equals("Serverpoints") && userID==0){
-                addscore(data[1],Integer.parseInt(data[2]));
+                addscore(data[1], Integer.parseInt(data[2]));
             }
             else if (data[0].equals("UpdateScoreAll")){
                 Hud.updatescore(Integer.parseInt(data[1]), Integer.parseInt(data[2]));
             }
             else if (data[0].equals("fire")){
                 FireBall f = new FireBall(this, Float.parseFloat(data[2]),
-                        Float.parseFloat(data[3]), Float.parseFloat(data[4]), Float.parseFloat(data[5]));
-                networkFireballs.add(f);
+                        Float.parseFloat(data[3]), Float.parseFloat(data[4]), Float.parseFloat(data[5]),true);
+                synchronized (networkFireballs) {
+                    networkFireballs.add(f);
+                }
             }
 
         } catch (Exception e) {
