@@ -223,7 +223,7 @@ public class PlayScreen implements Screen {
         if (button.isPressed() && coolDown >rateOfFire) {
             coolDown = 0;
             float[] s=mainCharacter.fire(lastX, lastY);
-            
+
             mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.9),
                     (float) (mainCharacter.b2body.getLinearVelocity().y * -0.9)), mainCharacter.b2body.getWorldCenter(), true);
         }
@@ -276,8 +276,23 @@ public class PlayScreen implements Screen {
         resourceManager.updateGunPowder(dt);
         resourceManager.updateOil(dt);
 
-        gamecam.position.x = mainCharacter.b2body.getPosition().x;
-        gamecam.position.y = mainCharacter.b2body.getPosition().y;
+        float x=0,y=0;
+        float angle = getAngle(mainCharacter);
+        if(!mainCharacter.isDestroyed()) {
+            x = mainCharacter.b2body.getPosition().x;
+            y = mainCharacter.b2body.getPosition().y;
+            gamecam.position.x = x;
+            gamecam.position.y = y;
+        }else {
+            gamecam.position.x = mainCharacter.getLast_xy_coord()[0];
+            gamecam.position.y = mainCharacter.getLast_xy_coord()[1];
+        }
+
+        //SendMessage
+        try {
+            game.playServices.BroadcastUnreliableMessage(userID + ":" + x + ":" + y + ":" + angle + ":"+!mainCharacter.isDestroyed());
+        }catch (Exception e){}
+
         //gamecam updates
         gamecam.update();
         renderer.setView(gamecam); //render only what the gamecam can see
@@ -285,13 +300,6 @@ public class PlayScreen implements Screen {
         button.setPosition(gamecam.position.x+gamePort.getWorldWidth() / 4 +10,gamecam.position.y-gamePort.getWorldHeight()/2+10);
         touchpad.setPosition(gamecam.position.x-gamePort.getWorldWidth() / 2+10,gamecam.position.y-gamePort.getWorldHeight()/2+10);
 
-        //SendMessage
-        float x = mainCharacter.b2body.getPosition().x;
-        float y = mainCharacter.b2body.getPosition().y;
-        float angle = getAngle(mainCharacter);
-        try {
-            game.playServices.BroadcastUnreliableMessage(userID + ":" + x + ":" + y + ":" + angle);
-        }catch (Exception e){}
     }
     //render
     @Override
