@@ -31,6 +31,7 @@ public class SpaceConquest extends Game {
 	public static final short OIL_BIT = 128;
 	public static final short ENEMY_STATION_BIT = 256;
 	public static final short FIREBALL_BIT = 1024;
+	public static final short FRIENDLY_FIREBALL_BIT = 2048;
 
 	public PlayServices playServices;
 	public MultiplayerSessionInfo multiplayerSessionInfo;

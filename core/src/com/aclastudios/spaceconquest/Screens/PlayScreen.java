@@ -233,8 +233,16 @@ public class PlayScreen implements Screen {
         else {
             double speedreduction = Math.pow(0.9, mainCharacter.getCharWeight()*0.5);
             mainCharacter.setScale(mainCharacter.getCharacterScale());
-            mainCharacter.setxSpeed((float) (touchpad.getKnobPercentX() * speedreduction));
-            mainCharacter.setySpeed((float) (touchpad.getKnobPercentY() * speedreduction));
+            float counterMomentumX = 0;
+            if((touchpad.getKnobPercentX()*mainCharacter.b2body.getLinearVelocity().x)<=0){
+                counterMomentumX = 2;
+            }
+            float counterMomentumY = 0;
+            if((touchpad.getKnobPercentY()*mainCharacter.b2body.getLinearVelocity().y)<=0){
+                counterMomentumY = 2;
+            }
+            mainCharacter.setxSpeed((float) (touchpad.getKnobPercentX() * speedreduction * counterMomentumX));
+            mainCharacter.setySpeed((float) (touchpad.getKnobPercentY() * speedreduction * counterMomentumY));
             mainCharacter.b2body.applyLinearImpulse(new Vector2(mainCharacter.getxSpeed(), mainCharacter.getySpeed()), mainCharacter.b2body.getWorldCenter(), true);
         }
         //System.out.println("last x is " + lastX + " last y is " + lastY);
@@ -474,7 +482,7 @@ public class PlayScreen implements Screen {
             }
             else if (data[0].equals("fire")){
                 FireBall f = new FireBall(this, Float.parseFloat(data[2]),
-                        Float.parseFloat(data[3]), Float.parseFloat(data[4]), Float.parseFloat(data[5]));
+                        Float.parseFloat(data[3]), Float.parseFloat(data[4]), Float.parseFloat(data[5]),true);
                 synchronized (networkFireballs) {
                     networkFireballs.add(f);
                 }

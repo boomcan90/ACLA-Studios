@@ -28,14 +28,16 @@ public class FireBall extends Sprite {
     float stateTime;
     boolean destroyed;
     boolean setToDestroy;
+    boolean enemyFire;
     float xSpd;
     float ySpd;
     Body b2body;
-    public FireBall(PlayScreen screen, float x, float y, float xSpd,float ySpd){
+    public FireBall(PlayScreen screen, float x, float y, float xSpd,float ySpd, boolean enemyFire){
         this.xSpd = xSpd;
         this.ySpd = ySpd;
         this.screen = screen;
         this.world = screen.getWorld();
+        this.enemyFire = enemyFire;
         frames = new Array<TextureRegion>();
         fb=new TextureAtlas("Mario_and_Enemies.pack").findRegion("fireball");
         for(int i = 0; i < 4; i++){
@@ -58,10 +60,9 @@ public class FireBall extends Sprite {
         FixtureDef fdef = new FixtureDef();
         CircleShape shape = new CircleShape();
         shape.setRadius(3 );
+        short characterBit = (this.enemyFire)?SpaceConquest.MAIN_CHARACTER_BIT:SpaceConquest.CHARACTER_BIT;
         fdef.filter.categoryBits = SpaceConquest.FIREBALL_BIT;
-        fdef.filter.maskBits = SpaceConquest.CHARACTER_BIT
-                |SpaceConquest.OBSTACLE_BIT
-                |SpaceConquest.MAIN_CHARACTER_BIT;
+        fdef.filter.maskBits = (short) (SpaceConquest.OBSTACLE_BIT |characterBit);
 
         fdef.shape = shape;
         fdef.restitution = 1;

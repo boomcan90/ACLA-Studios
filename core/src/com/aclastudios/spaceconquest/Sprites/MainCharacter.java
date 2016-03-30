@@ -246,7 +246,7 @@ public class MainCharacter extends Sprite {
 
     public float[] fire(float xSpd, float ySpd){
         float[] s = {b2body.getPosition().x,b2body.getPosition().y};
-        FireBall f = new FireBall(screen, s[0], s[1], xSpd , ySpd);
+        FireBall f = new FireBall(screen, s[0], s[1], xSpd , ySpd,false);
         fireballs.add(f);
         return s;
     }
