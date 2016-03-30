@@ -36,7 +36,6 @@ public class MainCharacter extends Sprite {
     private int charScore;
 
     private Array<FireBall> fireballs;
-    private Array<FireBall> networkFireballs;
 
     private float scale = (float) (1.0/20);
     private float stateTime;
@@ -112,7 +111,7 @@ public class MainCharacter extends Sprite {
                 |SpaceConquest.STATION_BIT
                 |SpaceConquest.ENEMY_STATION_BIT
                 |SpaceConquest.CHARACTER_BIT; //What can the character collide with?
-
+        fdef.friction = 1;
         //Body
         fdef.shape = shape;
         b2body.createFixture(fdef).setUserData(this);
@@ -233,10 +232,11 @@ public class MainCharacter extends Sprite {
         this.charWeight=w;
     }
 
-    public void fire(float xSpd, float ySpd){
-        FireBall f = new FireBall(screen, b2body.getPosition().x, b2body.getPosition().y, xSpd, ySpd);
+    public float[] fire(float xSpd, float ySpd){
+        float[] s = {b2body.getPosition().x,b2body.getPosition().y};
+        FireBall f = new FireBall(screen, s[0], s[1], xSpd, ySpd);
         fireballs.add(f);
-        networkFireballs.add(f);
+        return s;
     }
     public void draw(Batch batch){
         super.draw(batch);
