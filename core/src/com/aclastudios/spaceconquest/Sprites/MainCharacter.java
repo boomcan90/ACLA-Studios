@@ -236,10 +236,7 @@ public class MainCharacter extends Sprite {
         float[] s = {b2body.getPosition().x,b2body.getPosition().y};
         FireBall f = new FireBall(screen, s[0], s[1], xSpd, ySpd);
         fireballs.add(f);
-<<<<<<< HEAD
-=======
         return s;
->>>>>>> c03456ad5517732952e4f58dc32a475d088fd3dd
     }
     public void draw(Batch batch){
         super.draw(batch);

@@ -1,5 +1,6 @@
 package com.aclastudios.spaceconquest.SupportThreads;
 
+import com.aclastudios.spaceconquest.Scenes.Hud;
 import com.aclastudios.spaceconquest.SpaceConquest;
 
 public class Server{ //Not a thread for now
@@ -11,10 +12,12 @@ public class Server{ //Not a thread for now
     }
     public void addBlueScore(int score){
         BlueTeamScore+=score;
-        game.playServices.BroadcastMessage("UpdateScoreAll:"+BlueTeamScore+":"+RedTeamScore);
+        game.playServices.BroadcastMessage("UpdateScoreAll:" + RedTeamScore + ":" + BlueTeamScore);
+        Hud.updatescore(RedTeamScore,BlueTeamScore);
     }
     public void addRedScore(int score){
         RedTeamScore+=score;
-        game.playServices.BroadcastMessage("UpdateScoreAll:"+BlueTeamScore+":"+RedTeamScore);
+        game.playServices.BroadcastMessage("UpdateScoreAll:" + RedTeamScore + ":" + BlueTeamScore);
+        Hud.updatescore(RedTeamScore, BlueTeamScore);
     }
 }

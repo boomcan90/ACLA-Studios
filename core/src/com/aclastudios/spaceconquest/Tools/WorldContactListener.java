@@ -58,7 +58,11 @@ public class WorldContactListener implements ContactListener {
             case SpaceConquest.MAIN_CHARACTER_BIT |SpaceConquest.STATION_BIT:
                 System.out.println("inside station");
                 int score =screen.depositResource();
-                game.playServices.MessagetoServer("Serverpoints:"+game.multiplayerSessionInfo.mId_num+":"+score);
+                if (game.multiplayerSessionInfo.mId_num!=0) {
+                    game.playServices.MessagetoServer("Serverpoints:" + game.multiplayerSessionInfo.mId_num + ":" + score);
+                } else {
+                    screen.addscore("0",score);
+                }
                 break;
 //            case SpaceConquest.OBJECT_BIT| SpaceConquest.IRON_BIT:
 //                if(fixA.getFilterData().categoryBits == SpaceConquest.IRON_BIT)

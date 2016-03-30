@@ -73,7 +73,7 @@ public class Hud implements Disposable {
             timeCount = 0;
         }
     }
-    public static void updatescore(int blueScore, int redScore){
+    public static void updatescore(int redScore, int blueScore){
         BlueScore=blueScore;
         BlueScoreLabel.setText(String.format("%06d", BlueScore));
         RedScore=redScore;

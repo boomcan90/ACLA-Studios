@@ -222,8 +222,11 @@ public class PlayScreen implements Screen {
         coolDown +=dt;
         if (button.isPressed() && coolDown >rateOfFire) {
             coolDown = 0;
+            //start of fire ball
             float[] s=mainCharacter.fire(lastX, lastY);
-            
+            game.playServices.BroadcastMessage("fire:"+userID+":"+s[0]+":"+s[1]+":"+lastX+":"+lastY);
+            //end of fireball
+
             mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.9),
                     (float) (mainCharacter.b2body.getLinearVelocity().y * -0.9)), mainCharacter.b2body.getWorldCenter(), true);
         }
@@ -445,23 +448,30 @@ public class PlayScreen implements Screen {
             String[] data = message.split(":");
             if (data[0].equals("0") || data[0].equals("1")){
                 positionvalues = data.clone();
+            } else {
+                System.out.println("Blaaa"+data[0]+":"+data[1]+":"+data[2]);
             }
-            else if (data[0].equals("Serverpoints") && userID==0){
-                if (data[1].equals("0")){
-                    System.out.println("Blaaa_RedAdd="+Integer.parseInt(data[2]));
-                    server.addRedScore(Integer.parseInt(data[2]));
-                } else if (data[1].equals("1")){
-                    System.out.println("Blaaa_BlueAdd="+Integer.parseInt(data[2]));
-                    server.addBlueScore(Integer.parseInt(data[2]));
-                }
+            if (data[0].equals("Serverpoints") && userID==0){
+                addscore(data[1],Integer.parseInt(data[2]));
             }
             else if (data[0].equals("UpdateScoreAll")){
-                System.out.println("Blaaa_UpdateScoreAll="+Integer.parseInt(data[1])+":"+Integer.parseInt(data[2]));
-                Hud.updatescore(Integer.parseInt(data[1]),Integer.parseInt(data[2]));
+                Hud.updatescore(Integer.parseInt(data[1]), Integer.parseInt(data[2]));
+            }
+            else if (data[0].equals("fire")){
+                FireBall f = new FireBall(this, Float.parseFloat(data[2]),
+                        Float.parseFloat(data[3]), Float.parseFloat(data[4]), Float.parseFloat(data[5]));
+                networkFireballs.add(f);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+    public void addscore(String id,int data){
+        if (id.equals("0")){
+            server.addRedScore(data);
+        } else {
+            server.addBlueScore(data);
         }
     }
 
