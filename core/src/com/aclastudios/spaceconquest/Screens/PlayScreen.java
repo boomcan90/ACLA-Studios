@@ -427,8 +427,21 @@ public class PlayScreen implements Screen {
         try {
             String message = new String (Arrays.copyOfRange(bytes, 0, bytes.length),"UTF-8");
             String[] data = message.split(":");
-            if (data[0]=="0" || data[1]=="1"){
+            if (data[0].equals("0") || data[0].equals("1")){
                 positionvalues = data.clone();
+            }
+            else if (data[0].equals("Serverpoints") && userID==0){
+                if (data[1].equals("0")){
+                    System.out.println("Blaaa_RedAdd="+Integer.parseInt(data[2]));
+                    server.addRedScore(Integer.parseInt(data[2]));
+                } else if (data[1].equals("1")){
+                    System.out.println("Blaaa_BlueAdd="+Integer.parseInt(data[2]));
+                    server.addBlueScore(Integer.parseInt(data[2]));
+                }
+            }
+            else if (data[0].equals("UpdateScoreAll")){
+                System.out.println("Blaaa_UpdateScoreAll="+Integer.parseInt(data[1])+":"+Integer.parseInt(data[2]));
+                Hud.updatescore(Integer.parseInt(data[1]),Integer.parseInt(data[2]));
             }
 
         } catch (Exception e) {

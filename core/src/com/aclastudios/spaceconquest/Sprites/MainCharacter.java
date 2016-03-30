@@ -236,7 +236,6 @@ public class MainCharacter extends Sprite {
     public void fire(float xSpd, float ySpd){
         FireBall f = new FireBall(screen, b2body.getPosition().x, b2body.getPosition().y, xSpd, ySpd);
         fireballs.add(f);
-        networkFireballs.add(f);
     }
     public void draw(Batch batch){
         super.draw(batch);

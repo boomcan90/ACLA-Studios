@@ -11,10 +11,10 @@ public class Server{ //Not a thread for now
     }
     public void addBlueScore(int score){
         BlueTeamScore+=score;
-        game.playServices.BroadcastMessage(BlueTeamScore+"");
+        game.playServices.BroadcastMessage("UpdateScoreAll:"+BlueTeamScore+":"+RedTeamScore);
     }
     public void addRedScore(int score){
         RedTeamScore+=score;
-        game.playServices.BroadcastMessage(RedTeamScore+"");
+        game.playServices.BroadcastMessage("UpdateScoreAll:"+BlueTeamScore+":"+RedTeamScore);
     }
 }

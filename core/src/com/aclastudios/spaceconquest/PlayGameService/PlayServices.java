@@ -30,6 +30,8 @@ public interface PlayServices {
 
     public void BroadcastUnreliableMessage(String message);
 
+    public void MessagetoServer(String message);
+
     public void setScreen(PlayScreen screen);
 
 
