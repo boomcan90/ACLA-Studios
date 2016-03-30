@@ -224,7 +224,7 @@ public class PlayScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         //Setscreen in androidLauncher
-        game.playServices.setScreen(this);
+//        game.playServices.setScreen(this);
         if (this.userID==0){
             server=new Server(game);
         }
