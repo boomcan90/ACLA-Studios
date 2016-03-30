@@ -1,5 +1,7 @@
 package com.aclastudios.spaceconquest.Screens;
 
+
+
 import com.aclastudios.spaceconquest.Scenes.Hud;
 import com.aclastudios.spaceconquest.SpaceConquest;
 import com.aclastudios.spaceconquest.Sprites.Enemy;
@@ -15,7 +17,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -26,6 +30,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -33,9 +39,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
+
+import org.w3c.dom.Text;
 
 import java.util.Arrays;
 
@@ -80,7 +90,7 @@ public class PlayScreen implements Screen {
     private TextureAtlas buttonsAtlas; //** image of buttons **//
     private Skin buttonSkin; //** images are used as skins of the button **//
     private Table table;
-    private TextButton button;
+    private ImageButton button;
     private Label heading;
 
     private Touchpad touchpad;
@@ -100,13 +110,16 @@ public class PlayScreen implements Screen {
     //Server
     Server server;
 
+    private Texture red;
+    private Texture orange;
+
     public PlayScreen(SpaceConquest game, GameScreenManager gsm){
         // atlas = new TextureAtlas("Mario_and_Enemies.pack");
-        atlas = new TextureAtlas("textures.atlas");
+        atlas = new TextureAtlas("sprite_pack.pack");
         this.game = game;
         this.gsm = gsm;
-        this.userID = game.multiplayerSessionInfo.mParticipantsId.indexOf(game.multiplayerSessionInfo.mId);
-        game.multiplayerSessionInfo.mId_num=this.userID;
+//        this.userID = game.multiplayerSessionInfo.mParticipantsId.indexOf(game.multiplayerSessionInfo.mId);
+//        game.multiplayerSessionInfo.mId_num=this.userID;
                 //Background and Character assets
         texture = new Texture("map.png");
 
@@ -196,8 +209,12 @@ public class PlayScreen implements Screen {
         font = new BitmapFont();
         textButtonStyle.font = font;
 
-        button = new TextButton("FIRE", textButtonStyle);
-        button.setBounds(50, 50, 50, 50);
+//        button = new TextButton("FIRE", textButtonStyle);
+        red = new Texture(Gdx.files.internal("button_red.png"));
+        orange = new Texture(Gdx.files.internal("button_orange.png"));
+
+        button = new ImageButton(new TextureRegionDrawable(new TextureRegion(red)), new TextureRegionDrawable(new TextureRegion(orange)));
+        button.setBounds(50,50,50,50);
         //table.add(button);
 
         //Create a Stage and add TouchPad
@@ -207,7 +224,7 @@ public class PlayScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         //Setscreen in androidLauncher
-        game.playServices.setScreen(this);
+//        game.playServices.setScreen(this);
         if (this.userID==0){
             server=new Server(game);
         }
@@ -224,7 +241,7 @@ public class PlayScreen implements Screen {
             coolDown = 0;
             //start of fire ball
             float[] s=mainCharacter.fire(lastX, lastY);
-            game.playServices.BroadcastMessage("fire:"+userID+":"+s[0]+":"+s[1]+":"+lastX+":"+lastY);
+//            game.playServices.BroadcastMessage("fire:"+userID+":"+s[0]+":"+s[1]+":"+lastX+":"+lastY);
             //end of fireball
 
             mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.9),
@@ -304,6 +321,7 @@ public class PlayScreen implements Screen {
             gamecam.position.x = mainCharacter.getLast_xy_coord()[0];
             gamecam.position.y = mainCharacter.getLast_xy_coord()[1];
         }
+
 
         //SendMessage
         try {
