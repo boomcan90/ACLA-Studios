@@ -1,6 +1,7 @@
 package com.aclastudios.spaceconquest.Scenes;
 
 import com.aclastudios.spaceconquest.SpaceConquest;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -34,6 +35,7 @@ public class Hud implements Disposable {
         timeCount = 0;
         RedScore = 0;
         BlueScore = 0;
+        float scale = (float) 0.75;
 
         viewport = new FitViewport(SpaceConquest.V_WIDTH,SpaceConquest.V_HEIGHT,new OrthographicCamera());
         stage = new Stage(viewport, sb);
@@ -43,12 +45,22 @@ public class Hud implements Disposable {
         table.setBounds(0, SpaceConquest.V_HEIGHT * (float) 3 / 4, SpaceConquest.V_WIDTH, SpaceConquest.V_HEIGHT / 4);
         //table.setFillParent(true); //Table is the size of the stage
 
-        countdownLabel = new Label(String.format("%03d", worldTimer), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        GameLabel = new Label("SPACE CONQUEST", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        RedLabel = new Label("RED", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        RedScoreLabel = new Label(String.format("%06d", RedScore), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        BlueLabel = new Label("BLUE", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        BlueScoreLabel = new Label(String.format("%06d", BlueScore), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        countdownLabel = new Label(String.format("%03d", worldTimer), new Label.LabelStyle(new BitmapFont(Gdx.files.internal("fonts/visitor.fnt"), false), Color.WHITE));
+        GameLabel = new Label("SPACE CONQUEST", new Label.LabelStyle(new BitmapFont(Gdx.files.internal("fonts/visitor.fnt"), false), Color.WHITE));
+        RedLabel = new Label("RED", new Label.LabelStyle(new BitmapFont(Gdx.files.internal("fonts/visitor.fnt"), false), Color.WHITE));
+        RedScoreLabel = new Label(String.format("%06d", RedScore), new Label.LabelStyle(new BitmapFont(Gdx.files.internal("fonts/visitor.fnt"), false), Color.WHITE));
+        BlueLabel = new Label("BLUE", new Label.LabelStyle(new BitmapFont(Gdx.files.internal("fonts/visitor.fnt"), false), Color.WHITE));
+        BlueScoreLabel = new Label(String.format("%06d", BlueScore), new Label.LabelStyle(new BitmapFont(Gdx.files.internal("fonts/visitor.fnt"), false), Color.WHITE));
+
+
+        BlueLabel.setFontScale(scale);
+        RedLabel.setFontScale(scale);
+        GameLabel.setFontScale(scale);
+        countdownLabel.setFontScale(scale);
+        RedScoreLabel.setFontScale(scale);
+        BlueScoreLabel.setFontScale(scale);
+
+
 
         table.add(RedLabel).expandX().padTop(10);
         table.add(GameLabel).expandX().padTop(10);

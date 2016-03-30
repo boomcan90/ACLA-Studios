@@ -102,7 +102,7 @@ public class PlayScreen implements Screen {
 
     public PlayScreen(SpaceConquest game, GameScreenManager gsm){
         // atlas = new TextureAtlas("Mario_and_Enemies.pack");
-        atlas = new TextureAtlas("textures.atlas");
+        atlas = new TextureAtlas("sprite_pack.pack");
         this.game = game;
         this.gsm = gsm;
 //        this.userID = game.multiplayerSessionInfo.mParticipantsId.indexOf(game.multiplayerSessionInfo.mId);
