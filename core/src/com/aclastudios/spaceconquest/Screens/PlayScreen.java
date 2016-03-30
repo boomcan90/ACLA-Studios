@@ -8,6 +8,7 @@ import com.aclastudios.spaceconquest.Sprites.ResourceManager;
 import com.aclastudios.spaceconquest.SupportThreads.Server;
 import com.aclastudios.spaceconquest.Tools.B2WorldCreator;
 import com.aclastudios.spaceconquest.Tools.WorldContactListener;
+import com.aclastudios.spaceconquest.Weapons.FireBall;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -52,6 +53,8 @@ public class PlayScreen implements Screen {
 
     private float rateOfFire = (float) 0.1;
     private float coolDown;
+    private Array<FireBall> networkFireballs;
+
     private float x;
     private float y;
     private float lastX ;
@@ -143,7 +146,7 @@ public class PlayScreen implements Screen {
 
         resourceManager = new ResourceManager(this);
 
-
+        networkFireballs = new Array<FireBall>();
         coolDown = 0;
         lastX = 1;
         lastY = 0;
@@ -219,7 +222,8 @@ public class PlayScreen implements Screen {
         coolDown +=dt;
         if (button.isPressed() && coolDown >rateOfFire) {
             coolDown = 0;
-            mainCharacter.fire(lastX, lastY);
+            float[] s=mainCharacter.fire(lastX, lastY);
+            
             mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.9),
                     (float) (mainCharacter.b2body.getLinearVelocity().y * -0.9)), mainCharacter.b2body.getWorldCenter(), true);
         }
@@ -255,6 +259,13 @@ public class PlayScreen implements Screen {
             enemy.updateEnemy(Float.parseFloat(positionvalues[1]),
                     Float.parseFloat(positionvalues[2]),
                     Float.parseFloat(positionvalues[3]));
+        }
+
+        //check if fireballs is destroyed or not
+        for(FireBall  ball : networkFireballs) {
+            ball.update(dt);
+            if(ball.isDestroyed())
+                networkFireballs.removeValue(ball, true);
         }
 
         while ((resourceManager.getIron_count()+resourceManager.getGunpowder_count()+resourceManager.getOil_count())<21)
@@ -315,6 +326,11 @@ public class PlayScreen implements Screen {
             resourceManager.getOil_array(i).draw(game.batch);
 
         mainCharacter.draw(game.batch);
+
+        //render the fireballs over the network
+        for(FireBall ball : networkFireballs)
+            ball.draw(game.batch);
+
         if(!enemy.isDestroyed())
             enemy.draw(game.batch);
 

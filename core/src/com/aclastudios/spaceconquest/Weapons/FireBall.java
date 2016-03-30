@@ -5,6 +5,7 @@ import com.aclastudios.spaceconquest.SpaceConquest;
 import com.aclastudios.spaceconquest.Sprites.Space;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -36,7 +37,7 @@ public class FireBall extends Sprite {
         this.world = screen.getWorld();
         frames = new Array<TextureRegion>();
         for(int i = 0; i < 4; i++){
-            frames.add(new TextureRegion(screen.getAtlas().findRegion("oil_ore"), i * 8, 0, 8, 8));
+            frames.add(new TextureRegion(new TextureAtlas("Mario_and_Enemies.pack").findRegion("fireball"), i * 8, 0, 8, 8));
         }
         fireAnimation = new Animation(0.2f, frames);
         setRegion(fireAnimation.getKeyFrame(0));
