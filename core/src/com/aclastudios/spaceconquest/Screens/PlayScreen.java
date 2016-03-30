@@ -5,6 +5,7 @@ import com.aclastudios.spaceconquest.SpaceConquest;
 import com.aclastudios.spaceconquest.Sprites.Enemy;
 import com.aclastudios.spaceconquest.Sprites.MainCharacter;
 import com.aclastudios.spaceconquest.Sprites.ResourceManager;
+import com.aclastudios.spaceconquest.SupportThreads.Server;
 import com.aclastudios.spaceconquest.Tools.B2WorldCreator;
 import com.aclastudios.spaceconquest.Tools.WorldContactListener;
 import com.badlogic.gdx.Gdx;
@@ -90,11 +91,11 @@ public class PlayScreen implements Screen {
     private Enemy enemy;
 
 
-    private String[] datafromIncomingData;
+    private String[] positionvalues;
 
     private ResourceManager resourceManager;
-
-    // Texture Atlas for sprites
+    //Server
+    Server server;
 
     public PlayScreen(SpaceConquest game, GameScreenManager gsm){
         // atlas = new TextureAtlas("Mario_and_Enemies.pack");
@@ -204,6 +205,9 @@ public class PlayScreen implements Screen {
 
         //Setscreen in androidLauncher
         game.playServices.setScreen(this);
+        if (this.userID==0){
+            server=new Server(game);
+        }
     }
     @Override
     public void show() {
@@ -247,10 +251,10 @@ public class PlayScreen implements Screen {
         //sprites
         mainCharacter.update(dt);
         enemy.update(dt);
-        if (datafromIncomingData!=null) {
-            enemy.updateEnemy(Float.parseFloat(datafromIncomingData[1]),
-                    Float.parseFloat(datafromIncomingData[2]),
-                    Float.parseFloat(datafromIncomingData[3]));
+        if (positionvalues !=null) {
+            enemy.updateEnemy(Float.parseFloat(positionvalues[1]),
+                    Float.parseFloat(positionvalues[2]),
+                    Float.parseFloat(positionvalues[3]));
         }
 
         while ((resourceManager.getIron_count()+resourceManager.getGunpowder_count()+resourceManager.getOil_count())<21)
@@ -422,8 +426,11 @@ public class PlayScreen implements Screen {
     public void MessageListener(byte[] bytes){
         try {
             String message = new String (Arrays.copyOfRange(bytes, 0, bytes.length),"UTF-8");
-            datafromIncomingData = message.split(":");
-            System.out.println(message);
+            String[] data = message.split(":");
+            if (data[0]=="0" || data[1]=="1"){
+                positionvalues = data;
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
