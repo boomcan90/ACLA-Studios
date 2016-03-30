@@ -269,7 +269,8 @@ public class PlayScreen implements Screen {
         if (positionvalues != null) {
             enemy.updateEnemy(Float.parseFloat(positionvalues[1]),
                     Float.parseFloat(positionvalues[2]),
-                    Float.parseFloat(positionvalues[3]));
+                    Float.parseFloat(positionvalues[3]),
+                    Float.parseFloat(positionvalues[5]));
             if (positionvalues[4].equals("false")) {
                 enemy.dead();
             }
@@ -306,7 +307,8 @@ public class PlayScreen implements Screen {
 
         //SendMessage
         try {
-            game.playServices.BroadcastUnreliableMessage(userID + ":" + x + ":" + y + ":" + angle + ":"+String.valueOf(!mainCharacter.isDestroyed()));
+            game.playServices.BroadcastUnreliableMessage(userID + ":" + x + ":" + y + ":" + angle + ":"+
+                    String.valueOf(!mainCharacter.isDestroyed())+":" +mainCharacter.getCharWeight());
         }catch (Exception e){}
 
         //gamecam updates

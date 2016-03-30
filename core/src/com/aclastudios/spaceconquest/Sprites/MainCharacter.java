@@ -229,7 +229,7 @@ public class MainCharacter extends Sprite {
 
 
         //stop user from collecting resource
-        if(this.charWeight>=10){
+        if(this.charWeight>=20){
             Filter filter = fix.get(0).getFilterData();
             filter.maskBits =  SpaceConquest.OBSTACLE_BIT
                     |SpaceConquest.STATION_BIT
@@ -279,6 +279,7 @@ public class MainCharacter extends Sprite {
     }
     public void dead(){
         setToDestroy = true;
+        this.charWeight = 0;
     }
 
     public boolean isDestroyed() {
