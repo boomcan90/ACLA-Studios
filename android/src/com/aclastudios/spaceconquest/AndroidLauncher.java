@@ -344,10 +344,10 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		byte[] bytes = message.getBytes(Charset.forName("UTF-8"));
 		for (Object o : MultiplayerSession.mParticipants) {
 			Participant p = (Participant) o;
-			if (!p.getParticipantId().equals(MultiplayerSession.mId)) {
+//			if (!p.getParticipantId().equals(MultiplayerSession.mId)) {
 				Games.RealTimeMultiplayer.sendReliableMessage(mGoogleApiClient, null, bytes,
 						MultiplayerSession.mRoomId, p.getParticipantId());
-			}
+//			}
 		}
 	}
 	public void BroadcastUnreliableMessage(String message){
@@ -356,6 +356,12 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		Games.RealTimeMultiplayer.sendUnreliableMessageToOthers(mGoogleApiClient, bytes,
 				MultiplayerSession.mRoomId);
 
+	}
+	public void MessagetoServer(String message){
+		byte[] bytes = message.getBytes(Charset.forName("UTF-8"));
+		Participant p = (Participant) MultiplayerSession.mParticipants.get(0);
+		Games.RealTimeMultiplayer.sendReliableMessage(mGoogleApiClient, null, bytes,
+				MultiplayerSession.mRoomId, p.getParticipantId());
 	}
 
 	@Override
