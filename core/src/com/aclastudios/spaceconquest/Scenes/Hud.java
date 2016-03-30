@@ -19,19 +19,21 @@ public class Hud implements Disposable {
     private Integer worldTimer;
     private boolean timeUp; // true when the world timer reaches 0
     private float timeCount;
-    private static Integer score;
+    private static Integer RedScore;
+    private static Integer BlueScore;
 
     private Label countdownLabel;
-    private static Label scoreLabel;
-    private Label timeLabel;
-    private Label worldLabel;
-    private Label levelLabel;
-    private Label KnapsackLabel;
+    private Label GameLabel;
+    private Label BlueLabel;
+    private static Label BlueScoreLabel;
+    private Label RedLabel;
+    private static Label RedScoreLabel;
 
     public Hud(SpriteBatch sb){
         worldTimer = 300;
         timeCount = 0;
-        score = 0;
+        RedScore = 0;
+        BlueScore = 0;
 
         viewport = new FitViewport(SpaceConquest.V_WIDTH,SpaceConquest.V_HEIGHT,new OrthographicCamera());
         stage = new Stage(viewport, sb);
@@ -42,19 +44,20 @@ public class Hud implements Disposable {
         //table.setFillParent(true); //Table is the size of the stage
 
         countdownLabel = new Label(String.format("%03d", worldTimer), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        scoreLabel = new Label(String.format("%06d", score), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        timeLabel = new Label("TIME", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        levelLabel = new Label("Dooms Planet", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        worldLabel = new Label("SPACE CONQUEST", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        KnapsackLabel = new Label("KNAPSACK", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        GameLabel = new Label("SPACE CONQUEST", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        RedLabel = new Label("RED", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        RedScoreLabel = new Label(String.format("%06d", RedScore), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        BlueLabel = new Label("BLUE", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        BlueScoreLabel = new Label(String.format("%06d", BlueScore), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
-        table.add(KnapsackLabel).expandX().padTop(10);
-        table.add(worldLabel).expandX().padTop(10);
-        table.add(timeLabel).expandX().padTop(10);
+        table.add(RedLabel).expandX().padTop(10);
+        table.add(GameLabel).expandX().padTop(10);
+        table.add(BlueLabel).expandX().padTop(10);
         table.row(); //new row
-        table.add(scoreLabel).expandX();
-        table.add(levelLabel).expandX();
+        table.add(RedScoreLabel).expandX();
         table.add(countdownLabel).expandX();
+        table.add(BlueScoreLabel).expandX();
+
 
         stage.addActor(table);
     }
@@ -70,12 +73,13 @@ public class Hud implements Disposable {
             timeCount = 0;
         }
     }
-    public static void addScore(int value){
-        score+=value;
-        scoreLabel.setText(String.format("%06d", score));
+    public static void addRedScore(int value){
+        RedScore+=value;
+        RedScoreLabel.setText(String.format("%06d", RedScore));
     }
-    public static int getScore(){
-        return score;
+    public static void addBlueScore(int value){
+        BlueScore+=value;
+        BlueScoreLabel.setText(String.format("%06d", BlueScore));
     }
 
 

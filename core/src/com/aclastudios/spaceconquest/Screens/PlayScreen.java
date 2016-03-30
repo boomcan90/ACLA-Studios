@@ -1,11 +1,8 @@
 package com.aclastudios.spaceconquest.Screens;
 
-import com.aclastudios.spaceconquest.PlayGameService.MultiplayerSessionInfo;
 import com.aclastudios.spaceconquest.Scenes.Hud;
 import com.aclastudios.spaceconquest.SpaceConquest;
 import com.aclastudios.spaceconquest.Sprites.Enemy;
-import com.aclastudios.spaceconquest.Sprites.Resource.GunPowder;
-import com.aclastudios.spaceconquest.Sprites.Resource.Iron;
 import com.aclastudios.spaceconquest.Sprites.MainCharacter;
 import com.aclastudios.spaceconquest.Sprites.ResourceManager;
 import com.aclastudios.spaceconquest.Tools.B2WorldCreator;
@@ -38,10 +35,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.Array;
 
-import java.util.ArrayList;
-import java.util.Random;
-
-import javax.annotation.Resource;
+import java.util.Arrays;
 
 
 public class PlayScreen implements Screen {
@@ -95,6 +89,9 @@ public class PlayScreen implements Screen {
     private MainCharacter mainCharacter;
     private Enemy enemy;
 
+
+    private String[] datafromIncomingData;
+
     private ResourceManager resourceManager;
 
     public PlayScreen(SpaceConquest game, GameScreenManager gsm){
@@ -102,6 +99,7 @@ public class PlayScreen implements Screen {
         this.game = game;
         this.gsm = gsm;
         this.userID = game.multiplayerSessionInfo.mParticipantsId.indexOf(game.multiplayerSessionInfo.mId);
+        game.multiplayerSessionInfo.mId_num=this.userID;
                 //Background and Character assets
         texture = new Texture("map.png");
 
@@ -131,7 +129,11 @@ public class PlayScreen implements Screen {
 
         //Sprites
         mainCharacter = new MainCharacter(world,this);
-        enemy = new Enemy(world,this,0);
+        if (userID==1) {
+            enemy = new Enemy(world, this, 0);
+        } else {
+            enemy = new Enemy(world, this, 1);
+        }
         mainCharacter.setOriginCenter();
 
 
@@ -153,7 +155,7 @@ public class PlayScreen implements Screen {
             }
         }
         //set world listener
-        world.setContactListener(new WorldContactListener(this));
+        world.setContactListener(new WorldContactListener(this,game));
 
         //touchpad setup
         //Create a touchpad skin
@@ -199,8 +201,6 @@ public class PlayScreen implements Screen {
 
         //Setscreen in androidLauncher
         game.playServices.setScreen(this);
-
-
     }
     @Override
     public void show() {
@@ -244,6 +244,11 @@ public class PlayScreen implements Screen {
         //sprites
         mainCharacter.update(dt);
         enemy.update(dt);
+        if (datafromIncomingData!=null) {
+            enemy.updateEnemy(Float.parseFloat(datafromIncomingData[1]),
+                    Float.parseFloat(datafromIncomingData[2]),
+                    Float.parseFloat(datafromIncomingData[3]));
+        }
 
         while ((resourceManager.getIron_count()+resourceManager.getGunpowder_count()+resourceManager.getOil_count())<=20)
             resourceManager.generateResources(this.x, this.y, this.width, this.height);
@@ -261,6 +266,14 @@ public class PlayScreen implements Screen {
 
         button.setPosition(gamecam.position.x+gamePort.getWorldWidth() / 4 +10,gamecam.position.y-gamePort.getWorldHeight()/2+10);
         touchpad.setPosition(gamecam.position.x-gamePort.getWorldWidth() / 2+10,gamecam.position.y-gamePort.getWorldHeight()/2+10);
+
+        //SendMessage
+        float x = mainCharacter.b2body.getPosition().x;
+        float y = mainCharacter.b2body.getPosition().y;
+        float angle = getAngle(mainCharacter);
+        try {
+            game.playServices.BroadcastUnreliableMessage(userID + ":" + x + ":" + y + ":" + angle);
+        }catch (Exception e){}
     }
     //render
     @Override
@@ -316,11 +329,7 @@ public class PlayScreen implements Screen {
         if(hud.isTimeUp()==true){
             gsm.set(new GameOver(game, gsm));
         }
-        float x = mainCharacter.b2body.getPosition().x;
-        float y = mainCharacter.b2body.getPosition().y;
-        try {
-            game.playServices.BroadcastUnreliableMessage(x + " " + y);
-        }catch (Exception e){}
+
 
     }
 
@@ -406,8 +415,14 @@ public class PlayScreen implements Screen {
         return res;
     }
 
-    public void MessageListener(String string){
-        System.out.println("Listening to incoming message in PlayScreen: " + string);
+    public void MessageListener(byte[] bytes){
+        try {
+            String message = new String (Arrays.copyOfRange(bytes, 0, bytes.length),"UTF-8");
+            datafromIncomingData = message.split(":");
+            System.out.println(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

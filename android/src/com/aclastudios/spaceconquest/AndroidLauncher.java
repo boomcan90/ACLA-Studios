@@ -1,6 +1,7 @@
 package com.aclastudios.spaceconquest;
 
 
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -15,7 +16,6 @@ import com.aclastudios.spaceconquest.PlayGameService.MultiplayerSessionInfo;
 import com.aclastudios.spaceconquest.PlayGameService.PlayServices;
 import com.aclastudios.spaceconquest.Screens.PlayScreen;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -361,26 +361,13 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 	@Override
 	public void onRealTimeMessageReceived(RealTimeMessage rtm) {
 		byte[] buf = rtm.getMessageData();
-		String sender = rtm.getSenderParticipantId();
-		//testing
-//		InputStream is = new ByteArrayInputStream(buf);
-//		bufferedReader = new BufferedReader(new InputStreamReader(is));
-
-		//end
-		try{
-			String messageType = new String (Arrays.copyOfRange(buf, 0, 1),"UTF-8");
-			String Msg = new String (Arrays.copyOfRange(buf,0,buf.length),"UTF-8");
-			System.out.println("Listen to message: "+ Msg);
-			screen.MessageListener(Msg);
-
-		}catch (Exception e){
-			Log.d(TAG, "Error reading from received message: "+e.getMessage());
+		if (screen!=null) {
+			screen.MessageListener(buf);
 		}
+
 	}
 	@Override
 	public void setScreen(PlayScreen screen) {
 		this.screen = screen;
 	}
-
-
 }

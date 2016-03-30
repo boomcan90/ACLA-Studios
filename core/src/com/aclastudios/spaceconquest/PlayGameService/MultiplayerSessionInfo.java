@@ -11,6 +11,7 @@ import java.util.ArrayList;
 public class MultiplayerSessionInfo {
 	
 	public String mId;
+	public int mId_num;
 	public String mIncomingInvitationId;
 	public String mRoomId;
 	public ArrayList mParticipants;
