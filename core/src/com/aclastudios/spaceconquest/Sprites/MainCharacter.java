@@ -38,6 +38,8 @@ public class MainCharacter extends Sprite {
     private Array<FireBall> fireballs;
 
     private float scale = (float) (1.0/10);
+
+    // used for respawning the character
     private float stateTime;
     private boolean setToDestroy;
     private boolean destroyed;
@@ -49,13 +51,13 @@ public class MainCharacter extends Sprite {
     private State previousState;
     private Animation running;
     private float stateTimer;
+
+    //potentially useless
     private float x_value;
     private float y_value;
+
+    //last known position of main character
     private float last_x_coord;
-
-
-
-
     private float last_y_coord;
 
     public MainCharacter(World world,PlayScreen screen){
@@ -93,9 +95,9 @@ public class MainCharacter extends Sprite {
         BodyDef bdef = new BodyDef();
         //Array<RectangleMapObject> object = map.getLayers().get(7).getObjects().getByType(RectangleMapObject.class);
         for (MapLayer layer : map.getLayers()) {
-            if (layer.getName().matches(area[screen.getUserID()])) {
+            if (layer.getName().matches(area[screen.getUserID()/screen.getNumOfPlayers()])) {
                 Array<RectangleMapObject> mo = layer.getObjects().getByType(RectangleMapObject.class);
-                Rectangle rect = mo.get(0).getRectangle();
+                Rectangle rect = mo.get(screen.getUserID()%3).getRectangle();
                 last_x_coord = rect.getX()*SpaceConquest.MAP_SCALE;
                 last_y_coord = rect.getY()*SpaceConquest.MAP_SCALE;
                 bdef.position.set(last_x_coord,last_y_coord); //temp set position
@@ -115,13 +117,12 @@ public class MainCharacter extends Sprite {
         fdef.filter.categoryBits = SpaceConquest.MAIN_CHARACTER_BIT; //what category is this fixture
         fdef.filter.maskBits = SpaceConquest.OBSTACLE_BIT
                 |SpaceConquest.FIREBALL_BIT
-                | SpaceConquest.IRON_BIT
+                |SpaceConquest.IRON_BIT
                 |SpaceConquest.GUNPOWDER_BIT
                 |SpaceConquest.OIL_BIT
                 |SpaceConquest.STATION_BIT
                 |SpaceConquest.ENEMY_STATION_BIT
                 |SpaceConquest.CHARACTER_BIT; //What can the character collide with?
-        fdef.friction = 1;
         //Body
         fdef.shape = shape;
         b2body.createFixture(fdef).setUserData(this);
@@ -148,6 +149,7 @@ public class MainCharacter extends Sprite {
             last_y_coord = b2body.getPosition().y;
             setPosition(last_x_coord - getWidth() / 2, last_y_coord - getHeight() / 2);
             setRegion(getFrame(dt));
+            setScale(getCharacterScale());
             //System.out.println("My weight is " + charWeight);
         }
 
@@ -225,7 +227,7 @@ public class MainCharacter extends Sprite {
         this.charWeight += charWeight;
         Array<Fixture> fix = b2body.getFixtureList();
         Shape shape = fix.get(0).getShape();
-        shape.setRadius( radius + (this.charWeight*scale*5));
+        shape.setRadius( radius + (this.charWeight*scale*7));
         System.out.println(shape.getRadius());
 
         System.out.println("charweight: "+this.charWeight);
@@ -236,11 +238,12 @@ public class MainCharacter extends Sprite {
             Filter filter = fix.get(0).getFilterData();
             filter.maskBits =  SpaceConquest.OBSTACLE_BIT
                     |SpaceConquest.STATION_BIT
+                    |SpaceConquest.ENEMY_STATION_BIT
                     |SpaceConquest.CHARACTER_BIT
                     |SpaceConquest.FIREBALL_BIT;
             fix.get(0).setFilterData(filter);
         }
-
+        setScale(getCharacterScale());
     }
 
     public void setCharWeight(int w){
