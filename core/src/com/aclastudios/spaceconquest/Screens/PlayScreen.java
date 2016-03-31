@@ -250,20 +250,18 @@ public class PlayScreen implements Screen {
         else {
             double speedreduction = Math.pow(0.9, mainCharacter.getCharWeight()*0.5);
             mainCharacter.setScale(mainCharacter.getCharacterScale());
-            float counterMomentumX = 1;
             if((touchpad.getKnobPercentX()*mainCharacter.b2body.getLinearVelocity().x)<=0){
 //                counterMomentumX = 2;
                 mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.4),0),
                 mainCharacter.b2body.getWorldCenter(), true);
             }
-            float counterMomentumY = 1;
             if((touchpad.getKnobPercentY()*mainCharacter.b2body.getLinearVelocity().y)<=0){
 //                counterMomentumY = 2;
                 mainCharacter.b2body.applyLinearImpulse(new Vector2(0,(float) (mainCharacter.b2body.getLinearVelocity().y * -0.4)),
                         mainCharacter.b2body.getWorldCenter(), true);
             }
-            mainCharacter.setxSpeed((float) (touchpad.getKnobPercentX() * speedreduction * counterMomentumX));
-            mainCharacter.setySpeed((float) (touchpad.getKnobPercentY() * speedreduction * counterMomentumY));
+            mainCharacter.setxSpeed((float) (touchpad.getKnobPercentX() * speedreduction ));
+            mainCharacter.setySpeed((float) (touchpad.getKnobPercentY() * speedreduction ));
             mainCharacter.b2body.applyLinearImpulse(new Vector2(mainCharacter.getxSpeed(), mainCharacter.getySpeed()), mainCharacter.b2body.getWorldCenter(), true);
         }
         //System.out.println("last x is " + lastX + " last y is " + lastY);
