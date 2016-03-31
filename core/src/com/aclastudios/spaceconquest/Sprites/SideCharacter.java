@@ -24,7 +24,7 @@ import com.badlogic.gdx.utils.Array;
 /**
  * Created by User on 17/3/2016.
  */
-public class Enemy extends Sprite{
+public class SideCharacter extends Sprite{
     //private float xSpeed,ySpeed;
     public final String[] area = {"Team1Spawn","Team2Spawn"};
     private float x, y;
@@ -53,8 +53,8 @@ public class Enemy extends Sprite{
 
     //private int charWeight;
     //private int charScore;
-    public Enemy(World world, PlayScreen screen,int ID){
-        super(screen.getAtlas().findRegion("KID"));
+    public SideCharacter(World world, PlayScreen screen, int ID, String spriteName){
+        super(screen.getAtlas().findRegion(spriteName));
         this.screen = screen;
         this.world = world;
         this.enemyID = ID;
@@ -81,7 +81,7 @@ public class Enemy extends Sprite{
         frames.add(new TextureRegion(getTexture(), getRegionX() + 195*2, getRegionY(), 168, 190));
         frames.add(new TextureRegion(getTexture(), getRegionX() + 195 * 3, getRegionY(), 168, 190));
         running =new Animation(0.2f, frames);
-
+        setOriginCenter();
         defineCharacter();
 
     }
@@ -89,9 +89,9 @@ public class Enemy extends Sprite{
     public void defineCharacter(){
         BodyDef bdef = new BodyDef();
         for (MapLayer layer : map.getLayers()) {
-            if (layer.getName().matches(area[enemyID])) {
+            if (layer.getName().matches(area[enemyID/(screen.getNumOfPlayers()/2)])) {
                 Array<RectangleMapObject> mo = layer.getObjects().getByType(RectangleMapObject.class);
-                Rectangle rect = mo.get(0).getRectangle();
+                Rectangle rect = mo.get(enemyID%(screen.getNumOfPlayers()/2)).getRectangle();
                 spawnX = rect.getX()*SpaceConquest.MAP_SCALE;
                 spawnY = rect.getY()*SpaceConquest.MAP_SCALE;
                 bdef.position.set(spawnX, spawnY); //temp set position
@@ -174,8 +174,8 @@ public class Enemy extends Sprite{
     }
 
     public State getState(){
-        System.out.println("Enemy X: " + b2body.getLinearVelocity().x);
-        System.out.println("Enemy Y: " + b2body.getLinearVelocity().y);
+        System.out.println("SideCharacter X: " + b2body.getLinearVelocity().x);
+        System.out.println("SideCharacter Y: " + b2body.getLinearVelocity().y);
         if (b2body.getLinearVelocity().x > 5 || b2body.getLinearVelocity().x < -5 || b2body.getLinearVelocity().y > 5 || b2body.getLinearVelocity().y < -5) {
             return State.RUNNING;
         } else {
