@@ -233,7 +233,15 @@ public class PlayScreen implements Screen {
         else {
             double speedreduction = Math.pow(0.9, mainCharacter.getCharWeight()*0.5);
             mainCharacter.setScale(mainCharacter.getCharacterScale());
-            mainCharacter.setxSpeed((float) (touchpad.getKnobPercentX() * speedreduction));
+            float counterMomentumX = 1;
+            if((touchpad.getKnobPercentX()*mainCharacter.b2body.getLinearVelocity().x)<=0){
+                counterMomentumX = 2;
+            }
+            float counterMomentumY = 1;
+            if((touchpad.getKnobPercentY()*mainCharacter.b2body.getLinearVelocity().y)<=0){
+                counterMomentumY = 2;
+            }
+            mainCharacter.setxSpeed((float) (touchpad.getKnobPercentX() * speedreduction ));
             mainCharacter.setySpeed((float) (touchpad.getKnobPercentY() * speedreduction));
             mainCharacter.b2body.applyLinearImpulse(new Vector2(mainCharacter.getxSpeed(), mainCharacter.getySpeed()), mainCharacter.b2body.getWorldCenter(), true);
         }
@@ -261,7 +269,8 @@ public class PlayScreen implements Screen {
         if (positionvalues != null) {
             enemy.updateEnemy(Float.parseFloat(positionvalues[1]),
                     Float.parseFloat(positionvalues[2]),
-                    Float.parseFloat(positionvalues[3]));
+                    Float.parseFloat(positionvalues[3]),
+                    Float.parseFloat(positionvalues[5]));
             if (positionvalues[4].equals("false")) {
                 enemy.dead();
             }
@@ -298,7 +307,8 @@ public class PlayScreen implements Screen {
 
         //SendMessage
         try {
-            game.playServices.BroadcastUnreliableMessage(userID + ":" + x + ":" + y + ":" + angle + ":"+String.valueOf(!mainCharacter.isDestroyed()));
+            game.playServices.BroadcastUnreliableMessage(userID + ":" + x + ":" + y + ":" + angle + ":"+
+                    String.valueOf(!mainCharacter.isDestroyed())+":" +mainCharacter.getCharWeight());
         }catch (Exception e){}
 
         //gamecam updates
@@ -475,7 +485,7 @@ public class PlayScreen implements Screen {
             }
             else if (data[0].equals("fire")){
                 FireBall f = new FireBall(this, Float.parseFloat(data[2]),
-                        Float.parseFloat(data[3]), Float.parseFloat(data[4]), Float.parseFloat(data[5]));
+                        Float.parseFloat(data[3]), Float.parseFloat(data[4]), Float.parseFloat(data[5]),true);
                 synchronized (networkFireballs) {
                     networkFireballs.add(f);
                 }

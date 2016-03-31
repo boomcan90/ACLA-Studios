@@ -16,6 +16,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
@@ -39,6 +40,9 @@ public class Enemy extends Sprite{
     private boolean setToDestroy;
     private boolean destroyed;
     private float deathCount;
+    private float weight;
+    private float radius = 8;
+    private float scale = (float) (1.0/20);
 
     //private int charWeight;
     //private int charScore;
@@ -79,7 +83,7 @@ public class Enemy extends Sprite{
 
         FixtureDef fdef = new FixtureDef();
         CircleShape shape = new CircleShape();
-        shape.setRadius(8);
+        shape.setRadius(radius);
         //xSpeed = 0;
         //ySpeed = 0;
 
@@ -140,10 +144,15 @@ public class Enemy extends Sprite{
     public boolean isDestroyed() {
         return destroyed;
     }
-    public void updateEnemy(float x,float y, float angle){
+    public void updateEnemy(float x,float y, float angle,float weight){
         this.x=x;
         this.y=y;
         this.angle = angle;
+        this.weight = weight;
+        Array<Fixture> fix = b2body.getFixtureList();
+        Shape shape = fix.get(0).getShape();
+        shape.setRadius( radius + (this.weight*scale*5));
+        System.out.println(shape.getRadius());
     }
     /*
     public float getySpeed() {

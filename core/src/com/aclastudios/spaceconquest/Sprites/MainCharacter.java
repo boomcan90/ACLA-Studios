@@ -229,7 +229,7 @@ public class MainCharacter extends Sprite {
 
 
         //stop user from collecting resource
-        if(this.charWeight>=10){
+        if(this.charWeight>=20){
             Filter filter = fix.get(0).getFilterData();
             filter.maskBits =  SpaceConquest.OBSTACLE_BIT
                     |SpaceConquest.STATION_BIT
@@ -246,7 +246,7 @@ public class MainCharacter extends Sprite {
 
     public float[] fire(float xSpd, float ySpd){
         float[] s = {b2body.getPosition().x,b2body.getPosition().y};
-        FireBall f = new FireBall(screen, s[0], s[1], xSpd , ySpd);
+        FireBall f = new FireBall(screen, s[0], s[1], xSpd , ySpd,false);
         fireballs.add(f);
         return s;
     }
@@ -279,7 +279,7 @@ public class MainCharacter extends Sprite {
     }
     public void dead(){
         setToDestroy = true;
-
+        this.charWeight = 0;
     }
 
     public boolean isDestroyed() {
