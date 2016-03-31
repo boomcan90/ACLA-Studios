@@ -15,9 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-/**
- * Created by Lakshita on 3/3/2016.
- */
+
 public class MenuScreen implements Screen {
     private Viewport viewport;
     private Stage stage;
@@ -55,13 +53,13 @@ public class MenuScreen implements Screen {
     @Override
     public void render(float delta) {
         if(Gdx.input.justTouched()) {
-            gsm.set(new PlayScreen(game, gsm));
-//            game.playServices.startQuickGame();
-//            game.multiplayerSessionInfo.mState = game.multiplayerSessionInfo.ROOM_WAIT;
-//            gsm.set(new WaitScreen(game, gsm));
-//            dispose();
+//            gsm.set(new PlayScreen(game, gsm));
+            game.playServices.startQuickGame();
+            game.multiplayerSessionInfo.mState = game.multiplayerSessionInfo.ROOM_WAIT;
+            gsm.set(new WaitScreen(game, gsm));
+            dispose();
         } else {
-//            game.playServices.loginGPGS();
+            game.playServices.loginGPGS();
         }
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

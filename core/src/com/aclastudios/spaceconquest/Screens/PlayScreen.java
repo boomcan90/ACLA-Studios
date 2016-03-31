@@ -61,7 +61,7 @@ public class PlayScreen implements Screen {
     private Viewport gamePort;
     private Hud hud;
 
-    private float rateOfFire = (float) 0.1;
+    private float rateOfFire = (float) 0.3;
     private float coolDown;
     private Array<FireBall> networkFireballs;
 
@@ -118,8 +118,8 @@ public class PlayScreen implements Screen {
         atlas = new TextureAtlas("sprite_pack.pack");
         this.game = game;
         this.gsm = gsm;
-//        this.userID = game.multiplayerSessionInfo.mParticipantsId.indexOf(game.multiplayerSessionInfo.mId);
-//        game.multiplayerSessionInfo.mId_num=this.userID;
+        this.userID = game.multiplayerSessionInfo.mParticipantsId.indexOf(game.multiplayerSessionInfo.mId);
+        game.multiplayerSessionInfo.mId_num=this.userID;
                 //Background and Character assets
         texture = new Texture("map.png");
 
@@ -155,8 +155,7 @@ public class PlayScreen implements Screen {
             enemy = new Enemy(world, this, 1);
         }
         mainCharacter.setOriginCenter();
-
-
+        enemy.setOriginCenter();
         resourceManager = new ResourceManager(this);
 
         networkFireballs = new Array<FireBall>();
@@ -224,7 +223,7 @@ public class PlayScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         //Setscreen in androidLauncher
-//        game.playServices.setScreen(this);
+        game.playServices.setScreen(this);
         if (this.userID==0){
             server=new Server(game);
         }
@@ -241,22 +240,23 @@ public class PlayScreen implements Screen {
             coolDown = 0;
             //start of fire ball
             float[] s=mainCharacter.fire(lastX, lastY);
-//            game.playServices.BroadcastMessage("fire:"+userID+":"+s[0]+":"+s[1]+":"+lastX+":"+lastY);
+            game.playServices.BroadcastMessage("fire:"+userID+":"+s[0]+":"+s[1]+":"+lastX+":"+lastY);
             //end of fireball
 
             mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.9),
                     (float) (mainCharacter.b2body.getLinearVelocity().y * -0.9)), mainCharacter.b2body.getWorldCenter(), true);
         }
         else {
-            double speedreduction = Math.pow(0.9, mainCharacter.getCharWeight()*0.5);
+            double speedreduction = Math.pow(0.9, mainCharacter.getCharWeight()*0.2);
             mainCharacter.setScale(mainCharacter.getCharacterScale());
+            enemy.setScale(enemy.getCharacterScale());
+
             if((touchpad.getKnobPercentX()*mainCharacter.b2body.getLinearVelocity().x)<=0){
-//                counterMomentumX = 2;
                 mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.4),0),
                 mainCharacter.b2body.getWorldCenter(), true);
             }
+
             if((touchpad.getKnobPercentY()*mainCharacter.b2body.getLinearVelocity().y)<=0){
-//                counterMomentumY = 2;
                 mainCharacter.b2body.applyLinearImpulse(new Vector2(0,(float) (mainCharacter.b2body.getLinearVelocity().y * -0.4)),
                         mainCharacter.b2body.getWorldCenter(), true);
             }
@@ -264,7 +264,6 @@ public class PlayScreen implements Screen {
             mainCharacter.setySpeed((float) (touchpad.getKnobPercentY() * speedreduction ));
             mainCharacter.b2body.applyLinearImpulse(new Vector2(mainCharacter.getxSpeed(), mainCharacter.getySpeed()), mainCharacter.b2body.getWorldCenter(), true);
         }
-        //System.out.println("last x is " + lastX + " last y is " + lastY);
         currentAngle = getAngle(mainCharacter);
         mainCharacter.setRotation(currentAngle);
     }
@@ -278,10 +277,9 @@ public class PlayScreen implements Screen {
 
         //hud timer
         hud.update(dt);
-
+        Hud.updateknapscore(mainCharacter.getCharWeight());
         //stopping the character
         slowDownCharacter();
-        //System.out.println("x speed is " + mainCharacter.b2body.getLinearVelocity().x + "touch pad " + touchpad.isTouched());
         //sprites
         mainCharacter.update(dt);
         enemy.update(dt);
@@ -290,6 +288,7 @@ public class PlayScreen implements Screen {
                     Float.parseFloat(positionvalues[2]),
                     Float.parseFloat(positionvalues[3]),
                     Float.parseFloat(positionvalues[5]));
+            enemy.setRotation(Float.parseFloat(positionvalues[3]));
             if (positionvalues[4].equals("false")) {
                 enemy.dead();
             }
@@ -491,6 +490,7 @@ public class PlayScreen implements Screen {
         try {
             String message = new String (Arrays.copyOfRange(bytes, 0, bytes.length),"UTF-8");
             String[] data = message.split(":");
+
             if (data[0].equals("0") || data[0].equals("1")){
                 positionvalues = data.clone();
             } else {

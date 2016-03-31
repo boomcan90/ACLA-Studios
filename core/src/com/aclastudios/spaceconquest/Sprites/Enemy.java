@@ -50,21 +50,23 @@ public class Enemy extends Sprite{
     private float y_value;
     private float last_x_coord;
     private float weight;
-    private float radius = 8;
-    private float scale = (float) (1.0/20);
+    private float radius = 13;
+    private float scale = (float) (1.0/10);
 
     //private int charWeight;
     //private int charScore;
     public Enemy(World world, PlayScreen screen,int ID){
-        super(screen.getAtlas().findRegion("PYRO"));
+        super(screen.getAtlas().findRegion("KID"));
         this.world = world;
         this.enemyID = ID;
         map =screen.getMap();
         defineCharacter();
-        //character = new TextureRegion(getTexture(),338,26,16,24);
-        character = new TextureRegion(getTexture(), getRegionX() + 195, getRegionY(), 200, 200);
-        //setBounds(0, 0, 16, 24);
-        setBounds(0, 0, 16, 16);
+//        character = new TextureRegion(getTexture(),338,26,16,24);
+//        character = new TextureRegion(getTexture(), getRegionX() + 195, getRegionY(), 200, 200);
+//        //setBounds(0, 0, 16, 24);
+//        setBounds(0, 0, 25, 25);
+        character = new TextureRegion(getTexture(), getRegionX() + 190, getRegionY(), 170, 190);
+        setBounds(0, 0, 25, 25);
         setRegion(character);
         stateTime = 0;
         setToDestroy = false;
@@ -78,12 +80,11 @@ public class Enemy extends Sprite{
         frames.add(new TextureRegion(getTexture(), getRegionX(), getRegionY(), 168, 190));
         frames.add(new TextureRegion(getTexture(), getRegionX() + 195 , getRegionY(), 168, 190));
         frames.add(new TextureRegion(getTexture(), getRegionX() + 195*2, getRegionY(), 168, 190));
-        frames.add(new TextureRegion(getTexture(), getRegionX() + 195*3, getRegionY(), 168, 190));
+        frames.add(new TextureRegion(getTexture(), getRegionX() + 195 * 3, getRegionY(), 168, 190));
         running =new Animation(0.2f, frames);
 
         defineCharacter();
-        character = new TextureRegion(getTexture(), getRegionX() + 190, getRegionY(), 170, 190);
-        setBounds(0, 0, 16, 16);
+
     }
 
     public void defineCharacter(){
@@ -152,7 +153,10 @@ public class Enemy extends Sprite{
             setRegion(getFrame(dt));
         }
     }
+    public float getCharacterScale() {
 
+        return ((float)1+ (weight*scale));
+    }
     public TextureRegion getFrame(float dt){
         currentState = getState();
 
@@ -172,8 +176,8 @@ public class Enemy extends Sprite{
     }
 
     public State getState(){
-//        System.out.println("X: " + b2body.getLinearVelocity().x);
-//        System.out.println("Y: " + b2body.getLinearVelocity().y);
+        System.out.println("Enemy X: " + b2body.getLinearVelocity().x);
+        System.out.println("Enemy Y: " + b2body.getLinearVelocity().y);
         if (b2body.getLinearVelocity().x > 5 || b2body.getLinearVelocity().x < -5 || b2body.getLinearVelocity().y > 5 || b2body.getLinearVelocity().y < -5) {
             return State.RUNNING;
         } else {
