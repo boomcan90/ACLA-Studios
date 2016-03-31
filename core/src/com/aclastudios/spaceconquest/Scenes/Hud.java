@@ -173,15 +173,20 @@ public class Hud implements Disposable {
     }
     public static void updatescore(int redScore, int blueScore){
         BlueScore=blueScore;
-        BlueScoreLabel.setText(String.format("%06d", BlueScore));
         RedScore=redScore;
-        RedScoreLabel.setText(String.format("%06d", RedScore));
+        BlueScoreLabel.setText(String.format("%03d | %03d", RedScore, BlueScore));
+//        RedScoreLabel.setText(String.format("%06d", RedScore));
     }
 
 
     @Override
     public void dispose() {
         stage.dispose();
+    }
+
+    public static void updateknapscore(int inp) {
+        teamKnapsack = inp;
+
     }
 
     public boolean isTimeUp() { return timeUp; }

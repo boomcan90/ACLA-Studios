@@ -32,12 +32,12 @@ public class MainCharacter extends Sprite {
     protected Fixture fixture;
     private TextureRegion character;
     private int charWeight = 0;
-    private float radius = 8;
+    private float radius = 13;
     private int charScore;
 
     private Array<FireBall> fireballs;
 
-    private float scale = (float) (1.0/20);
+    private float scale = (float) (1.0/10);
     private float stateTime;
     private boolean setToDestroy;
     private boolean destroyed;
@@ -79,7 +79,7 @@ public class MainCharacter extends Sprite {
 
         defineCharacter();
         character = new TextureRegion(getTexture(), getRegionX() + 190, getRegionY(), 170, 190);
-        setBounds(0, 0, 16, 16);
+        setBounds(0, 0, 25, 25);
         setRegion(character);
         fireballs = new Array<FireBall>();
 
