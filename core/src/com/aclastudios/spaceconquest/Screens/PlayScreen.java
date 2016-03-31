@@ -49,14 +49,19 @@ import org.w3c.dom.Text;
 
 import java.util.Arrays;
 
-
+/*
+**********************************declare number of players, first 3 players are team 1,
+ */
 public class PlayScreen implements Screen {
 
     private int userID;
+
+
+    private int numOfPlayers = 2;
+
     private SpaceConquest game;
     private TextureAtlas atlas;
     Texture texture;
-    Texture spaceman;
     private OrthographicCamera gamecam;
     private Viewport gamePort;
     private Hud hud;
@@ -84,7 +89,6 @@ public class PlayScreen implements Screen {
     //Touchpad
     private OrthographicCamera camera;
     private Stage stage;
-    private Stage stage2;
 
     private BitmapFont font;
     private TextureAtlas buttonsAtlas; //** image of buttons **//
@@ -122,8 +126,6 @@ public class PlayScreen implements Screen {
         game.multiplayerSessionInfo.mId_num=this.userID;
                 //Background and Character assets
         texture = new Texture("map.png");
-
-        spaceman = new Texture("astronaut.png");
 
         //Game map and Game View
         //camera of the map
@@ -192,9 +194,9 @@ public class PlayScreen implements Screen {
         touchpadStyle.background = touchBackground;
         touchpadStyle.knob = touchKnob;
         //Create new TouchPad with the created style
-        touchpad = new Touchpad(10, touchpadStyle);
+        touchpad = new Touchpad(30, touchpadStyle);
         //setBounds(x,y,width,height)
-        touchpad.setBounds(15, 15, 50, 50);
+        touchpad.setBounds(15, 15, 70, 70);
 
         buttonsAtlas = new TextureAtlas("button/button.pack");
         buttonSkin = new Skin(buttonsAtlas);
@@ -248,8 +250,8 @@ public class PlayScreen implements Screen {
         }
         else {
             double speedreduction = Math.pow(0.9, mainCharacter.getCharWeight()*0.2);
-            mainCharacter.setScale(mainCharacter.getCharacterScale());
-            enemy.setScale(enemy.getCharacterScale());
+//            mainCharacter.setScale(mainCharacter.getCharacterScale());
+//            enemy.setScale(enemy.getCharacterScale());
 
             if((touchpad.getKnobPercentX()*mainCharacter.b2body.getLinearVelocity().x)<=0){
                 mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.4),0),
@@ -288,7 +290,7 @@ public class PlayScreen implements Screen {
                     Float.parseFloat(positionvalues[2]),
                     Float.parseFloat(positionvalues[3]),
                     Float.parseFloat(positionvalues[5]));
-            enemy.setRotation(Float.parseFloat(positionvalues[3]));
+//            enemy.setRotation(Float.parseFloat(positionvalues[3]));
             if (positionvalues[4].equals("false")) {
                 enemy.dead();
             }
@@ -360,7 +362,6 @@ public class PlayScreen implements Screen {
             game.batch.setProjectionMatrix(gamecam.combined);
             game.batch.begin(); //opens the "box"
             game.batch.draw(texture, 0, 0, texture.getWidth() * SpaceConquest.MAP_SCALE, texture.getHeight() * SpaceConquest.MAP_SCALE);
-            //game.batch.draw(spaceman, gamecam.position.x - 20, gamecam.position.y - 20, 50, 50);
 
             mainCharacter.draw(game.batch);
             enemy.draw(game.batch);
@@ -523,6 +524,9 @@ public class PlayScreen implements Screen {
     }
 
 
+    public int getNumOfPlayers() {
+        return numOfPlayers;
+    }
     public int getUserID() {
         return userID;
     }

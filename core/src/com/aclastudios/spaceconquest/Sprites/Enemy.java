@@ -31,6 +31,7 @@ public class Enemy extends Sprite{
     private float angle;
     private int enemyID;
     public World world;
+    private PlayScreen screen;
     TiledMap map;
     public Body b2body;
     protected Fixture fixture;
@@ -46,9 +47,6 @@ public class Enemy extends Sprite{
     private State previousState;
     private Animation running;
     private float stateTimer;
-    private float x_value;
-    private float y_value;
-    private float last_x_coord;
     private float weight;
     private float radius = 13;
     private float scale = (float) (1.0/10);
@@ -57,6 +55,7 @@ public class Enemy extends Sprite{
     //private int charScore;
     public Enemy(World world, PlayScreen screen,int ID){
         super(screen.getAtlas().findRegion("KID"));
+        this.screen = screen;
         this.world = world;
         this.enemyID = ID;
         map =screen.getMap();
@@ -105,8 +104,6 @@ public class Enemy extends Sprite{
         FixtureDef fdef = new FixtureDef();
         CircleShape shape = new CircleShape();
         shape.setRadius(radius);
-        //xSpeed = 0;
-        //ySpeed = 0;
 
         //Collision Bit
         fdef.filter.categoryBits = SpaceConquest.CHARACTER_BIT; //what category is this fixture
@@ -147,6 +144,7 @@ public class Enemy extends Sprite{
                 defineCharacter();
             //}
         }else {
+            setScale(getCharacterScale());
             b2body.setTransform(this.x, this.y,angle);
             setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
             //System.out.println("My weight is " + charWeight);
@@ -204,8 +202,9 @@ public class Enemy extends Sprite{
         this.weight = weight;
         Array<Fixture> fix = b2body.getFixtureList();
         Shape shape = fix.get(0).getShape();
-        shape.setRadius( radius + (this.weight*scale*5));
+        shape.setRadius( radius + (this.weight*scale*7));
         System.out.println(shape.getRadius());
+        setRotation(angle);
     }
     /*
     public float getySpeed() {
