@@ -15,9 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-/**
- * Created by Lakshita on 3/3/2016.
- */
+
 public class MenuScreen implements Screen {
     private Viewport viewport;
     private Stage stage;

@@ -1,5 +1,7 @@
 package com.aclastudios.spaceconquest.Screens;
 
+
+
 import com.aclastudios.spaceconquest.Scenes.Hud;
 import com.aclastudios.spaceconquest.SpaceConquest;
 import com.aclastudios.spaceconquest.Sprites.Enemy;
@@ -15,7 +17,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -26,6 +30,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -33,9 +39,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
+
+import org.w3c.dom.Text;
 
 import java.util.Arrays;
 
@@ -51,7 +61,7 @@ public class PlayScreen implements Screen {
     private Viewport gamePort;
     private Hud hud;
 
-    private float rateOfFire = (float) 0.1;
+    private float rateOfFire = (float) 0.3;
     private float coolDown;
     private Array<FireBall> networkFireballs;
 
@@ -80,7 +90,7 @@ public class PlayScreen implements Screen {
     private TextureAtlas buttonsAtlas; //** image of buttons **//
     private Skin buttonSkin; //** images are used as skins of the button **//
     private Table table;
-    private TextButton button;
+    private ImageButton button;
     private Label heading;
 
     private Touchpad touchpad;
@@ -100,9 +110,12 @@ public class PlayScreen implements Screen {
     //Server
     Server server;
 
+    private Texture red;
+    private Texture orange;
+
     public PlayScreen(SpaceConquest game, GameScreenManager gsm){
         // atlas = new TextureAtlas("Mario_and_Enemies.pack");
-        atlas = new TextureAtlas("textures.atlas");
+        atlas = new TextureAtlas("sprite_pack.pack");
         this.game = game;
         this.gsm = gsm;
         this.userID = game.multiplayerSessionInfo.mParticipantsId.indexOf(game.multiplayerSessionInfo.mId);
@@ -142,8 +155,7 @@ public class PlayScreen implements Screen {
             enemy = new Enemy(world, this, 1);
         }
         mainCharacter.setOriginCenter();
-
-
+        enemy.setOriginCenter();
         resourceManager = new ResourceManager(this);
 
         networkFireballs = new Array<FireBall>();
@@ -196,8 +208,12 @@ public class PlayScreen implements Screen {
         font = new BitmapFont();
         textButtonStyle.font = font;
 
-        button = new TextButton("FIRE", textButtonStyle);
-        button.setBounds(50, 50, 50, 50);
+//        button = new TextButton("FIRE", textButtonStyle);
+        red = new Texture(Gdx.files.internal("button_red.png"));
+        orange = new Texture(Gdx.files.internal("button_orange.png"));
+
+        button = new ImageButton(new TextureRegionDrawable(new TextureRegion(red)), new TextureRegionDrawable(new TextureRegion(orange)));
+        button.setBounds(50,50,50,50);
         //table.add(button);
 
         //Create a Stage and add TouchPad
@@ -231,21 +247,23 @@ public class PlayScreen implements Screen {
                     (float) (mainCharacter.b2body.getLinearVelocity().y * -0.9)), mainCharacter.b2body.getWorldCenter(), true);
         }
         else {
-            double speedreduction = Math.pow(0.9, mainCharacter.getCharWeight()*0.5);
+            double speedreduction = Math.pow(0.9, mainCharacter.getCharWeight()*0.2);
             mainCharacter.setScale(mainCharacter.getCharacterScale());
-            float counterMomentumX = 1;
+            enemy.setScale(enemy.getCharacterScale());
+
             if((touchpad.getKnobPercentX()*mainCharacter.b2body.getLinearVelocity().x)<=0){
-                counterMomentumX = 2;
+                mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.4),0),
+                mainCharacter.b2body.getWorldCenter(), true);
             }
-            float counterMomentumY = 1;
+
             if((touchpad.getKnobPercentY()*mainCharacter.b2body.getLinearVelocity().y)<=0){
-                counterMomentumY = 2;
+                mainCharacter.b2body.applyLinearImpulse(new Vector2(0,(float) (mainCharacter.b2body.getLinearVelocity().y * -0.4)),
+                        mainCharacter.b2body.getWorldCenter(), true);
             }
             mainCharacter.setxSpeed((float) (touchpad.getKnobPercentX() * speedreduction ));
-            mainCharacter.setySpeed((float) (touchpad.getKnobPercentY() * speedreduction));
+            mainCharacter.setySpeed((float) (touchpad.getKnobPercentY() * speedreduction ));
             mainCharacter.b2body.applyLinearImpulse(new Vector2(mainCharacter.getxSpeed(), mainCharacter.getySpeed()), mainCharacter.b2body.getWorldCenter(), true);
         }
-        //System.out.println("last x is " + lastX + " last y is " + lastY);
         currentAngle = getAngle(mainCharacter);
         mainCharacter.setRotation(currentAngle);
     }
@@ -259,10 +277,9 @@ public class PlayScreen implements Screen {
 
         //hud timer
         hud.update(dt);
-
+        Hud.updateknapscore(mainCharacter.getCharWeight());
         //stopping the character
         slowDownCharacter();
-        //System.out.println("x speed is " + mainCharacter.b2body.getLinearVelocity().x + "touch pad " + touchpad.isTouched());
         //sprites
         mainCharacter.update(dt);
         enemy.update(dt);
@@ -271,6 +288,7 @@ public class PlayScreen implements Screen {
                     Float.parseFloat(positionvalues[2]),
                     Float.parseFloat(positionvalues[3]),
                     Float.parseFloat(positionvalues[5]));
+            enemy.setRotation(Float.parseFloat(positionvalues[3]));
             if (positionvalues[4].equals("false")) {
                 enemy.dead();
             }
@@ -304,6 +322,7 @@ public class PlayScreen implements Screen {
             gamecam.position.x = mainCharacter.getLast_xy_coord()[0];
             gamecam.position.y = mainCharacter.getLast_xy_coord()[1];
         }
+
 
         //SendMessage
         try {

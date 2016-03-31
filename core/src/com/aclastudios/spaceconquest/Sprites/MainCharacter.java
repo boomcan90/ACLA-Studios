@@ -32,12 +32,12 @@ public class MainCharacter extends Sprite {
     protected Fixture fixture;
     private TextureRegion character;
     private int charWeight = 0;
-    private float radius = 8;
+    private float radius = 13;
     private int charScore;
 
     private Array<FireBall> fireballs;
 
-    private float scale = (float) (1.0/20);
+    private float scale = (float) (1.0/10);
     private float stateTime;
     private boolean setToDestroy;
     private boolean destroyed;
@@ -70,15 +70,16 @@ public class MainCharacter extends Sprite {
         stateTimer = 0;
 
         Array<TextureRegion> frames = new Array<TextureRegion>();
-        for (int i = 0; i < 4; i++) {
-            frames.add(new TextureRegion(getTexture(), i*195, getRegionY(), 200, 200));
-        }
-
-        running =new Animation(0.1f, frames);
+        // animation for walking
+        frames.add(new TextureRegion(getTexture(), getRegionX() , getRegionY(), 168, 190));
+        frames.add(new TextureRegion(getTexture(), getRegionX() + 195 , getRegionY(), 168, 190));
+        frames.add(new TextureRegion(getTexture(), getRegionX() + 195*2, getRegionY(), 168, 190));
+        frames.add(new TextureRegion(getTexture(), getRegionX() + 195*3, getRegionY(), 168, 190));
+        running =new Animation(0.2f, frames);
 
         defineCharacter();
-        character = new TextureRegion(getTexture(), getRegionX() + 195, getRegionY(), 200, 200);
-        setBounds(0, 0, 16, 16);
+        character = new TextureRegion(getTexture(), getRegionX() + 190, getRegionY(), 170, 190);
+        setBounds(0, 0, 25, 25);
         setRegion(character);
         fireballs = new Array<FireBall>();
 
@@ -180,7 +181,9 @@ public class MainCharacter extends Sprite {
     }
 
     public State getState(){
-        if (b2body.getLinearVelocity().x != 0 || b2body.getLinearVelocity().y != 0) {
+//        System.out.println("X: " + b2body.getLinearVelocity().x);
+//        System.out.println("Y: " + b2body.getLinearVelocity().y);
+        if (b2body.getLinearVelocity().x > 5 || b2body.getLinearVelocity().x < -5 || b2body.getLinearVelocity().y > 5 || b2body.getLinearVelocity().y < -5) {
             return State.RUNNING;
         } else {
             return State.STANDING;
