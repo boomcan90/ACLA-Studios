@@ -44,7 +44,7 @@ public class B2WorldCreator {
             cuerpos.add(world.createBody(bdef));
             cuerpos.get(cuerpos.size - 1).createFixture(shape2, 0);
         }
-        for (MapObject object : map.getLayers().get(4+screen.getUserID()).getObjects().getByType(PolylineMapObject.class)) {
+        for (MapObject object : map.getLayers().get(4+(screen.getUserID()/(screen.getNumOfPlayers()/2))).getObjects().getByType(PolylineMapObject.class)) {
             float vertices[] = ((PolylineMapObject) object).getPolyline()
                     .getTransformedVertices();
             for(int i = 0; i< vertices.length;i++){
@@ -65,7 +65,7 @@ public class B2WorldCreator {
             fdef.filter.maskBits = SpaceConquest.MAIN_CHARACTER_BIT;
             body.createFixture(fdef).setUserData("SpaceStation"); // Add fixture to the body
         }
-        for (MapObject object : map.getLayers().get(2+screen.getUserID()).getObjects().getByType(PolylineMapObject.class)) {
+        for (MapObject object : map.getLayers().get(2+(screen.getUserID()/(screen.getNumOfPlayers()/2))).getObjects().getByType(PolylineMapObject.class)) {
             float vertices[] = ((PolylineMapObject) object).getPolyline()
                     .getTransformedVertices();
             for(int i = 0; i< vertices.length;i++){

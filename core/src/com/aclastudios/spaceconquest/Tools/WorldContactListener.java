@@ -1,9 +1,7 @@
 package com.aclastudios.spaceconquest.Tools;
 
-import com.aclastudios.spaceconquest.Scenes.Hud;
 import com.aclastudios.spaceconquest.Screens.PlayScreen;
 import com.aclastudios.spaceconquest.SpaceConquest;
-import com.aclastudios.spaceconquest.Sprites.Enemy;
 import com.aclastudios.spaceconquest.Sprites.MainCharacter;
 import com.aclastudios.spaceconquest.Sprites.Resource.GunPowder;
 import com.aclastudios.spaceconquest.Sprites.Resource.Iron;

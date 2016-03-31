@@ -4,7 +4,7 @@ package com.aclastudios.spaceconquest.Screens;
 
 import com.aclastudios.spaceconquest.Scenes.Hud;
 import com.aclastudios.spaceconquest.SpaceConquest;
-import com.aclastudios.spaceconquest.Sprites.Enemy;
+import com.aclastudios.spaceconquest.Sprites.SideCharacter;
 import com.aclastudios.spaceconquest.Sprites.MainCharacter;
 import com.aclastudios.spaceconquest.Sprites.ResourceManager;
 import com.aclastudios.spaceconquest.SupportThreads.Server;
@@ -17,7 +17,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
@@ -30,7 +29,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -43,22 +41,22 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-
+/*
+**********************************declare number of players, first 3 players are team 1,
+ */
 public class PlayScreen implements Screen {
 
     private int userID;
+    private String[] spriteName = {"PYRO", "KID"};
+    private int numOfPlayers = 2;
+
     private SpaceConquest game;
     private TextureAtlas atlas;
     Texture texture;
-    Texture spaceman;
     private OrthographicCamera gamecam;
     private Viewport gamePort;
     private Hud hud;
@@ -86,7 +84,6 @@ public class PlayScreen implements Screen {
     //Touchpad
     private OrthographicCamera camera;
     private Stage stage;
-    private Stage stage2;
 
     private BitmapFont font;
     private TextureAtlas buttonsAtlas; //** image of buttons **//
@@ -103,7 +100,7 @@ public class PlayScreen implements Screen {
     private GameScreenManager gsm;
     //Sprites
     private MainCharacter mainCharacter;
-    private HashMap<Integer,Enemy> enemyhashmap;
+    private HashMap<Integer,SideCharacter> enemyhashmap;
     private HashMap<Integer,String[]> positionvalues;
 //    private String[] positionvalues;
     private ResourceManager resourceManager;
@@ -118,6 +115,7 @@ public class PlayScreen implements Screen {
         this.game = game;
         this.gsm = gsm;
         this.userID = game.multiplayerSessionInfo.mParticipantsId.indexOf(game.multiplayerSessionInfo.mId);
+        numOfPlayers =  game.multiplayerSessionInfo.mParticipants.size();
         game.multiplayerSessionInfo.mId_num=this.userID;
         //Background and Character assets
         texture = new Texture("map.png");
@@ -144,12 +142,12 @@ public class PlayScreen implements Screen {
         new B2WorldCreator(this);
 
         //Sprites and Characters
-        enemyhashmap = new HashMap<Integer, Enemy>();
+        enemyhashmap = new HashMap<Integer, SideCharacter>();
         mainCharacter = new MainCharacter(world,this);
-        for (int i = 0; i< game.multiplayerSessionInfo.mParticipants.size();i++) {
+        for (int i = 0; i< numOfPlayers;i++) {
             if (i!=userID) {
-                Enemy enemy = new Enemy(world, this, i);
-                enemyhashmap.put(i,enemy);
+                SideCharacter sideCharacter = new SideCharacter(world, this, i,spriteName[i/(numOfPlayers/2)]);
+                enemyhashmap.put(i, sideCharacter);
             }
         }
         mainCharacter.setOriginCenter();
@@ -191,9 +189,9 @@ public class PlayScreen implements Screen {
         touchpadStyle.background = touchBackground;
         touchpadStyle.knob = touchKnob;
         //Create new TouchPad with the created style
-        touchpad = new Touchpad(10, touchpadStyle);
+        touchpad = new Touchpad(30, touchpadStyle);
         //setBounds(x,y,width,height)
-        touchpad.setBounds(15, 15, 50, 50);
+        touchpad.setBounds(15, 15, 70, 70);
 
         buttonsAtlas = new TextureAtlas("button/button.pack");
         buttonSkin = new Skin(buttonsAtlas);
@@ -281,21 +279,21 @@ public class PlayScreen implements Screen {
         slowDownCharacter();
         //sprites
         mainCharacter.update(dt);
-        //Enemy update
+        //SideCharacter update
         for (int i: enemyhashmap.keySet()){
-            Enemy enemy = enemyhashmap.get(i);
+            SideCharacter sideCharacter = enemyhashmap.get(i);
             if (positionvalues != null) {
                 String[] values = positionvalues.get(i);
-                enemy.updateEnemy(Float.parseFloat(values[1]),
+                sideCharacter.updateEnemy(Float.parseFloat(values[1]),
                         Float.parseFloat(values[2]),
                         Float.parseFloat(values[3]),
                         Float.parseFloat(values[5]));
-//                enemy.setRotation(Float.parseFloat(values[3]));
+//                sideCharacter.setRotation(Float.parseFloat(values[3]));
                 if (values[4].equals("false")) {
-                    enemy.dead();
+                    sideCharacter.dead();
                 }
             }
-            enemy.update(dt);
+            sideCharacter.update(dt);
         }
 
         //check if fireballs is destroyed or not
@@ -363,12 +361,11 @@ public class PlayScreen implements Screen {
             game.batch.setProjectionMatrix(gamecam.combined);
             game.batch.begin(); //opens the "box"
             game.batch.draw(texture, 0, 0, texture.getWidth() * SpaceConquest.MAP_SCALE, texture.getHeight() * SpaceConquest.MAP_SCALE);
-            //game.batch.draw(spaceman, gamecam.position.x - 20, gamecam.position.y - 20, 50, 50);
 
             mainCharacter.draw(game.batch);
-            for (Enemy enemy: enemyhashmap.values()){
-                if (!enemy.isDestroyed()) {
-                    enemy.draw(game.batch);
+            for (SideCharacter sideCharacter : enemyhashmap.values()){
+                if (!sideCharacter.isDestroyed()) {
+                    sideCharacter.draw(game.batch);
                 }
             }
             for (int i = 0; i < resourceManager.getIron_count(); i++)
@@ -526,6 +523,9 @@ public class PlayScreen implements Screen {
     }
 
 
+    public int getNumOfPlayers() {
+        return numOfPlayers;
+    }
     public int getUserID() {
         return userID;
     }
