@@ -247,8 +247,7 @@ public class PlayScreen implements Screen {
         }
         else {
             double speedreduction = Math.pow(0.9, mainCharacter.getCharWeight()*0.2);
-            mainCharacter.setScale(mainCharacter.getCharacterScale());
-
+//            mainCharacter.setScale(mainCharacter.getCharacterScale());
 //            enemy.setScale(enemy.getCharacterScale());
 
             if((touchpad.getKnobPercentX()*mainCharacter.b2body.getLinearVelocity().x)<=0){
