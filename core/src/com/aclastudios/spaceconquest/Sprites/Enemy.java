@@ -82,7 +82,7 @@ public class Enemy extends Sprite{
         frames.add(new TextureRegion(getTexture(), getRegionX() + 195*2, getRegionY(), 168, 190));
         frames.add(new TextureRegion(getTexture(), getRegionX() + 195 * 3, getRegionY(), 168, 190));
         running =new Animation(0.2f, frames);
-
+        setOriginCenter();
         defineCharacter();
 
     }

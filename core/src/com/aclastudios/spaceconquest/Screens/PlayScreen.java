@@ -47,7 +47,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 
 public class PlayScreen implements Screen {
@@ -101,11 +103,9 @@ public class PlayScreen implements Screen {
     private GameScreenManager gsm;
     //Sprites
     private MainCharacter mainCharacter;
-    private Enemy enemy;
-
-
-    private String[] positionvalues;
-
+    private HashMap<Integer,Enemy> enemyhashmap;
+    private HashMap<Integer,String[]> positionvalues;
+//    private String[] positionvalues;
     private ResourceManager resourceManager;
     //Server
     Server server;
@@ -114,17 +114,13 @@ public class PlayScreen implements Screen {
     private Texture orange;
 
     public PlayScreen(SpaceConquest game, GameScreenManager gsm){
-        // atlas = new TextureAtlas("Mario_and_Enemies.pack");
         atlas = new TextureAtlas("sprite_pack.pack");
         this.game = game;
         this.gsm = gsm;
         this.userID = game.multiplayerSessionInfo.mParticipantsId.indexOf(game.multiplayerSessionInfo.mId);
         game.multiplayerSessionInfo.mId_num=this.userID;
-                //Background and Character assets
+        //Background and Character assets
         texture = new Texture("map.png");
-
-        spaceman = new Texture("astronaut.png");
-
         //Game map and Game View
         //camera of the map
         gamecam  = new OrthographicCamera();
@@ -147,22 +143,25 @@ public class PlayScreen implements Screen {
         //B2world
         new B2WorldCreator(this);
 
-        //Sprites
+        //Sprites and Characters
+        enemyhashmap = new HashMap<Integer, Enemy>();
         mainCharacter = new MainCharacter(world,this);
-        if (userID==1) {
-            enemy = new Enemy(world, this, 0);
-        } else {
-            enemy = new Enemy(world, this, 1);
+        for (int i = 0; i< game.multiplayerSessionInfo.mParticipants.size();i++) {
+            if (i!=userID) {
+                Enemy enemy = new Enemy(world, this, i);
+                enemyhashmap.put(i,enemy);
+            }
         }
         mainCharacter.setOriginCenter();
-        enemy.setOriginCenter();
         resourceManager = new ResourceManager(this);
 
+        //Initialize FireBalls Array
         networkFireballs = new Array<FireBall>();
         coolDown = 0;
         lastX = 1;
         lastY = 0;
 
+        //Initialize Spawn Area
         for (MapLayer layer : map.getLayers()) {
             if (layer.getName().matches("resourceSpawningArea")) {
                 Array<RectangleMapObject> mo = layer.getObjects().getByType(RectangleMapObject.class);
@@ -249,7 +248,8 @@ public class PlayScreen implements Screen {
         else {
             double speedreduction = Math.pow(0.9, mainCharacter.getCharWeight()*0.2);
             mainCharacter.setScale(mainCharacter.getCharacterScale());
-            enemy.setScale(enemy.getCharacterScale());
+
+//            enemy.setScale(enemy.getCharacterScale());
 
             if((touchpad.getKnobPercentX()*mainCharacter.b2body.getLinearVelocity().x)<=0){
                 mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.4),0),
@@ -282,18 +282,22 @@ public class PlayScreen implements Screen {
         slowDownCharacter();
         //sprites
         mainCharacter.update(dt);
-        enemy.update(dt);
-        if (positionvalues != null) {
-            enemy.updateEnemy(Float.parseFloat(positionvalues[1]),
-                    Float.parseFloat(positionvalues[2]),
-                    Float.parseFloat(positionvalues[3]),
-                    Float.parseFloat(positionvalues[5]));
-            enemy.setRotation(Float.parseFloat(positionvalues[3]));
-            if (positionvalues[4].equals("false")) {
-                enemy.dead();
+        //Enemy update
+        for (int i: enemyhashmap.keySet()){
+            Enemy enemy = enemyhashmap.get(i);
+            if (positionvalues != null) {
+                String[] values = positionvalues.get(i);
+                enemy.updateEnemy(Float.parseFloat(values[1]),
+                        Float.parseFloat(values[2]),
+                        Float.parseFloat(values[3]),
+                        Float.parseFloat(values[5]));
+//                enemy.setRotation(Float.parseFloat(values[3]));
+                if (values[4].equals("false")) {
+                    enemy.dead();
+                }
             }
+            enemy.update(dt);
         }
-
 
         //check if fireballs is destroyed or not
         synchronized (networkFireballs) {
@@ -363,7 +367,11 @@ public class PlayScreen implements Screen {
             //game.batch.draw(spaceman, gamecam.position.x - 20, gamecam.position.y - 20, 50, 50);
 
             mainCharacter.draw(game.batch);
-            enemy.draw(game.batch);
+            for (Enemy enemy: enemyhashmap.values()){
+                if (!enemy.isDestroyed()) {
+                    enemy.draw(game.batch);
+                }
+            }
             for (int i = 0; i < resourceManager.getIron_count(); i++)
                 resourceManager.getIron_array(i).draw(game.batch);
             for (int i = 0; i < resourceManager.getGunpowder_count(); i++)
@@ -376,9 +384,6 @@ public class PlayScreen implements Screen {
             //render the fireballs over the network
             for (FireBall ball : networkFireballs)
                 ball.draw(game.batch);
-
-            if (!enemy.isDestroyed())
-                enemy.draw(game.batch);
 
             game.batch.end(); //close the "box" and draw it on the screen
 
@@ -491,12 +496,11 @@ public class PlayScreen implements Screen {
             String message = new String (Arrays.copyOfRange(bytes, 0, bytes.length),"UTF-8");
             String[] data = message.split(":");
 
-            if (data[0].equals("0") || data[0].equals("1")){
-                positionvalues = data.clone();
-            } else {
-                System.out.println("Blaaa"+data[0]+":"+data[1]+":"+data[2]);
+            if (data[0].equals("0") || data[0].equals("1") || data[0].equals("2")|| data[0].equals("3")|| data[0].equals("4")|| data[0].equals("5")) {
+                String[] position = data.clone();
+                positionvalues.put(Integer.parseInt(data[0]), position);
             }
-            if (data[0].equals("Serverpoints") && userID==0){
+            else if (data[0].equals("Serverpoints") && userID==0){
                 addscore(data[1], Integer.parseInt(data[2]));
             }
             else if (data[0].equals("UpdateScoreAll")){
