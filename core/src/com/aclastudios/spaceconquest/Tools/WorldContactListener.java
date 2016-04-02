@@ -85,19 +85,11 @@ public class WorldContactListener implements ContactListener {
             case SpaceConquest.FIREBALL_BIT | SpaceConquest.MAIN_CHARACTER_BIT:
                 if(fixA.getFilterData().categoryBits == SpaceConquest.FIREBALL_BIT) {
                     ((FireBall) fixA.getUserData()).setToDestroy();
-                    screen.reduceHP();
-                    if (screen.getplayerHP()<=0){
-                        ((MainCharacter) fixB.getUserData()).dead();
-                        screen.setplayerHP(0);
-                    }
+                    ((MainCharacter) fixB.getUserData()).reduceHP();
                 }
                 else {
                     ((FireBall) fixB.getUserData()).setToDestroy();
-                    screen.reduceHP();
-                    if (screen.getplayerHP()<=0){
-                        ((MainCharacter) fixB.getUserData()).dead();
-                        screen.setplayerHP(0);
-                    }
+                    ((MainCharacter) fixA.getUserData()).reduceHP();
                 }
                 break;
         }

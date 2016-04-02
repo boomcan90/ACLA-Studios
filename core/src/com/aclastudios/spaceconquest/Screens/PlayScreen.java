@@ -93,6 +93,7 @@ public class PlayScreen implements Screen {
     private Skin buttonSkin; //** images are used as skins of the button **//
     private Table table;
     private ImageButton button;
+    private ImageButton jetpack_Button;
     private Label heading;
 
     private Touchpad touchpad;
@@ -106,11 +107,11 @@ public class PlayScreen implements Screen {
     private HashMap<Integer,SideCharacter> enemyhashmap;
     private HashMap<Integer,String[]> positionvalues;
     private ResourceManager resourceManager;
-    private int playerHP = 0;
     //Server
     Server server;
 
     private Texture red;
+    private Texture health;
     private Texture orange;
 
     public PlayScreen(SpaceConquest game, GameScreenManager gsm){
@@ -202,25 +203,21 @@ public class PlayScreen implements Screen {
 
 //        table = new Table(buttonSkin);
 //        table.setBounds(50,50, 50, 50);
-
-        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.up = buttonSkin.getDrawable("touchBackground");
-        textButtonStyle.down = buttonSkin.getDrawable("touchKnob");
-        font = new BitmapFont();
-        textButtonStyle.font = font;
-
-//        button = new TextButton("FIRE", textButtonStyle);
         red = new Texture(Gdx.files.internal("button_red.png"));
         orange = new Texture(Gdx.files.internal("button_orange.png"));
+        health = new Texture(Gdx.files.internal("healthbar.png"));
 
         button = new ImageButton(new TextureRegionDrawable(new TextureRegion(red)), new TextureRegionDrawable(new TextureRegion(orange)));
-        button.setBounds(50,50,50,50);
+        button.setBounds(70,70,40,40);
+        jetpack_Button = new ImageButton(new TextureRegionDrawable(new TextureRegion(orange)), new TextureRegionDrawable(new TextureRegion(red)));
+        jetpack_Button.setBounds(45,45,40,40);
         //table.add(button);
 
         //Create a Stage and add TouchPad
         stage = new Stage(gamePort, game.batch);
         stage.addActor(touchpad);
         stage.addActor(button);
+        stage.addActor(jetpack_Button);
         Gdx.input.setInputProcessor(stage);
 
         //Setscreen in androidLauncher
@@ -237,7 +234,7 @@ public class PlayScreen implements Screen {
 
     public void handleInput(float dt){
         coolDown +=dt;
-        if (button.isPressed() && coolDown >rateOfFire) {
+        if (button.isPressed() && coolDown >rateOfFire && mainCharacter.getAmmunition()!=0) {
             coolDown = 0;
             //start of fire ball
             float[] s=mainCharacter.fire(lastX, lastY);
@@ -248,17 +245,18 @@ public class PlayScreen implements Screen {
                     (float) (mainCharacter.b2body.getLinearVelocity().y * -0.9)), mainCharacter.b2body.getWorldCenter(), true);
         }
         else {
-            double speedreduction = Math.pow(0.9, mainCharacter.getCharWeight()*0.2);
-//            mainCharacter.setScale(mainCharacter.getCharacterScale());
-//            enemy.setScale(enemy.getCharacterScale());
+            double speedreduction = Math.pow(0.9, mainCharacter.getCharWeight()*0.5);
+            if(jetpack_Button.isPressed()&&mainCharacter.exhaustJetPack(dt)){
+                speedreduction = 2;
+            }
 
             if((touchpad.getKnobPercentX()*mainCharacter.b2body.getLinearVelocity().x)<=0){
-                mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.4),0),
+                mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.2),0),
                 mainCharacter.b2body.getWorldCenter(), true);
             }
 
             if((touchpad.getKnobPercentY()*mainCharacter.b2body.getLinearVelocity().y)<=0){
-                mainCharacter.b2body.applyLinearImpulse(new Vector2(0,(float) (mainCharacter.b2body.getLinearVelocity().y * -0.4)),
+                mainCharacter.b2body.applyLinearImpulse(new Vector2(0,(float) (mainCharacter.b2body.getLinearVelocity().y * -0.2)),
                         mainCharacter.b2body.getWorldCenter(), true);
             }
             mainCharacter.setxSpeed((float) (touchpad.getKnobPercentX() * speedreduction ));
@@ -336,14 +334,15 @@ public class PlayScreen implements Screen {
         //SendMessage
         try {
             game.playServices.BroadcastUnreliableMessage(userID + ":" + x + ":" + y + ":" + angle + ":"+
-                    String.valueOf(!mainCharacter.isDestroyed())+":" +mainCharacter.getCharWeight());
+                    String.valueOf(!mainCharacter.isDestroyed())+":" +mainCharacter.getCharWeight()+":"+mainCharacter.getHP());
         }catch (Exception e){}
 
         //gamecam updates
         gamecam.update();
         renderer.setView(gamecam); //render only what the gamecam can see
 
-        button.setPosition(gamecam.position.x+gamePort.getWorldWidth() / 4 +10,gamecam.position.y-gamePort.getWorldHeight()/2+10);
+        button.setPosition(gamecam.position.x+gamePort.getWorldWidth() / 4 + 40,gamecam.position.y-gamePort.getWorldHeight()/2+10);
+        jetpack_Button.setPosition(gamecam.position.x+gamePort.getWorldWidth() / 4 ,gamecam.position.y-gamePort.getWorldHeight()/2+10);
         touchpad.setPosition(gamecam.position.x-gamePort.getWorldWidth() / 2+10,gamecam.position.y-gamePort.getWorldHeight()/2+10);
 
     }
@@ -371,10 +370,29 @@ public class PlayScreen implements Screen {
             game.batch.draw(texture, 0, 0, texture.getWidth() * SpaceConquest.MAP_SCALE, texture.getHeight() * SpaceConquest.MAP_SCALE);
 
             mainCharacter.draw(game.batch);
-            for (SideCharacter sideCharacter : enemyhashmap.values()){
-                if (!sideCharacter.isDestroyed()) {
-                    sideCharacter.draw(game.batch);
-                }
+            //maincharacter healthbay
+            HealthBar healthBar = new HealthBar(new TextureRegion(health),mainCharacter);
+            int hp = mainCharacter.getHP();
+            healthBar.setWidth(hp);
+            healthBar.draw(game.batch,hp);
+
+            //Side Characters
+            for (int i: enemyhashmap.keySet()) {
+                SideCharacter sideCharacter = enemyhashmap.get(i);
+                try {
+                    if (positionvalues != null) {
+                        if (positionvalues.get(i)[6] != null) {
+                            if (!sideCharacter.isDestroyed()) {
+                                sideCharacter.draw(game.batch);
+                                //sideCharacter healthbar
+                                HealthBar SC_healthBar = new HealthBar(new TextureRegion(health), sideCharacter);
+                                int SC_hp = Integer.parseInt(positionvalues.get(i)[6]);
+                                SC_healthBar.setWidth(SC_hp);
+                                SC_healthBar.draw(game.batch, SC_hp);
+                            }
+                        }
+                    }
+                }catch (Exception e){}
             }
             for (int i = 0; i < resourceManager.getIron_count(); i++)
                 resourceManager.getIron_array(i).draw(game.batch);
@@ -388,13 +406,6 @@ public class PlayScreen implements Screen {
             //render the fireballs over the network
             for (FireBall ball : networkFireballs)
                 ball.draw(game.batch);
-
-            //*****************************************************************************************
-//            HealthBar healthBar = new HealthBar(new TextureRegion(red),mainCharacter);
-            HealthBar healthBar = new HealthBar(new TextureRegion(red),mainCharacter);
-            healthBar.setPosition(mainCharacter.getX(),mainCharacter.getY()+10);
-            healthBar.draw(game.batch,100);
-
 
             game.batch.end(); //close the "box" and draw it on the screen
 
@@ -496,6 +507,7 @@ public class PlayScreen implements Screen {
     public void increaseCharWeight(int w){
         mainCharacter.addCharWeight(w);
     }
+
     public int depositResource(){
         int res = mainCharacter.getCharWeight();
         mainCharacter.depositResource();
@@ -543,16 +555,6 @@ public class PlayScreen implements Screen {
     }
     public int getUserID() {
         return userID;
-    }
-
-    public void reduceHP(){
-        playerHP--;
-    }
-    public void setplayerHP(int hp){
-        playerHP = hp;
-    }
-    public int getplayerHP(){
-        return playerHP;
     }
 
 }

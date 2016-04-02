@@ -34,6 +34,7 @@ public class MainCharacter extends Sprite {
     private int charWeight = 0;
     private float radius = 13;
     private int charScore;
+    private int playerHP = 20;
 
     private Array<FireBall> fireballs;
 
@@ -59,6 +60,17 @@ public class MainCharacter extends Sprite {
     //last known position of main character
     private float last_x_coord;
     private float last_y_coord;
+
+    //resource and asset
+    private int iron_count = 0;
+    private int oil_count = 0;
+    private int gun_powder_count = 0;
+    private int iron_storage = 0;
+    private int oil_storage = 0;
+    private int gun_powder_storage = 0;
+
+    private int ammunition = 100;
+    private float jetpack_time = 0;
 
     public MainCharacter(World world,PlayScreen screen){
         super(screen.getAtlas().findRegion("PYRO"));
@@ -234,13 +246,10 @@ public class MainCharacter extends Sprite {
 
 
         //stop user from collecting resource
-        if(this.charWeight>=20){
+        if(this.charWeight>=15){
             Filter filter = fix.get(0).getFilterData();
             filter.maskBits =  SpaceConquest.OBSTACLE_BIT
                     |SpaceConquest.FIREBALL_BIT
-                    |SpaceConquest.IRON_BIT
-                    |SpaceConquest.GUNPOWDER_BIT
-                    |SpaceConquest.OIL_BIT
                     |SpaceConquest.STATION_BIT
                     |SpaceConquest.ENEMY_STATION_BIT
                     |SpaceConquest.CHARACTER_BIT;
@@ -254,6 +263,7 @@ public class MainCharacter extends Sprite {
     }
 
     public float[] fire(float xSpd, float ySpd){
+        ammunition-=1;
         float[] s = {b2body.getPosition().x,b2body.getPosition().y};
         FireBall f = new FireBall(screen, s[0], s[1], xSpd , ySpd,false);
         fireballs.add(f);
@@ -267,6 +277,18 @@ public class MainCharacter extends Sprite {
 
     public void depositResource() {
         charWeight = 0;
+
+        //storing the resource and converting them into valued item
+        iron_storage+=iron_count;
+        gun_powder_storage+=gun_powder_count;
+        oil_storage+=oil_count;
+        ammunition += ((iron_storage>=gun_powder_storage)?gun_powder_storage:iron_storage)*5;
+        jetpack_time += oil_storage;
+        //destroying the exhausted resource
+        oil_storage=0;
+        iron_storage -= (iron_storage>=gun_powder_storage)?gun_powder_storage:iron_storage;
+        gun_powder_storage -=(iron_storage>=gun_powder_storage)?gun_powder_storage:iron_storage;
+
         Array<Fixture> fix = b2body.getFixtureList();
         Shape shape = fix.get(0).getShape();
         shape.setRadius(radius);
@@ -277,6 +299,7 @@ public class MainCharacter extends Sprite {
                 |SpaceConquest.GUNPOWDER_BIT
                 |SpaceConquest.OIL_BIT
                 |SpaceConquest.STATION_BIT
+                |SpaceConquest.ENEMY_STATION_BIT
                 |SpaceConquest.CHARACTER_BIT
                 |SpaceConquest.FIREBALL_BIT;
         fix.get(0).setFilterData(filter);
@@ -310,4 +333,39 @@ public class MainCharacter extends Sprite {
     public float getY_value(){
         return y_value;
     }
+
+    public void addOil_count() {
+        this.oil_count++;
+    }
+
+    public void addIron_count() {
+        this.iron_count++;
+    }
+
+    public void addGun_powder_count() {
+        this.gun_powder_count++;
+    }
+
+    public int getAmmunition() {
+        return ammunition;
+    }
+
+    public boolean exhaustJetPack(float dt){
+        if(jetpack_time>0.05) {
+            jetpack_time -= dt;
+            return true;
+        }
+        return false;
+    }
+    public void reduceHP(){
+        playerHP=playerHP-4;
+        if (playerHP<=0){
+            dead();
+            playerHP=20;
+        }
+    }
+    public int getHP(){
+        return playerHP;
+    }
 }
+
