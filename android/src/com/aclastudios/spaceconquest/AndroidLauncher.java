@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.WindowManager;
 
 import com.aclastudios.spaceconquest.PlayGameService.MultiplayerSessionInfo;
 import com.aclastudios.spaceconquest.PlayGameService.PlayServices;
@@ -213,7 +214,6 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 			//Set multiplayer flag to be true so that game screen will choose to create multiplayer world instead
 			final int MIN_OPPONENTS = 1, MAX_OPPONENTS = 1;
 			Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(MIN_OPPONENTS,MAX_OPPONENTS, 0);
-
 			RoomConfig.Builder rtmConfigBuilder = RoomConfig.builder(mGooglePlayListeners);
 			rtmConfigBuilder.setMessageReceivedListener(this);
 			rtmConfigBuilder.setRoomStatusUpdateListener(mGooglePlayListeners);

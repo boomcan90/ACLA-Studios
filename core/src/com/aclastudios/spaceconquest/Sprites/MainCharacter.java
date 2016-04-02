@@ -95,7 +95,7 @@ public class MainCharacter extends Sprite {
         BodyDef bdef = new BodyDef();
         //Array<RectangleMapObject> object = map.getLayers().get(7).getObjects().getByType(RectangleMapObject.class);
         for (MapLayer layer : map.getLayers()) {
-            if (layer.getName().matches(area[screen.getUserID()/screen.getNumOfPlayers()])) {
+            if (layer.getName().matches(area[screen.getUserID()/(screen.getNumOfPlayers()/2)])) {
                 Array<RectangleMapObject> mo = layer.getObjects().getByType(RectangleMapObject.class);
                 Rectangle rect = mo.get(screen.getUserID()%3).getRectangle();
                 last_x_coord = rect.getX()*SpaceConquest.MAP_SCALE;
@@ -237,10 +237,13 @@ public class MainCharacter extends Sprite {
         if(this.charWeight>=20){
             Filter filter = fix.get(0).getFilterData();
             filter.maskBits =  SpaceConquest.OBSTACLE_BIT
+                    |SpaceConquest.FIREBALL_BIT
+                    |SpaceConquest.IRON_BIT
+                    |SpaceConquest.GUNPOWDER_BIT
+                    |SpaceConquest.OIL_BIT
                     |SpaceConquest.STATION_BIT
                     |SpaceConquest.ENEMY_STATION_BIT
-                    |SpaceConquest.CHARACTER_BIT
-                    |SpaceConquest.FIREBALL_BIT;
+                    |SpaceConquest.CHARACTER_BIT;
             fix.get(0).setFilterData(filter);
         }
         setScale(getCharacterScale());
