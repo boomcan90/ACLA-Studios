@@ -9,6 +9,7 @@ import com.aclastudios.spaceconquest.Sprites.MainCharacter;
 import com.aclastudios.spaceconquest.Sprites.ResourceManager;
 import com.aclastudios.spaceconquest.SupportThreads.Server;
 import com.aclastudios.spaceconquest.Tools.B2WorldCreator;
+import com.aclastudios.spaceconquest.Tools.HealthBar;
 import com.aclastudios.spaceconquest.Tools.WorldContactListener;
 import com.aclastudios.spaceconquest.Weapons.FireBall;
 import com.badlogic.gdx.Gdx;
@@ -17,6 +18,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
@@ -29,6 +31,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -108,6 +111,7 @@ public class PlayScreen implements Screen {
     Server server;
 
     private Texture red;
+    private Texture health;
     private Texture orange;
 
     public PlayScreen(SpaceConquest game, GameScreenManager gsm){
@@ -201,6 +205,7 @@ public class PlayScreen implements Screen {
 //        table.setBounds(50,50, 50, 50);
         red = new Texture(Gdx.files.internal("button_red.png"));
         orange = new Texture(Gdx.files.internal("button_orange.png"));
+        health = new Texture(Gdx.files.internal("healthbar.png"));
 
         button = new ImageButton(new TextureRegionDrawable(new TextureRegion(red)), new TextureRegionDrawable(new TextureRegion(orange)));
         button.setBounds(70,70,40,40);
@@ -329,7 +334,7 @@ public class PlayScreen implements Screen {
         //SendMessage
         try {
             game.playServices.BroadcastUnreliableMessage(userID + ":" + x + ":" + y + ":" + angle + ":"+
-                    String.valueOf(!mainCharacter.isDestroyed())+":" +mainCharacter.getCharWeight());
+                    String.valueOf(!mainCharacter.isDestroyed())+":" +mainCharacter.getCharWeight()+":"+mainCharacter.getHP());
         }catch (Exception e){}
 
         //gamecam updates
@@ -365,10 +370,29 @@ public class PlayScreen implements Screen {
             game.batch.draw(texture, 0, 0, texture.getWidth() * SpaceConquest.MAP_SCALE, texture.getHeight() * SpaceConquest.MAP_SCALE);
 
             mainCharacter.draw(game.batch);
-            for (SideCharacter sideCharacter : enemyhashmap.values()){
-                if (!sideCharacter.isDestroyed()) {
-                    sideCharacter.draw(game.batch);
-                }
+            //maincharacter healthbay
+            HealthBar healthBar = new HealthBar(new TextureRegion(health),mainCharacter);
+            int hp = mainCharacter.getHP();
+            healthBar.setWidth(hp);
+            healthBar.draw(game.batch,hp);
+
+            //Side Characters
+            for (int i: enemyhashmap.keySet()) {
+                SideCharacter sideCharacter = enemyhashmap.get(i);
+                try {
+                    if (positionvalues != null) {
+                        if (positionvalues.get(i)[6] != null) {
+                            if (!sideCharacter.isDestroyed()) {
+                                sideCharacter.draw(game.batch);
+                                //sideCharacter healthbar
+                                HealthBar SC_healthBar = new HealthBar(new TextureRegion(health), sideCharacter);
+                                int SC_hp = Integer.parseInt(positionvalues.get(i)[6]);
+                                SC_healthBar.setWidth(SC_hp);
+                                SC_healthBar.draw(game.batch, SC_hp);
+                            }
+                        }
+                    }
+                }catch (Exception e){}
             }
             for (int i = 0; i < resourceManager.getIron_count(); i++)
                 resourceManager.getIron_array(i).draw(game.batch);

@@ -34,6 +34,7 @@ public class MainCharacter extends Sprite {
     private int charWeight = 0;
     private float radius = 13;
     private int charScore;
+    private int playerHP = 20;
 
     private Array<FireBall> fireballs;
 
@@ -68,7 +69,7 @@ public class MainCharacter extends Sprite {
     private int oil_storage = 0;
     private int gun_powder_storage = 0;
 
-    private int ammunition = 0;
+    private int ammunition = 100;
     private float jetpack_time = 0;
 
     public MainCharacter(World world,PlayScreen screen){
@@ -356,4 +357,15 @@ public class MainCharacter extends Sprite {
         }
         return false;
     }
+    public void reduceHP(){
+        playerHP=playerHP-4;
+        if (playerHP<=0){
+            dead();
+            playerHP=20;
+        }
+    }
+    public int getHP(){
+        return playerHP;
+    }
 }
+

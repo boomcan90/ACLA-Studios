@@ -30,37 +30,28 @@ public class WorldContactListener implements ContactListener {
 
         switch (cDef){
             case SpaceConquest.MAIN_CHARACTER_BIT | SpaceConquest.IRON_BIT:
-                if(fixA.getFilterData().categoryBits == SpaceConquest.IRON_BIT) {
-                    ((Iron) fixA.getUserData()).use((MainCharacter) fixB.getUserData());
-                    ((MainCharacter) fixB.getUserData()).addIron_count();
-                }
-                else {
-                    ((Iron) fixB.getUserData()).use((MainCharacter) fixA.getUserData());
-                    ((MainCharacter) fixA.getUserData()).addIron_count();
-                }
-                screen.increaseCharWeight(1);
+                if(fixA.getFilterData().categoryBits == SpaceConquest.IRON_BIT)
+                    ((Iron)fixA.getUserData()).use((MainCharacter) fixB.getUserData());
+                else
+                    ((Iron)fixB.getUserData()).use((MainCharacter) fixA.getUserData());
+                //Hud.addScore(1);
+                screen.increaseCharWeight(2);
                 break;
             case SpaceConquest.MAIN_CHARACTER_BIT | SpaceConquest.GUNPOWDER_BIT:
-                if(fixA.getFilterData().categoryBits == SpaceConquest.GUNPOWDER_BIT) {
-                    ((GunPowder) fixA.getUserData()).use((MainCharacter) fixB.getUserData());
-                    ((MainCharacter) fixB.getUserData()).addGun_powder_count();
-                }
-                else {
-                    ((GunPowder) fixB.getUserData()).use((MainCharacter) fixA.getUserData());
-                    ((MainCharacter) fixA.getUserData()).addGun_powder_count();
-                }
-                screen.increaseCharWeight(1);
+                if(fixA.getFilterData().categoryBits == SpaceConquest.GUNPOWDER_BIT)
+                    ((GunPowder)fixA.getUserData()).use((MainCharacter) fixB.getUserData());
+                else
+                    ((GunPowder)fixB.getUserData()).use((MainCharacter) fixA.getUserData());
+                //Hud.addScore(1);
+                screen.increaseCharWeight(2);
                 break;
             case SpaceConquest.MAIN_CHARACTER_BIT | SpaceConquest.OIL_BIT:
-                if(fixA.getFilterData().categoryBits == SpaceConquest.OIL_BIT) {
-                    ((Oil) fixA.getUserData()).use((MainCharacter) fixB.getUserData());
-                    ((MainCharacter) fixB.getUserData()).addOil_count();
-                }
-                else {
-                    ((Oil) fixB.getUserData()).use((MainCharacter) fixA.getUserData());
-                    ((MainCharacter) fixA.getUserData()).addOil_count();
-                }
-                screen.increaseCharWeight(1);
+                if(fixA.getFilterData().categoryBits == SpaceConquest.OIL_BIT)
+                    ((Oil)fixA.getUserData()).use((MainCharacter) fixB.getUserData());
+                else
+                    ((Oil)fixB.getUserData()).use((MainCharacter) fixA.getUserData());
+                //Hud.addScore(1);
+                screen.increaseCharWeight(2);
                 break;
             case SpaceConquest.MAIN_CHARACTER_BIT |SpaceConquest.STATION_BIT:
                 System.out.println("inside station");
@@ -71,34 +62,34 @@ public class WorldContactListener implements ContactListener {
                     screen.addscore("0",score);
                 }
                 break;
+//            case SpaceConquest.OBJECT_BIT| SpaceConquest.IRON_BIT:
+//                if(fixA.getFilterData().categoryBits == SpaceConquest.IRON_BIT)
+//                    ((Iron)fixA.getUserData()).use((MainCharacter) fixB.getUserData());
+//                else
+//                    ((Iron)fixB.getUserData()).use((MainCharacter) fixA.getUserData());
+//                break;
             case SpaceConquest.FIREBALL_BIT | SpaceConquest.OBSTACLE_BIT:
                 if(fixA.getFilterData().categoryBits == SpaceConquest.FIREBALL_BIT)
                     ((FireBall)fixA.getUserData()).setToDestroy();
                 else
                     ((FireBall)fixB.getUserData()).setToDestroy();
                 break;
-//            case SpaceConquest.FIREBALL_BIT | SpaceConquest.CHARACTER_BIT:
-//                if(fixA.getFilterData().categoryBits == SpaceConquest.FIREBALL_BIT) {
-//                    ((FireBall) fixA.getUserData()).setToDestroy();
-//                }
-//                else {
-//                    ((FireBall) fixB.getUserData()).setToDestroy();
-//                }
-//                break;
-            case SpaceConquest.FIREBALL_BIT | SpaceConquest.MAIN_CHARACTER_BIT:
+            case SpaceConquest.FIREBALL_BIT | SpaceConquest.CHARACTER_BIT:
                 if(fixA.getFilterData().categoryBits == SpaceConquest.FIREBALL_BIT) {
                     ((FireBall) fixA.getUserData()).setToDestroy();
-                    ((MainCharacter) fixB.getUserData()).dead();
                 }
                 else {
                     ((FireBall) fixB.getUserData()).setToDestroy();
-                    ((MainCharacter) fixA.getUserData()).dead();
                 }
-                //if you die, your enemy gains 50 points
-                if (game.multiplayerSessionInfo.mId_num!=0) {
-                    game.playServices.MessagetoServer("Serverpoints:" + ((screen.getUserID() + (screen.getNumOfPlayers()/2)) / screen.getNumOfPlayers()) + ":" + 50);
-                } else {
-                    screen.addscore(Integer.toString((screen.getUserID() + 3) / 3), 50);
+                break;
+            case SpaceConquest.FIREBALL_BIT | SpaceConquest.MAIN_CHARACTER_BIT:
+                if(fixA.getFilterData().categoryBits == SpaceConquest.FIREBALL_BIT) {
+                    ((FireBall) fixA.getUserData()).setToDestroy();
+                    ((MainCharacter) fixB.getUserData()).reduceHP();
+                }
+                else {
+                    ((FireBall) fixB.getUserData()).setToDestroy();
+                    ((MainCharacter) fixA.getUserData()).reduceHP();
                 }
                 break;
         }
