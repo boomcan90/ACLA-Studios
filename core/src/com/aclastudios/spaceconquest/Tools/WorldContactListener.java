@@ -1,5 +1,6 @@
 package com.aclastudios.spaceconquest.Tools;
 
+import com.aclastudios.spaceconquest.Scenes.Hud;
 import com.aclastudios.spaceconquest.Screens.PlayScreen;
 import com.aclastudios.spaceconquest.SpaceConquest;
 import com.aclastudios.spaceconquest.Sprites.MainCharacter;
@@ -27,40 +28,52 @@ public class WorldContactListener implements ContactListener {
         Fixture fixB = contact.getFixtureB();
 
         int cDef = fixA.getFilterData().categoryBits | fixB.getFilterData().categoryBits;
-
+        int[] forHud;
         switch (cDef){
             case SpaceConquest.MAIN_CHARACTER_BIT | SpaceConquest.IRON_BIT:
+                screen.increaseCharWeight(1);
                 if(fixA.getFilterData().categoryBits == SpaceConquest.IRON_BIT) {
                     ((Iron) fixA.getUserData()).use((MainCharacter) fixB.getUserData());
                     ((MainCharacter) fixB.getUserData()).addIron_count();
+                    forHud = ((MainCharacter) fixB.getUserData()).getKnapsackInfo();
                 }
                 else {
                     ((Iron) fixB.getUserData()).use((MainCharacter) fixA.getUserData());
                     ((MainCharacter) fixA.getUserData()).addIron_count();
+                    forHud = ((MainCharacter) fixA.getUserData()).getKnapsackInfo();
                 }
-                screen.increaseCharWeight(1);
+                //Hud.addScore(1);
+                Hud.updateknapscore(forHud[0],forHud[1],forHud[2],forHud[3]);
                 break;
             case SpaceConquest.MAIN_CHARACTER_BIT | SpaceConquest.GUNPOWDER_BIT:
-                if(fixA.getFilterData().categoryBits == SpaceConquest.GUNPOWDER_BIT) {
-                    ((GunPowder) fixA.getUserData()).use((MainCharacter) fixB.getUserData());
-                    ((MainCharacter) fixB.getUserData()).addGun_powder_count();
-                }
-                else {
-                    ((GunPowder) fixB.getUserData()).use((MainCharacter) fixA.getUserData());
-                    ((MainCharacter) fixA.getUserData()).addGun_powder_count();
-                }
                 screen.increaseCharWeight(1);
+                if(fixA.getFilterData().categoryBits == SpaceConquest.GUNPOWDER_BIT){
+                    ((GunPowder)fixA.getUserData()).use((MainCharacter) fixB.getUserData());
+                    ((MainCharacter) fixB.getUserData()).addGun_powder_count();
+                    forHud = ((MainCharacter) fixB.getUserData()).getKnapsackInfo();
+                }
+                else{
+                    ((GunPowder)fixB.getUserData()).use((MainCharacter) fixA.getUserData());
+                    ((MainCharacter) fixA.getUserData()).addGun_powder_count();
+                    forHud = ((MainCharacter) fixA.getUserData()).getKnapsackInfo();
+                }
+                Hud.updateknapscore(forHud[0],forHud[1],forHud[2],forHud[3]);
+                //Hud.addScore(1);
                 break;
             case SpaceConquest.MAIN_CHARACTER_BIT | SpaceConquest.OIL_BIT:
-                if(fixA.getFilterData().categoryBits == SpaceConquest.OIL_BIT) {
-                    ((Oil) fixA.getUserData()).use((MainCharacter) fixB.getUserData());
-                    ((MainCharacter) fixB.getUserData()).addOil_count();
-                }
-                else {
-                    ((Oil) fixB.getUserData()).use((MainCharacter) fixA.getUserData());
-                    ((MainCharacter) fixA.getUserData()).addOil_count();
-                }
                 screen.increaseCharWeight(1);
+                if(fixA.getFilterData().categoryBits == SpaceConquest.OIL_BIT){
+                    ((Oil)fixA.getUserData()).use((MainCharacter) fixB.getUserData());
+                    ((MainCharacter) fixB.getUserData()).addOil_count();
+                    forHud = ((MainCharacter) fixB.getUserData()).getKnapsackInfo();
+                }
+                else{
+                    ((Oil)fixB.getUserData()).use((MainCharacter) fixA.getUserData());
+                    ((MainCharacter) fixA.getUserData()).addOil_count();
+                    forHud = ((MainCharacter) fixA.getUserData()).getKnapsackInfo();
+                }
+                Hud.updateknapscore(forHud[0],forHud[1],forHud[2],forHud[3]);
+                //Hud.addScore(1);
                 break;
             case SpaceConquest.MAIN_CHARACTER_BIT |SpaceConquest.STATION_BIT:
                 System.out.println("inside station");
@@ -71,34 +84,34 @@ public class WorldContactListener implements ContactListener {
                     screen.addscore("0",score);
                 }
                 break;
+//            case SpaceConquest.OBJECT_BIT| SpaceConquest.IRON_BIT:
+//                if(fixA.getFilterData().categoryBits == SpaceConquest.IRON_BIT)
+//                    ((Iron)fixA.getUserData()).use((MainCharacter) fixB.getUserData());
+//                else
+//                    ((Iron)fixB.getUserData()).use((MainCharacter) fixA.getUserData());
+//                break;
             case SpaceConquest.FIREBALL_BIT | SpaceConquest.OBSTACLE_BIT:
                 if(fixA.getFilterData().categoryBits == SpaceConquest.FIREBALL_BIT)
                     ((FireBall)fixA.getUserData()).setToDestroy();
                 else
                     ((FireBall)fixB.getUserData()).setToDestroy();
                 break;
-//            case SpaceConquest.FIREBALL_BIT | SpaceConquest.CHARACTER_BIT:
-//                if(fixA.getFilterData().categoryBits == SpaceConquest.FIREBALL_BIT) {
-//                    ((FireBall) fixA.getUserData()).setToDestroy();
-//                }
-//                else {
-//                    ((FireBall) fixB.getUserData()).setToDestroy();
-//                }
-//                break;
-            case SpaceConquest.FIREBALL_BIT | SpaceConquest.MAIN_CHARACTER_BIT:
+            case SpaceConquest.FIREBALL_BIT | SpaceConquest.CHARACTER_BIT:
                 if(fixA.getFilterData().categoryBits == SpaceConquest.FIREBALL_BIT) {
                     ((FireBall) fixA.getUserData()).setToDestroy();
-                    ((MainCharacter) fixB.getUserData()).dead();
                 }
                 else {
                     ((FireBall) fixB.getUserData()).setToDestroy();
-                    ((MainCharacter) fixA.getUserData()).dead();
                 }
-                //if you die, your enemy gains 50 points
-                if (game.multiplayerSessionInfo.mId_num!=0) {
-                    game.playServices.MessagetoServer("Serverpoints:" + ((screen.getUserID() + (screen.getNumOfPlayers()/2)) / screen.getNumOfPlayers()) + ":" + 50);
-                } else {
-                    screen.addscore(Integer.toString((screen.getUserID() + 3) / 3), 50);
+                break;
+            case SpaceConquest.FIREBALL_BIT | SpaceConquest.MAIN_CHARACTER_BIT:
+                if(fixA.getFilterData().categoryBits == SpaceConquest.FIREBALL_BIT) {
+                    ((FireBall) fixA.getUserData()).setToDestroy();
+                    ((MainCharacter) fixB.getUserData()).reduceHP();
+                }
+                else {
+                    ((FireBall) fixB.getUserData()).setToDestroy();
+                    ((MainCharacter) fixA.getUserData()).reduceHP();
                 }
                 break;
         }

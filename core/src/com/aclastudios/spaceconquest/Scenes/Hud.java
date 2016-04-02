@@ -184,9 +184,11 @@ public class Hud implements Disposable {
         stage.dispose();
     }
 
-    public static void updateknapscore(int inp) {
+    public static void updateknapscore(int inp, int oil, int iron, int gunpowder) {
         teamKnapsack = inp;
-
+        oilScore =oil;
+        ironScore = iron;
+        gunpowderScore = gunpowder;
     }
 
     public boolean isTimeUp() { return timeUp; }

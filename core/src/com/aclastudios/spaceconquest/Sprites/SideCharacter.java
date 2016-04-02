@@ -174,8 +174,8 @@ public class SideCharacter extends Sprite{
     }
 
     public State getState(){
-        System.out.println("SideCharacter X: " + b2body.getLinearVelocity().x);
-        System.out.println("SideCharacter Y: " + b2body.getLinearVelocity().y);
+//        System.out.println("SideCharacter X: " + b2body.getLinearVelocity().x);
+//        System.out.println("SideCharacter Y: " + b2body.getLinearVelocity().y);
         if (b2body.getLinearVelocity().x > 5 || b2body.getLinearVelocity().x < -5 || b2body.getLinearVelocity().y > 5 || b2body.getLinearVelocity().y < -5) {
             return State.RUNNING;
         } else {
@@ -203,7 +203,7 @@ public class SideCharacter extends Sprite{
         Array<Fixture> fix = b2body.getFixtureList();
         Shape shape = fix.get(0).getShape();
         shape.setRadius( radius + (this.weight*scale*7));
-        System.out.println(shape.getRadius());
+//        System.out.println(shape.getRadius());
         setRotation(angle);
     }
     /*

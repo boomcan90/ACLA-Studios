@@ -34,6 +34,7 @@ public class MainCharacter extends Sprite {
     private int charWeight = 0;
     private float radius = 13;
     private int charScore;
+    private int playerHP = 20;
 
     private Array<FireBall> fireballs;
 
@@ -68,7 +69,7 @@ public class MainCharacter extends Sprite {
     private int oil_storage = 0;
     private int gun_powder_storage = 0;
 
-    private int ammunition = 0;
+    private int ammunition = 10;
     private float jetpack_time = 0;
 
     public MainCharacter(World world,PlayScreen screen){
@@ -266,6 +267,7 @@ public class MainCharacter extends Sprite {
         float[] s = {b2body.getPosition().x,b2body.getPosition().y};
         FireBall f = new FireBall(screen, s[0], s[1], xSpd , ySpd,false);
         fireballs.add(f);
+        System.out.println("ammunition left: "+ ammunition);
         return s;
     }
     public void draw(Batch batch){
@@ -281,7 +283,7 @@ public class MainCharacter extends Sprite {
         iron_storage+=iron_count;
         gun_powder_storage+=gun_powder_count;
         oil_storage+=oil_count;
-        ammunition += ((iron_storage>=gun_powder_storage)?gun_powder_storage:iron_storage)*5;
+        ammunition +=  ((iron_storage>=gun_powder_storage)?gun_powder_storage:iron_storage)*5;
         jetpack_time += oil_storage;
         //destroying the exhausted resource
         oil_storage=0;
@@ -358,4 +360,27 @@ public class MainCharacter extends Sprite {
     public float getJetpack_time() {
         return jetpack_time;
     }
+    public void reduceHP(){
+        playerHP=playerHP-4;
+        if (playerHP<=0){
+            dead();
+            playerHP=20;
+        }
+    }
+    public int getHP(){
+        return playerHP;
+    }
+
+    public int[] getKnapsackInfo() {
+        return new int[]{charWeight, oil_count+oil_storage,iron_storage+iron_count,gun_powder_storage+gun_powder_count};
+    }
+
+    public int getOil_count() {
+        return oil_count;
+    }
+
+    public int getGun_powder_count() {
+        return gun_powder_count;
+    }
 }
+
