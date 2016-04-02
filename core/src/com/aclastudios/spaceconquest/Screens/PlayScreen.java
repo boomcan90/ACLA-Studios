@@ -102,7 +102,6 @@ public class PlayScreen implements Screen {
     private MainCharacter mainCharacter;
     private HashMap<Integer,SideCharacter> enemyhashmap;
     private HashMap<Integer,String[]> positionvalues;
-//    private String[] positionvalues;
     private ResourceManager resourceManager;
     //Server
     Server server;
@@ -142,6 +141,7 @@ public class PlayScreen implements Screen {
         new B2WorldCreator(this);
 
         //Sprites and Characters
+        positionvalues = new HashMap<Integer, String[]>();
         enemyhashmap = new HashMap<Integer, SideCharacter>();
         mainCharacter = new MainCharacter(world,this);
         for (int i = 0; i< numOfPlayers;i++) {
@@ -282,16 +282,20 @@ public class PlayScreen implements Screen {
         //SideCharacter update
         for (int i: enemyhashmap.keySet()){
             SideCharacter sideCharacter = enemyhashmap.get(i);
-            if (positionvalues != null) {
-                String[] values = positionvalues.get(i);
-                sideCharacter.updateEnemy(Float.parseFloat(values[1]),
-                        Float.parseFloat(values[2]),
-                        Float.parseFloat(values[3]),
-                        Float.parseFloat(values[5]));
-//                sideCharacter.setRotation(Float.parseFloat(values[3]));
-                if (values[4].equals("false")) {
-                    sideCharacter.dead();
-                }
+            if (positionvalues!= null) {
+                try{
+                    String[] values = positionvalues.get(i);
+                    if (values!=null) {
+                        sideCharacter.updateEnemy(Float.parseFloat(values[1]),
+                                Float.parseFloat(values[2]),
+                                Float.parseFloat(values[3]),
+                                Float.parseFloat(values[5]));
+//                  sideCharacter.setRotation(Float.parseFloat(values[3]));
+                        if (values[4].equals("false")) {
+                            sideCharacter.dead();
+                        }
+                    }
+                }catch (Exception e){}
             }
             sideCharacter.update(dt);
         }

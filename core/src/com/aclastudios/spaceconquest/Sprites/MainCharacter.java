@@ -237,10 +237,13 @@ public class MainCharacter extends Sprite {
         if(this.charWeight>=20){
             Filter filter = fix.get(0).getFilterData();
             filter.maskBits =  SpaceConquest.OBSTACLE_BIT
+                    |SpaceConquest.FIREBALL_BIT
+                    |SpaceConquest.IRON_BIT
+                    |SpaceConquest.GUNPOWDER_BIT
+                    |SpaceConquest.OIL_BIT
                     |SpaceConquest.STATION_BIT
                     |SpaceConquest.ENEMY_STATION_BIT
-                    |SpaceConquest.CHARACTER_BIT
-                    |SpaceConquest.FIREBALL_BIT;
+                    |SpaceConquest.CHARACTER_BIT;
             fix.get(0).setFilterData(filter);
         }
         setScale(getCharacterScale());
