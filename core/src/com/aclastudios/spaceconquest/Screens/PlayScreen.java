@@ -9,6 +9,7 @@ import com.aclastudios.spaceconquest.Sprites.MainCharacter;
 import com.aclastudios.spaceconquest.Sprites.ResourceManager;
 import com.aclastudios.spaceconquest.SupportThreads.Server;
 import com.aclastudios.spaceconquest.Tools.B2WorldCreator;
+import com.aclastudios.spaceconquest.Tools.HealthBar;
 import com.aclastudios.spaceconquest.Tools.WorldContactListener;
 import com.aclastudios.spaceconquest.Weapons.FireBall;
 import com.badlogic.gdx.Gdx;
@@ -17,6 +18,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
@@ -29,6 +31,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -103,6 +106,7 @@ public class PlayScreen implements Screen {
     private HashMap<Integer,SideCharacter> enemyhashmap;
     private HashMap<Integer,String[]> positionvalues;
     private ResourceManager resourceManager;
+    private int playerHP = 0;
     //Server
     Server server;
 
@@ -385,6 +389,13 @@ public class PlayScreen implements Screen {
             for (FireBall ball : networkFireballs)
                 ball.draw(game.batch);
 
+            //*****************************************************************************************
+//            HealthBar healthBar = new HealthBar(new TextureRegion(red),mainCharacter);
+            HealthBar healthBar = new HealthBar(new TextureRegion(red),mainCharacter);
+            healthBar.setPosition(mainCharacter.getX(),mainCharacter.getY()+10);
+            healthBar.draw(game.batch,100);
+
+
             game.batch.end(); //close the "box" and draw it on the screen
 
 
@@ -532,6 +543,16 @@ public class PlayScreen implements Screen {
     }
     public int getUserID() {
         return userID;
+    }
+
+    public void reduceHP(){
+        playerHP--;
+    }
+    public void setplayerHP(int hp){
+        playerHP = hp;
+    }
+    public int getplayerHP(){
+        return playerHP;
     }
 
 }
