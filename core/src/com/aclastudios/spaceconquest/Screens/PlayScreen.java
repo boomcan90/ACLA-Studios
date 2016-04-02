@@ -29,6 +29,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -203,9 +204,9 @@ public class PlayScreen implements Screen {
         orange = new Texture(Gdx.files.internal("button_orange.png"));
 
         button = new ImageButton(new TextureRegionDrawable(new TextureRegion(red)), new TextureRegionDrawable(new TextureRegion(orange)));
-        button.setBounds(70,70,40,40);
+        button.setBounds(0,0,40,40);
         jetpack_Button = new ImageButton(new TextureRegionDrawable(new TextureRegion(orange)), new TextureRegionDrawable(new TextureRegion(red)));
-        jetpack_Button.setBounds(45,45,40,40);
+        jetpack_Button.setBounds(0,0,40,40);
         //table.add(button);
 
         //Create a Stage and add TouchPad
@@ -240,8 +241,9 @@ public class PlayScreen implements Screen {
                     (float) (mainCharacter.b2body.getLinearVelocity().y * -0.9)), mainCharacter.b2body.getWorldCenter(), true);
         }
         else {
-            double speedreduction = Math.pow(0.9, mainCharacter.getCharWeight()*0.5);
-            if(jetpack_Button.isPressed()&&mainCharacter.exhaustJetPack(dt)){
+            double speedreduction = Math.pow(0.9, mainCharacter.getCharWeight()*0.8);
+            if(jetpack_Button.isPressed()){
+                mainCharacter.exhaustJetPack(dt);
                 speedreduction = 2;
             }
 
@@ -336,10 +338,15 @@ public class PlayScreen implements Screen {
         gamecam.update();
         renderer.setView(gamecam); //render only what the gamecam can see
 
-        button.setPosition(gamecam.position.x+gamePort.getWorldWidth() / 4 + 40,gamecam.position.y-gamePort.getWorldHeight()/2+10);
+        button.setPosition(gamecam.position.x + gamePort.getWorldWidth() / 4 + 40, gamecam.position.y - gamePort.getWorldHeight() / 2 + 10);
         jetpack_Button.setPosition(gamecam.position.x+gamePort.getWorldWidth() / 4 ,gamecam.position.y-gamePort.getWorldHeight()/2+10);
         touchpad.setPosition(gamecam.position.x-gamePort.getWorldWidth() / 2+10,gamecam.position.y-gamePort.getWorldHeight()/2+10);
 
+        if(mainCharacter.getAmmunition()==0)
+            button.setTouchable(Touchable.disabled);
+        if(mainCharacter.getJetpack_time()<0.1){
+            jetpack_Button.setTouchable(Touchable.disabled);
+        }
     }
     //render
     @Override

@@ -349,11 +349,13 @@ public class MainCharacter extends Sprite {
         return ammunition;
     }
 
-    public boolean exhaustJetPack(float dt){
-        if(jetpack_time>0.05) {
-            jetpack_time -= dt;
-            return true;
+    public void exhaustJetPack(float dt){
+        if(jetpack_time>0.1) {
+            jetpack_time -= (dt*charWeight);
         }
-        return false;
+    }
+
+    public float getJetpack_time() {
+        return jetpack_time;
     }
 }
