@@ -95,7 +95,7 @@ public class MainCharacter extends Sprite {
         BodyDef bdef = new BodyDef();
         //Array<RectangleMapObject> object = map.getLayers().get(7).getObjects().getByType(RectangleMapObject.class);
         for (MapLayer layer : map.getLayers()) {
-            if (layer.getName().matches(area[screen.getUserID()/screen.getNumOfPlayers()])) {
+            if (layer.getName().matches(area[screen.getUserID()/(screen.getNumOfPlayers()/2)])) {
                 Array<RectangleMapObject> mo = layer.getObjects().getByType(RectangleMapObject.class);
                 Rectangle rect = mo.get(screen.getUserID()%3).getRectangle();
                 last_x_coord = rect.getX()*SpaceConquest.MAP_SCALE;
