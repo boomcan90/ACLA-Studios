@@ -76,13 +76,23 @@ public class WorldContactListener implements ContactListener {
                 //Hud.addScore(1);
                 break;
             case SpaceConquest.MAIN_CHARACTER_BIT |SpaceConquest.STATION_BIT:
-                System.out.println("inside station");
                 int score =screen.depositResource();
-                if (game.multiplayerSessionInfo.mId_num!=0) {
-                    game.playServices.MessagetoServer("Serverpoints:" + game.multiplayerSessionInfo.mId_num + ":" + score);
-                } else {
-                    screen.addscore("0",score);
+                float[] gadget;
+                if(fixA.getFilterData().categoryBits == SpaceConquest.MAIN_CHARACTER_BIT){
+                    forHud = ((MainCharacter) fixA.getUserData()).getKnapsackInfo();
+                    gadget = ((MainCharacter) fixA.getUserData()).getGadgetInfo();
+                }else{
+                    forHud = ((MainCharacter) fixB.getUserData()).getKnapsackInfo();
+                    gadget = ((MainCharacter) fixB.getUserData()).getGadgetInfo();
                 }
+                Hud.updateknapscore(forHud[0],forHud[1],forHud[2],forHud[3]);
+                Hud.updateGadget((int)gadget[0],gadget[1]);
+                //uncomment this
+//                if (game.multiplayerSessionInfo.mId_num!=0) {
+//                    game.playServices.MessagetoServer("Serverpoints:" + game.multiplayerSessionInfo.mId_num + ":" + score);
+//                } else {
+                  //  screen.addscore("0",score);
+//                }
                 break;
 //            case SpaceConquest.OBJECT_BIT| SpaceConquest.IRON_BIT:
 //                if(fixA.getFilterData().categoryBits == SpaceConquest.IRON_BIT)

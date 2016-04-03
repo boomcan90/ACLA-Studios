@@ -18,7 +18,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
@@ -31,13 +30,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -71,13 +67,9 @@ public class PlayScreen implements Screen {
 
     private float x;
     private float y;
-    private float lastX ;
-    private float lastY ;
     private float width;
     private float height;
 
-    private float lastAngle = 0;
-    private float currentAngle;
     private TmxMapLoader maploader; //Load the map into the game
     private TiledMap map; //Reference to the map
     private OrthogonalTiledMapRenderer renderer; //Renders the map to the screen
@@ -119,9 +111,12 @@ public class PlayScreen implements Screen {
         atlas = new TextureAtlas("sprite_pack.pack");
         this.game = game;
         this.gsm = gsm;
-        this.userID = game.multiplayerSessionInfo.mParticipantsId.indexOf(game.multiplayerSessionInfo.mId);
-        numOfPlayers =  game.multiplayerSessionInfo.mParticipants.size();
-        game.multiplayerSessionInfo.mId_num=this.userID;
+        this.userID=0;
+        this.numOfPlayers = 2;
+        //uncomment this
+        //this.userID = game.multiplayerSessionInfo.mParticipantsId.indexOf(game.multiplayerSessionInfo.mId);
+//        numOfPlayers =  game.multiplayerSessionInfo.mParticipants.size();
+//        game.multiplayerSessionInfo.mId_num=this.userID;
         //Background and Character assets
         texture = new Texture("map.png");
         //Game map and Game View
@@ -162,8 +157,6 @@ public class PlayScreen implements Screen {
         //Initialize FireBalls Array
         networkFireballs = new Array<FireBall>();
         coolDown = 0;
-        lastX = 1;
-        lastY = 0;
 
         //Initialize Spawn Area
         for (MapLayer layer : map.getLayers()) {
@@ -222,7 +215,8 @@ public class PlayScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         //Setscreen in androidLauncher
-        game.playServices.setScreen(this);
+        //uncomment this
+//        game.playServices.setScreen(this);
         if (this.userID==0){
             server=new Server(game);
         }
@@ -235,42 +229,33 @@ public class PlayScreen implements Screen {
 
     public void handleInput(float dt){
         coolDown +=dt;
-        if (button.isPressed() && coolDown >rateOfFire && mainCharacter.getAmmunition()>=0) {
+        if (button.isPressed() && coolDown >rateOfFire && mainCharacter.getAmmunition()>0) {
             coolDown = 0;
             //start of fire ball
-            float[] s=mainCharacter.fire(lastX, lastY);
-            game.playServices.BroadcastMessage("fire:"+userID+":"+s[0]+":"+s[1]+":"+lastX+":"+lastY);
+            mainCharacter.fire();
+            //game.playServices.BroadcastMessage("fire:"+userID+":"+s[0]+":"+s[1]+":"+lastX+":"+lastY);
             //end of fireball
 
-            mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.9),
-                    (float) (mainCharacter.b2body.getLinearVelocity().y * -0.9)), mainCharacter.b2body.getWorldCenter(), true);
+            mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.5),
+                    (float) (mainCharacter.b2body.getLinearVelocity().y * -0.5)), mainCharacter.b2body.getWorldCenter(), true);
 
         }
         else {
             double speedreduction = Math.pow(0.9, mainCharacter.getCharWeight()*0.8);
-            if(jetpack_Button.isPressed() && mainCharacter.getJetpack_time()>0.1){
+            if(jetpack_Button.isPressed() && mainCharacter.getJetpack_time()>0.05){
                 mainCharacter.exhaustJetPack(dt);
                 speedreduction = 2;
-//                if(mainCharacter.getJetpack_time()<0.1){
-//                    jetpack_Button.setDisabled(true);
-//                }
             }
-            if((touchpad.getKnobPercentX()*mainCharacter.b2body.getLinearVelocity().x)<=0){
-                mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.2),0),
-                mainCharacter.b2body.getWorldCenter(), true);
+            else {
+                //friction
+                mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.01),
+                        (float) (mainCharacter.b2body.getLinearVelocity().y * -0.01)), mainCharacter.b2body.getWorldCenter(), true);
             }
-
-            if((touchpad.getKnobPercentY()*mainCharacter.b2body.getLinearVelocity().y)<=0){
-                mainCharacter.b2body.applyLinearImpulse(new Vector2(0,(float) (mainCharacter.b2body.getLinearVelocity().y * -0.2)),
-                        mainCharacter.b2body.getWorldCenter(), true);
-            }
-            mainCharacter.setxSpeed((float) (touchpad.getKnobPercentX() * speedreduction ));
-            mainCharacter.setySpeed((float) (touchpad.getKnobPercentY() * speedreduction));
-            System.out.println("speed: "+mainCharacter.getxSpeed()+" "+mainCharacter.getySpeed());
-            mainCharacter.b2body.applyLinearImpulse(new Vector2(mainCharacter.getxSpeed(), mainCharacter.getySpeed()), mainCharacter.b2body.getWorldCenter(), true);
+            mainCharacter.setxSpeedPercent((float) (touchpad.getKnobPercentX() * speedreduction));
+            mainCharacter.setySpeedPercent((float) (touchpad.getKnobPercentY() * speedreduction));
+            System.out.println("speed: " + mainCharacter.getxSpeedPercent() + " " + mainCharacter.getySpeedPercent());
+            mainCharacter.b2body.applyLinearImpulse(new Vector2(mainCharacter.getxSpeedPercent(), mainCharacter.getySpeedPercent()), mainCharacter.b2body.getWorldCenter(), true);
         }
-        currentAngle = getAngle(mainCharacter);
-        mainCharacter.setRotation(currentAngle);
     }
 
     public void update(float dt){
@@ -280,8 +265,9 @@ public class PlayScreen implements Screen {
         //Allows box2d calculate the physics
         world.step(1 / 60f, 6, 2);
 
+        float[] gadget = mainCharacter.getGadgetInfo();
         //hud timer
-        hud.update(dt);
+        hud.update(dt, (int)gadget[0],gadget[1]);
         //stopping the character
         slowDownCharacter();
         //sprites
@@ -324,7 +310,6 @@ public class PlayScreen implements Screen {
         resourceManager.updateOil(dt);
 
         float x=0,y=0;
-        float angle = getAngle(mainCharacter);
         if(!mainCharacter.isDestroyed()) {
             x = mainCharacter.b2body.getPosition().x;
             y = mainCharacter.b2body.getPosition().y;
@@ -338,7 +323,7 @@ public class PlayScreen implements Screen {
 
         //SendMessage
         try {
-            game.playServices.BroadcastUnreliableMessage(userID + ":" + x + ":" + y + ":" + angle + ":"+
+            game.playServices.BroadcastUnreliableMessage(userID + ":" + x + ":" + y + ":" + mainCharacter.getAngle() + ":"+
                     String.valueOf(!mainCharacter.isDestroyed())+":" +mainCharacter.getCharWeight()+":"+mainCharacter.getHP());
         }catch (Exception e){}
 
@@ -375,11 +360,6 @@ public class PlayScreen implements Screen {
             game.batch.draw(texture, 0, 0, texture.getWidth() * SpaceConquest.MAP_SCALE, texture.getHeight() * SpaceConquest.MAP_SCALE);
 
             mainCharacter.draw(game.batch);
-            //maincharacter healthbay
-            HealthBar healthBar = new HealthBar(new TextureRegion(health),mainCharacter);
-            int hp = mainCharacter.getHP();
-            healthBar.setWidth(hp);
-            healthBar.draw(game.batch,hp);
 
             //Side Characters
             for (int i: enemyhashmap.keySet()) {
@@ -412,6 +392,11 @@ public class PlayScreen implements Screen {
             for (FireBall ball : networkFireballs)
                 ball.draw(game.batch);
 
+            //maincharacter healthbay
+            HealthBar healthBar = new HealthBar(new TextureRegion(health),mainCharacter);
+            int hp = mainCharacter.getHP();
+            healthBar.setWidth(hp);
+            healthBar.draw(game.batch,hp);
             game.batch.end(); //close the "box" and draw it on the screen
 
 
@@ -478,29 +463,6 @@ public class PlayScreen implements Screen {
     }
     public TextureAtlas getAtlas() {
         return atlas;
-    }
-
-    //returns angle in degrees
-    public float getAngle(MainCharacter c){
-        float x =c.getxSpeed();
-        float y = c.getySpeed();
-
-        if(x != 0 || y != 0){
-            lastX = x;
-            lastY = y;
-        }
-
-        if(x>0 && y>0){
-            lastAngle =(float)Math.toDegrees(Math.atan(y / x));
-        }
-        else if(x<0){
-            lastAngle =180+(float)Math.toDegrees(Math.atan(y / x));
-        }
-        else if (x>0 && y<0){
-            lastAngle =360+(float)Math.toDegrees(Math.atan(y / x));
-        }
-        return lastAngle;
-
     }
 
     private void slowDownCharacter() {
