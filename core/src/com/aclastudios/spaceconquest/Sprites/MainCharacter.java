@@ -24,7 +24,8 @@ import com.badlogic.gdx.utils.Array;
 
 public class MainCharacter extends Sprite {
     public final String[] area = {"Team1Spawn","Team2Spawn"};
-    private float xSpeed,ySpeed;
+    private float xSpeedPercent, ySpeedPercent,lastXPercent, lastYPercent;
+    private float lastAngle = 0;
     public World world;
     public Body b2body;
     private PlayScreen screen;
@@ -69,8 +70,8 @@ public class MainCharacter extends Sprite {
     private int oil_storage = 0;
     private int gun_powder_storage = 0;
 
-    private int ammunition = 100;
-    private float jetpack_time = 0;
+    private int ammunition = 10;
+    private float jetpack_time = 2;
 
     public MainCharacter(World world,PlayScreen screen){
         super(screen.getAtlas().findRegion("PYRO"));
@@ -96,6 +97,11 @@ public class MainCharacter extends Sprite {
         setBounds(0, 0, 25, 25);
         setRegion(character);
         fireballs = new Array<FireBall>();
+
+        lastXPercent = 0;
+        lastYPercent = 0;
+        xSpeedPercent = 0;
+        ySpeedPercent = 0;
 
         stateTime = 0;
         setToDestroy = false;
@@ -123,8 +129,8 @@ public class MainCharacter extends Sprite {
         FixtureDef fdef = new FixtureDef();
         CircleShape shape = new CircleShape();
         shape.setRadius(radius);
-        xSpeed = 0;
-        ySpeed = 0;
+        xSpeedPercent = 0;
+        ySpeedPercent = 0;
         //Collision Bit
         fdef.filter.categoryBits = SpaceConquest.MAIN_CHARACTER_BIT; //what category is this fixture
         fdef.filter.maskBits = SpaceConquest.OBSTACLE_BIT
@@ -174,6 +180,7 @@ public class MainCharacter extends Sprite {
             if(ball.isDestroyed())
                 fireballs.removeValue(ball, true);
         }
+        setRotation(getAngle());
     }
 
     public TextureRegion getFrame(float dt){
@@ -210,20 +217,20 @@ public class MainCharacter extends Sprite {
         fixture.setFilterData(filter);
     }
 
-    public float getySpeed() {
-        return ySpeed;
+    public float getySpeedPercent() {
+        return ySpeedPercent;
     }
 
-    public float getxSpeed() {
-        return xSpeed;
+    public float getxSpeedPercent() {
+        return xSpeedPercent;
     }
 
-    public void setxSpeed(float xSpeed) {
-        this.xSpeed = xSpeed;
+    public void setxSpeedPercent(float xSpeedPercent) {
+        this.xSpeedPercent = xSpeedPercent;
     }
 
-    public void setySpeed(float ySpeed) {
-        this.ySpeed = ySpeed;
+    public void setySpeedPercent(float ySpeedPercent) {
+        this.ySpeedPercent = ySpeedPercent;
     }
 
 
@@ -262,11 +269,12 @@ public class MainCharacter extends Sprite {
         this.charWeight=w;
     }
 
-    public float[] fire(float xSpd, float ySpd){
+    public float[] fire(){
         ammunition-=1;
         float[] s = {b2body.getPosition().x,b2body.getPosition().y};
-        FireBall f = new FireBall(screen, s[0], s[1], xSpd , ySpd,false);
+        FireBall f = new FireBall(screen, s[0], s[1], lastXPercent , lastYPercent,false);
         fireballs.add(f);
+        System.out.println("ammunition left: "+ ammunition);
         return s;
     }
     public void draw(Batch batch){
@@ -282,12 +290,16 @@ public class MainCharacter extends Sprite {
         iron_storage+=iron_count;
         gun_powder_storage+=gun_powder_count;
         oil_storage+=oil_count;
-        ammunition += ((iron_storage>=gun_powder_storage)?gun_powder_storage:iron_storage)*5;
+        iron_count = 0;
+        gun_powder_count=0;
+        oil_count = 0;
+        ammunition +=  ((iron_storage>=gun_powder_storage)?gun_powder_storage:iron_storage)*5;
         jetpack_time += oil_storage;
         //destroying the exhausted resource
         oil_storage=0;
-        iron_storage -= (iron_storage>=gun_powder_storage)?gun_powder_storage:iron_storage;
-        gun_powder_storage -=(iron_storage>=gun_powder_storage)?gun_powder_storage:iron_storage;
+        int lesserone=(iron_storage>=gun_powder_storage)?gun_powder_storage:iron_storage;
+        iron_storage -= lesserone;
+        gun_powder_storage -=lesserone;
 
         Array<Fixture> fix = b2body.getFixtureList();
         Shape shape = fix.get(0).getShape();
@@ -350,12 +362,12 @@ public class MainCharacter extends Sprite {
         return ammunition;
     }
 
-    public boolean exhaustJetPack(float dt){
-        if(jetpack_time>0.05) {
-            jetpack_time -= dt;
-            return true;
-        }
-        return false;
+    public void exhaustJetPack(float dt){
+        jetpack_time -= (dt);
+    }
+
+    public float getJetpack_time() {
+        return jetpack_time;
     }
     public void reduceHP(){
         playerHP=playerHP-4;
@@ -366,6 +378,39 @@ public class MainCharacter extends Sprite {
     }
     public int getHP(){
         return playerHP;
+    }
+
+    public int[] getKnapsackInfo() {
+        return new int[]{charWeight, oil_count+oil_storage,iron_storage+iron_count,gun_powder_storage+gun_powder_count};
+    }
+    public float[] getGadgetInfo() {
+        return new float[]{ammunition,jetpack_time};
+    }
+    public int getOil_count() {
+        return oil_count;
+    }
+
+    public int getGun_powder_count() {
+        return gun_powder_count;
+    }
+    public float getAngle(){
+
+        if(xSpeedPercent != 0 || ySpeedPercent != 0){
+            lastXPercent = xSpeedPercent;
+            lastYPercent = ySpeedPercent;
+        }
+
+        if(xSpeedPercent>0 && ySpeedPercent>0){
+            lastAngle =(float)Math.toDegrees(Math.atan(ySpeedPercent / xSpeedPercent));
+        }
+        else if(xSpeedPercent<0){
+            lastAngle =180+(float)Math.toDegrees(Math.atan(ySpeedPercent / xSpeedPercent));
+        }
+        else if (xSpeedPercent>0 && ySpeedPercent<0){
+            lastAngle =360+(float)Math.toDegrees(Math.atan(ySpeedPercent / xSpeedPercent));
+        }
+        return lastAngle;
+
     }
 }
 

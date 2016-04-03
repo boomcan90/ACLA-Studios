@@ -207,19 +207,19 @@ public class SideCharacter extends Sprite{
         setRotation(angle);
     }
     /*
-    public float getySpeed() {
+    public float getySpeedPercent() {
         return ySpeed;
     }
 
-    public float getxSpeed() {
+    public float getxSpeedPercent() {
         return xSpeed;
     }
 
-    public void setxSpeed(float xSpeed) {
+    public void setxSpeedPercent(float xSpeed) {
         this.xSpeed = xSpeed;
     }
 
-    public void setySpeed(float ySpeed) {
+    public void setySpeedPercent(float ySpeed) {
         this.ySpeed = ySpeed;
     }
 
