@@ -256,6 +256,7 @@ public class PlayScreen implements Screen {
             System.out.println("speed: " + mainCharacter.getxSpeedPercent() + " " + mainCharacter.getySpeedPercent());
             mainCharacter.b2body.applyLinearImpulse(new Vector2(mainCharacter.getxSpeedPercent(), mainCharacter.getySpeedPercent()), mainCharacter.b2body.getWorldCenter(), true);
         }
+
     }
 
     public void update(float dt){
@@ -282,12 +283,13 @@ public class PlayScreen implements Screen {
                         sideCharacter.updateEnemy(Float.parseFloat(values[1]),
                                 Float.parseFloat(values[2]),
                                 Float.parseFloat(values[3]),
-                                Float.parseFloat(values[5]));
+                                Float.parseFloat(values[5]),0,0);
 //                  sideCharacter.setRotation(Float.parseFloat(values[3]));
                         if (values[4].equals("false")) {
                             sideCharacter.dead();
                         }
                     }
+                    sideCharacter.b2body.setLinearVelocity(Float.parseFloat(values[7]),Float.parseFloat(values[8]));
                 }catch (Exception e){}
             }
             sideCharacter.update(dt);
@@ -324,7 +326,8 @@ public class PlayScreen implements Screen {
         //SendMessage
         try {
             game.playServices.BroadcastUnreliableMessage(userID + ":" + x + ":" + y + ":" + mainCharacter.getAngle() + ":"+
-                    String.valueOf(!mainCharacter.isDestroyed())+":" +mainCharacter.getCharWeight()+":"+mainCharacter.getHP());
+                    String.valueOf(!mainCharacter.isDestroyed())+":" +mainCharacter.getCharWeight()+":"+mainCharacter.getHP()+
+                   ":"+mainCharacter.b2body.getLinearVelocity().x + ":"+mainCharacter.b2body.getLinearVelocity().y);
         }catch (Exception e){}
 
         //gamecam updates
