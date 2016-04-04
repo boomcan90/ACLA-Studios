@@ -27,6 +27,7 @@ import com.badlogic.gdx.utils.Array;
 public class SideCharacter extends Sprite{
     //private float xSpeed,ySpeed;
     public final String[] area = {"Team1Spawn","Team2Spawn"};
+    private float xSpeedPercent, ySpeedPercent,lastXPercent, lastYPercent;
     private float x, y;
     private float angle;
     private int enemyID;
@@ -71,6 +72,10 @@ public class SideCharacter extends Sprite{
         setToDestroy = false;
         destroyed = false;
         deathCount = 0;
+        lastXPercent=0;
+        lastYPercent=0;
+        xSpeedPercent=0;
+        ySpeedPercent=0;
         x=0;
         y=0;
         angle=0;
@@ -195,11 +200,17 @@ public class SideCharacter extends Sprite{
     public boolean isDestroyed() {
         return destroyed;
     }
-    public void updateEnemy(float x,float y, float angle,float weight){
+    public void updateEnemy(float x,float y, float angle,float weight,float xPercent,float yPercent){
         this.x=x;
         this.y=y;
         this.angle = angle;
         this.weight = weight;
+        xSpeedPercent = xPercent;
+        ySpeedPercent = yPercent;
+        if(xPercent!=0||yPercent!=0){
+            lastYPercent=yPercent;
+            lastXPercent = xPercent;
+        }
         Array<Fixture> fix = b2body.getFixtureList();
         Shape shape = fix.get(0).getShape();
         shape.setRadius( radius + (this.weight*scale*7));
@@ -239,4 +250,12 @@ public class SideCharacter extends Sprite{
         this.charWeight=w;
     }
     */
+
+    public float getxSpeedPercent() {
+        return xSpeedPercent;
+    }
+
+    public float getySpeedPercent() {
+        return ySpeedPercent;
+    }
 }
