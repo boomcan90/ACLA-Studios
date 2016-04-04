@@ -1,5 +1,6 @@
 package com.aclastudios.spaceconquest.Tools;
 
+import com.aclastudios.spaceconquest.Scenes.Hud;
 import com.aclastudios.spaceconquest.Screens.PlayScreen;
 import com.aclastudios.spaceconquest.SpaceConquest;
 import com.aclastudios.spaceconquest.Sprites.MainCharacter;
@@ -27,40 +28,71 @@ public class WorldContactListener implements ContactListener {
         Fixture fixB = contact.getFixtureB();
 
         int cDef = fixA.getFilterData().categoryBits | fixB.getFilterData().categoryBits;
-
+        int[] forHud;
         switch (cDef){
             case SpaceConquest.MAIN_CHARACTER_BIT | SpaceConquest.IRON_BIT:
-                if(fixA.getFilterData().categoryBits == SpaceConquest.IRON_BIT)
-                    ((Iron)fixA.getUserData()).use((MainCharacter) fixB.getUserData());
-                else
-                    ((Iron)fixB.getUserData()).use((MainCharacter) fixA.getUserData());
+                screen.increaseCharWeight(1);
+                if(fixA.getFilterData().categoryBits == SpaceConquest.IRON_BIT) {
+                    ((Iron) fixA.getUserData()).use((MainCharacter) fixB.getUserData());
+                    ((MainCharacter) fixB.getUserData()).addIron_count();
+                    forHud = ((MainCharacter) fixB.getUserData()).getKnapsackInfo();
+                }
+                else {
+                    ((Iron) fixB.getUserData()).use((MainCharacter) fixA.getUserData());
+                    ((MainCharacter) fixA.getUserData()).addIron_count();
+                    forHud = ((MainCharacter) fixA.getUserData()).getKnapsackInfo();
+                }
                 //Hud.addScore(1);
-                screen.increaseCharWeight(2);
+                Hud.updateknapscore(forHud[0],forHud[1],forHud[2],forHud[3]);
                 break;
             case SpaceConquest.MAIN_CHARACTER_BIT | SpaceConquest.GUNPOWDER_BIT:
-                if(fixA.getFilterData().categoryBits == SpaceConquest.GUNPOWDER_BIT)
+                screen.increaseCharWeight(1);
+                if(fixA.getFilterData().categoryBits == SpaceConquest.GUNPOWDER_BIT){
                     ((GunPowder)fixA.getUserData()).use((MainCharacter) fixB.getUserData());
-                else
+                    ((MainCharacter) fixB.getUserData()).addGun_powder_count();
+                    forHud = ((MainCharacter) fixB.getUserData()).getKnapsackInfo();
+                }
+                else{
                     ((GunPowder)fixB.getUserData()).use((MainCharacter) fixA.getUserData());
+                    ((MainCharacter) fixA.getUserData()).addGun_powder_count();
+                    forHud = ((MainCharacter) fixA.getUserData()).getKnapsackInfo();
+                }
+                Hud.updateknapscore(forHud[0],forHud[1],forHud[2],forHud[3]);
                 //Hud.addScore(1);
-                screen.increaseCharWeight(2);
                 break;
             case SpaceConquest.MAIN_CHARACTER_BIT | SpaceConquest.OIL_BIT:
-                if(fixA.getFilterData().categoryBits == SpaceConquest.OIL_BIT)
+                screen.increaseCharWeight(1);
+                if(fixA.getFilterData().categoryBits == SpaceConquest.OIL_BIT){
                     ((Oil)fixA.getUserData()).use((MainCharacter) fixB.getUserData());
-                else
+                    ((MainCharacter) fixB.getUserData()).addOil_count();
+                    forHud = ((MainCharacter) fixB.getUserData()).getKnapsackInfo();
+                }
+                else{
                     ((Oil)fixB.getUserData()).use((MainCharacter) fixA.getUserData());
+                    ((MainCharacter) fixA.getUserData()).addOil_count();
+                    forHud = ((MainCharacter) fixA.getUserData()).getKnapsackInfo();
+                }
+                Hud.updateknapscore(forHud[0],forHud[1],forHud[2],forHud[3]);
                 //Hud.addScore(1);
-                screen.increaseCharWeight(2);
                 break;
             case SpaceConquest.MAIN_CHARACTER_BIT |SpaceConquest.STATION_BIT:
-                System.out.println("inside station");
                 int score =screen.depositResource();
-                if (game.multiplayerSessionInfo.mId_num!=0) {
-                    game.playServices.MessagetoServer("Serverpoints:" + game.multiplayerSessionInfo.mId_num + ":" + score);
-                } else {
-                    screen.addscore("0",score);
+                float[] gadget;
+                if(fixA.getFilterData().categoryBits == SpaceConquest.MAIN_CHARACTER_BIT){
+                    forHud = ((MainCharacter) fixA.getUserData()).getKnapsackInfo();
+                    gadget = ((MainCharacter) fixA.getUserData()).getGadgetInfo();
+                }else{
+                    forHud = ((MainCharacter) fixB.getUserData()).getKnapsackInfo();
+                    gadget = ((MainCharacter) fixB.getUserData()).getGadgetInfo();
                 }
+                Hud.updateknapscore(forHud[0],forHud[1],forHud[2],forHud[3]);
+                Hud.updateGadget((int)gadget[0],gadget[1]);
+                //uncomment this
+//                if (game.multiplayerSessionInfo.mId_num!=0) {
+//                    game.playServices.MessagetoServer("Serverpoints:" + game.multiplayerSessionInfo.mId_num + ":" + score);
+//                } else {
+                  //  screen.addscore("0",score);
+//                }
                 break;
 //            case SpaceConquest.OBJECT_BIT| SpaceConquest.IRON_BIT:
 //                if(fixA.getFilterData().categoryBits == SpaceConquest.IRON_BIT)
@@ -85,11 +117,11 @@ public class WorldContactListener implements ContactListener {
             case SpaceConquest.FIREBALL_BIT | SpaceConquest.MAIN_CHARACTER_BIT:
                 if(fixA.getFilterData().categoryBits == SpaceConquest.FIREBALL_BIT) {
                     ((FireBall) fixA.getUserData()).setToDestroy();
-                    ((MainCharacter) fixB.getUserData()).dead();
+                    ((MainCharacter) fixB.getUserData()).reduceHP();
                 }
                 else {
                     ((FireBall) fixB.getUserData()).setToDestroy();
-                    ((MainCharacter) fixA.getUserData()).dead();
+                    ((MainCharacter) fixA.getUserData()).reduceHP();
                 }
                 break;
         }
