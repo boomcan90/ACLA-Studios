@@ -73,14 +73,13 @@ public class MainCharacter extends Sprite {
 
         Array<TextureRegion> frames = new Array<TextureRegion>();
         // animation for walking
-        frames.add(new TextureRegion(getTexture(), getRegionX() , getRegionY(), 168, 190));
-        frames.add(new TextureRegion(getTexture(), getRegionX() + 195 , getRegionY(), 168, 190));
-        frames.add(new TextureRegion(getTexture(), getRegionX() + 195*2, getRegionY(), 168, 190));
-        frames.add(new TextureRegion(getTexture(), getRegionX() + 195*3, getRegionY(), 168, 190));
+        for (int i = 0; i < 4; i++) {
+            frames.add(new TextureRegion(getTexture(), getRegionX() + i * 200, getRegionY(), 200, 200));
+        }
         running =new Animation(0.2f, frames);
 
         defineCharacter();
-        character = new TextureRegion(getTexture(), getRegionX() + 190, getRegionY(), 170, 190);
+        character = new TextureRegion(getTexture(), getRegionX() + 200, getRegionY(), 200, 200);
         setBounds(0, 0, 25, 25);
         setRegion(character);
         fireballs = new Array<FireBall>();
