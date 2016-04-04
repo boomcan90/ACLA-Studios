@@ -51,7 +51,7 @@ import java.util.HashMap;
 public class PlayScreen implements Screen {
 
     private int userID;
-    private String[] spriteName = {"PYRO", "KID"};
+    private String[] spriteName = {"PYRO", "DAACTAR"};
     private int numOfPlayers = 2;
 
     private SpaceConquest game;
@@ -108,7 +108,7 @@ public class PlayScreen implements Screen {
     private Texture orange;
 
     public PlayScreen(SpaceConquest game, GameScreenManager gsm){
-        atlas = new TextureAtlas("sprite_pack.pack");
+        atlas = new TextureAtlas("sprite.txt");
         this.game = game;
         this.gsm = gsm;
         this.userID=0;
