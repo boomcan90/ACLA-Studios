@@ -243,7 +243,7 @@ public class PlayScreen implements Screen {
 
         }
         else {
-            double speedreduction = Math.pow(0.9, mainCharacter.getCharWeight()*0.8);
+            double speedreduction = Math.pow(0.9, mainCharacter.getCharWeight()*0.6);
             if(jetpack_Button.isPressed() && mainCharacter.getJetpack_time()>0.05){
                 mainCharacter.exhaustJetPack(dt);
                 speedreduction = 2;
@@ -253,8 +253,8 @@ public class PlayScreen implements Screen {
                 mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.01),
                         (float) (mainCharacter.b2body.getLinearVelocity().y * -0.01)), mainCharacter.b2body.getWorldCenter(), true);
             }
-            mainCharacter.setxSpeedPercent((float) (touchpad.getKnobPercentX() * speedreduction));
-            mainCharacter.setySpeedPercent((float) (touchpad.getKnobPercentY() * speedreduction));
+            mainCharacter.setxSpeedPercent((float) (touchpad.getKnobPercentX() * 1.5 * speedreduction));
+            mainCharacter.setySpeedPercent((float) (touchpad.getKnobPercentY() * 1.5 * speedreduction));
 //            System.out.println("speed: " + mainCharacter.getxSpeedPercent() + " " + mainCharacter.getySpeedPercent());
             mainCharacter.b2body.applyLinearImpulse(new Vector2(mainCharacter.getxSpeedPercent(), mainCharacter.getySpeedPercent()), mainCharacter.b2body.getWorldCenter(), true);
         }
@@ -299,11 +299,13 @@ public class PlayScreen implements Screen {
 
         //check if fireballs is destroyed or not
         synchronized (networkFireballs) {
-            for (FireBall ball : networkFireballs) {
-                ball.update(dt);
-                if (ball.isDestroyed())
-                    networkFireballs.removeValue(ball, true);
-            }
+            try {
+                for (FireBall ball : networkFireballs) {
+                    ball.update(dt);
+                    if (ball.isDestroyed())
+                        networkFireballs.removeValue(ball, true);
+                }
+            }catch (Exception e){}
         }
         while ((resourceManager.getIron_count()+resourceManager.getGunpowder_count()+resourceManager.getOil_count())<21)
             resourceManager.generateResources(this.x, this.y, this.width, this.height);
@@ -531,4 +533,6 @@ public class PlayScreen implements Screen {
         return userID;
     }
 
+
 }
+
