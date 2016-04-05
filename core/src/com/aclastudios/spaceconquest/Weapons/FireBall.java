@@ -16,9 +16,6 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
-/**
- * Created by brentaureli on 10/12/15.
- */
 public class FireBall extends Sprite {
     PlayScreen screen;
     World world;
@@ -69,7 +66,7 @@ public class FireBall extends Sprite {
         //fdef.friction = 0;
         b2body.createFixture(fdef).setUserData(this);
         b2body.setLinearVelocity(new Vector2((this.xSpd * 1000), (this.ySpd * 1000)));
-        System.out.println(b2body.getLinearVelocity().x + "y speed is "+b2body.getLinearVelocity().y);
+//        System.out.println(b2body.getLinearVelocity().x + "y speed is "+b2body.getLinearVelocity().y);
         //b2body.setLinearVelocity(new Vector2(fireRight ? 2 : -200, 200));
     }
 

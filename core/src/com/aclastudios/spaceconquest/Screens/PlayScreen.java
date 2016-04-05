@@ -233,8 +233,9 @@ public class PlayScreen implements Screen {
             coolDown = 0;
             //start of fire ball
             mainCharacter.fire();
-//            game.playServices.BroadcastMessage("fire:" + userID + ":" + mainCharacter.b2body.getPosition().x + ":" +
-//                    mainCharacter.b2body.getPosition().y+":"+lastX+":"+lastY);
+            game.playServices.BroadcastMessage("fire:" + userID + ":" + mainCharacter.b2body.getPosition().x + ":"
+                    + mainCharacter.b2body.getPosition().y + ":" + mainCharacter.getLastXPercent() + ":" +
+                    mainCharacter.getLastYPercent());
             //end of fireball
 
             mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.5),
@@ -254,7 +255,7 @@ public class PlayScreen implements Screen {
             }
             mainCharacter.setxSpeedPercent((float) (touchpad.getKnobPercentX() * speedreduction));
             mainCharacter.setySpeedPercent((float) (touchpad.getKnobPercentY() * speedreduction));
-            System.out.println("speed: " + mainCharacter.getxSpeedPercent() + " " + mainCharacter.getySpeedPercent());
+//            System.out.println("speed: " + mainCharacter.getxSpeedPercent() + " " + mainCharacter.getySpeedPercent());
             mainCharacter.b2body.applyLinearImpulse(new Vector2(mainCharacter.getxSpeedPercent(), mainCharacter.getySpeedPercent()), mainCharacter.b2body.getWorldCenter(), true);
         }
 
@@ -496,6 +497,7 @@ public class PlayScreen implements Screen {
             }
             else if (data[0].equals("Serverpoints") && userID==0){
                 addscore(data[1], Integer.parseInt(data[2]));
+                System.out.println(data[0]+":"+data[1]+":"+data[2]);
             }
             else if (data[0].equals("UpdateScoreAll")){
                 Hud.updatescore(Integer.parseInt(data[1]), Integer.parseInt(data[2]));
@@ -513,7 +515,8 @@ public class PlayScreen implements Screen {
         }
     }
     public void addscore(String id,int data){
-        if (id.equals("0")){
+        int num = Integer.parseInt(id);
+        if (num<numOfPlayers/2){
             server.addRedScore(data);
         } else {
             server.addBlueScore(data);

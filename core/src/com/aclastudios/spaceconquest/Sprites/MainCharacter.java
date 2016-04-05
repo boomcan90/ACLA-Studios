@@ -70,8 +70,8 @@ public class MainCharacter extends Sprite {
     private int oil_storage = 0;
     private int gun_powder_storage = 0;
 
-    private int ammunition = 10;
-    private float jetpack_time = 2;
+    private int ammunition;
+    private float jetpack_time;
 
     public MainCharacter(World world,PlayScreen screen, String SpriteName){
         super(screen.getAtlas().findRegion(SpriteName));
@@ -109,6 +109,8 @@ public class MainCharacter extends Sprite {
     }
 
     public void defineCharacter(){
+        ammunition = 20;
+        jetpack_time = 4;
         BodyDef bdef = new BodyDef();
         //Array<RectangleMapObject> object = map.getLayers().get(7).getObjects().getByType(RectangleMapObject.class);
         for (MapLayer layer : map.getLayers()) {
@@ -148,7 +150,6 @@ public class MainCharacter extends Sprite {
     public void update(float dt){
         stateTime += dt;
         if (setToDestroy ) {
-            System.out.println("destroying");
             destroyed = true;
             setToDestroy = false;
             stateTime = 0;
@@ -246,9 +247,9 @@ public class MainCharacter extends Sprite {
         Array<Fixture> fix = b2body.getFixtureList();
         Shape shape = fix.get(0).getShape();
         shape.setRadius( radius + (this.charWeight*scale*7));
-        System.out.println(shape.getRadius());
-
-        System.out.println("charweight: "+this.charWeight);
+//        System.out.println(shape.getRadius());
+//
+//        System.out.println("charweight: "+this.charWeight);
 
 
         //stop user from collecting resource
@@ -273,7 +274,7 @@ public class MainCharacter extends Sprite {
         float[] s = {b2body.getPosition().x,b2body.getPosition().y};
         FireBall f = new FireBall(screen, s[0], s[1], lastXPercent , lastYPercent,false);
         fireballs.add(f);
-        System.out.println("ammunition left: "+ ammunition);
+//        System.out.println("ammunition left: "+ ammunition);
         return s;
     }
     public void draw(Batch batch){
@@ -292,7 +293,7 @@ public class MainCharacter extends Sprite {
         iron_count = 0;
         gun_powder_count=0;
         oil_count = 0;
-        ammunition +=  ((iron_storage>=gun_powder_storage)?gun_powder_storage:iron_storage)*5;
+        ammunition +=  ((iron_storage>=gun_powder_storage)?gun_powder_storage:iron_storage)*15;
         jetpack_time += oil_storage;
         //destroying the exhausted resource
         oil_storage=0;
@@ -410,6 +411,14 @@ public class MainCharacter extends Sprite {
         }
         return lastAngle;
 
+    }
+
+    public float getLastXPercent() {
+        return lastXPercent;
+    }
+
+    public float getLastYPercent() {
+        return lastYPercent;
     }
 }
 

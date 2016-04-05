@@ -88,11 +88,11 @@ public class WorldContactListener implements ContactListener {
                 Hud.updateknapscore(forHud[0],forHud[1],forHud[2],forHud[3]);
                 Hud.updateGadget((int)gadget[0],gadget[1]);
                 //uncomment this
-//                if (game.multiplayerSessionInfo.mId_num!=0) {
-//                    game.playServices.MessagetoServer("Serverpoints:" + game.multiplayerSessionInfo.mId_num + ":" + score);
-//                } else {
-                  //  screen.addscore("0",score);
-//                }
+                if (game.multiplayerSessionInfo.mId_num!=0) {
+                    game.playServices.MessagetoServer("Serverpoints:" + game.multiplayerSessionInfo.mId_num + ":" + score);
+                } else {
+                    screen.addscore("0",score);
+                }
                 break;
 //            case SpaceConquest.OBJECT_BIT| SpaceConquest.IRON_BIT:
 //                if(fixA.getFilterData().categoryBits == SpaceConquest.IRON_BIT)
@@ -116,10 +116,37 @@ public class WorldContactListener implements ContactListener {
                 break;
             case SpaceConquest.FIREBALL_BIT | SpaceConquest.MAIN_CHARACTER_BIT:
                 if(fixA.getFilterData().categoryBits == SpaceConquest.FIREBALL_BIT) {
+                    if(((MainCharacter) fixB.getUserData()).getHP()<=4){
+                        int team = 0;
+                        if (game.multiplayerSessionInfo.mId_num<screen.getNumOfPlayers()/2){
+                            team=team+game.multiplayerSessionInfo.mParticipants.size()/2;
+                        } else {
+                            team=team-game.multiplayerSessionInfo.mParticipants.size()/2;
+                        }
+                        System.out.println("team from contact listener: "+team);
+                        if (game.multiplayerSessionInfo.mId_num!=0) {
+                            game.playServices.MessagetoServer("Serverpoints:" + team + ":" + 50);
+                        } else {
+                            screen.addscore(team+"",50);
+                        }
+                    }
                     ((FireBall) fixA.getUserData()).setToDestroy();
                     ((MainCharacter) fixB.getUserData()).reduceHP();
                 }
                 else {
+                    if(((MainCharacter) fixA.getUserData()).getHP()<=4){
+                        int team = 0;
+                        if (game.multiplayerSessionInfo.mId_num<screen.getNumOfPlayers()/2){
+                            team=team+game.multiplayerSessionInfo.mParticipants.size()/2;
+                        } else {
+                            team=team-game.multiplayerSessionInfo.mParticipants.size()/2;
+                        }
+                        if (game.multiplayerSessionInfo.mId_num!=0) {
+                            game.playServices.MessagetoServer("Serverpoints:" + team + ":" + 50);
+                        } else {
+                            screen.addscore(team+"",50);
+                        }
+                    }
                     ((FireBall) fixB.getUserData()).setToDestroy();
                     ((MainCharacter) fixA.getUserData()).reduceHP();
                 }
