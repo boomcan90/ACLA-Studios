@@ -21,9 +21,6 @@ import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
-/**
- * Created by User on 17/3/2016.
- */
 public class SideCharacter extends Sprite{
     //private float xSpeed,ySpeed;
     public final String[] area = {"Team1Spawn","Team2Spawn"};
