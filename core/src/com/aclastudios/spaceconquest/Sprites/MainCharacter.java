@@ -109,7 +109,7 @@ public class MainCharacter extends Sprite {
     }
 
     public void defineCharacter(){
-        ammunition = 20;
+        ammunition = 100;
         jetpack_time = 4;
         BodyDef bdef = new BodyDef();
         //Array<RectangleMapObject> object = map.getLayers().get(7).getObjects().getByType(RectangleMapObject.class);

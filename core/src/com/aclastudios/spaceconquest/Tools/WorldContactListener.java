@@ -130,8 +130,13 @@ public class WorldContactListener implements ContactListener {
                             screen.addscore(team+"",50);
                         }
                     }
-                    ((FireBall) fixA.getUserData()).setToDestroy();
-                    ((MainCharacter) fixB.getUserData()).reduceHP();
+                    try {
+                        ((FireBall) fixA.getUserData()).setToDestroy();
+                        ((MainCharacter) fixB.getUserData()).reduceHP();
+                    }catch (Exception e){
+                        System.out.println("*********************Error on fireball ***************** " + e.getMessage());
+
+                    }
                 }
                 else {
                     if(((MainCharacter) fixA.getUserData()).getHP()<=4){
@@ -147,8 +152,12 @@ public class WorldContactListener implements ContactListener {
                             screen.addscore(team+"",50);
                         }
                     }
-                    ((FireBall) fixB.getUserData()).setToDestroy();
-                    ((MainCharacter) fixA.getUserData()).reduceHP();
+                    try {
+                        ((FireBall) fixB.getUserData()).setToDestroy();
+                        ((MainCharacter) fixA.getUserData()).reduceHP();
+                    }catch (Exception e){
+                        System.out.println("*********************Error on fireball ***************** " + e.getMessage());
+                    }
                 }
                 break;
         }
