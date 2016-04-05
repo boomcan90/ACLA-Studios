@@ -78,10 +78,14 @@ public class SideCharacter extends Sprite{
         angle=0;
         Array<TextureRegion> frames = new Array<TextureRegion>();
         // animation for walking
-        frames.add(new TextureRegion(getTexture(), getRegionX(), getRegionY(), 168, 190));
-        frames.add(new TextureRegion(getTexture(), getRegionX() + 195 , getRegionY(), 168, 190));
-        frames.add(new TextureRegion(getTexture(), getRegionX() + 195*2, getRegionY(), 168, 190));
-        frames.add(new TextureRegion(getTexture(), getRegionX() + 195 * 3, getRegionY(), 168, 190));
+        // frames.add(new TextureRegion(getTexture(), getRegionX(), getRegionY(), 168, 190));
+        // frames.add(new TextureRegion(getTexture(), getRegionX() + 195 , getRegionY(), 168, 190));
+        // frames.add(new TextureRegion(getTexture(), getRegionX() + 195*2, getRegionY(), 168, 190));
+        // frames.add(new TextureRegion(getTexture(), getRegionX() + 195 * 3, getRegionY(), 168, 190));
+        //
+        for (int i = 0; i < 4; i++) {
+            frames.add(new TextureRegion(getTexture(), getRegionX() + i * 200, getRegionY(), 200, 200));
+        }
         running =new Animation(0.2f, frames);
         setOriginCenter();
         defineCharacter();
