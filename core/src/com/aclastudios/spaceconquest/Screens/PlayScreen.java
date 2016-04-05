@@ -114,9 +114,9 @@ public class PlayScreen implements Screen {
         this.userID=0;
         this.numOfPlayers = 2;
         //uncomment this
-        //this.userID = game.multiplayerSessionInfo.mParticipantsId.indexOf(game.multiplayerSessionInfo.mId);
-//        numOfPlayers =  game.multiplayerSessionInfo.mParticipants.size();
-//        game.multiplayerSessionInfo.mId_num=this.userID;
+        this.userID = game.multiplayerSessionInfo.mParticipantsId.indexOf(game.multiplayerSessionInfo.mId);
+        numOfPlayers =  game.multiplayerSessionInfo.mParticipants.size();
+        game.multiplayerSessionInfo.mId_num=this.userID;
         //Background and Character assets
         texture = new Texture("map.png");
         //Game map and Game View
@@ -144,7 +144,7 @@ public class PlayScreen implements Screen {
         //Sprites and Characters
         positionvalues = new HashMap<Integer, String[]>();
         enemyhashmap = new HashMap<Integer, SideCharacter>();
-        mainCharacter = new MainCharacter(world,this);
+        mainCharacter = new MainCharacter(world,this,spriteName[userID/(numOfPlayers/2)]);
         for (int i = 0; i< numOfPlayers;i++) {
             if (i!=userID) {
                 SideCharacter sideCharacter = new SideCharacter(world, this, i,spriteName[i/(numOfPlayers/2)]);
@@ -216,7 +216,7 @@ public class PlayScreen implements Screen {
 
         //Setscreen in androidLauncher
         //uncomment this
-//        game.playServices.setScreen(this);
+        game.playServices.setScreen(this);
         if (this.userID==0){
             server=new Server(game);
         }
@@ -233,7 +233,8 @@ public class PlayScreen implements Screen {
             coolDown = 0;
             //start of fire ball
             mainCharacter.fire();
-            //game.playServices.BroadcastMessage("fire:"+userID+":"+s[0]+":"+s[1]+":"+lastX+":"+lastY);
+//            game.playServices.BroadcastMessage("fire:" + userID + ":" + mainCharacter.b2body.getPosition().x + ":" +
+//                    mainCharacter.b2body.getPosition().y+":"+lastX+":"+lastY);
             //end of fireball
 
             mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.5),

@@ -73,8 +73,8 @@ public class MainCharacter extends Sprite {
     private int ammunition = 10;
     private float jetpack_time = 2;
 
-    public MainCharacter(World world,PlayScreen screen){
-        super(screen.getAtlas().findRegion("PYRO"));
+    public MainCharacter(World world,PlayScreen screen, String SpriteName){
+        super(screen.getAtlas().findRegion(SpriteName));
         this.screen = screen;
         this.world = world;
         map =screen.getMap();
