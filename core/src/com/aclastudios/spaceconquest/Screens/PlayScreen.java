@@ -114,9 +114,9 @@ public class PlayScreen implements Screen {
         this.userID=0;
         this.numOfPlayers = 2;
         //uncomment this
-        //this.userID = game.multiplayerSessionInfo.mParticipantsId.indexOf(game.multiplayerSessionInfo.mId);
-//        numOfPlayers =  game.multiplayerSessionInfo.mParticipants.size();
-//        game.multiplayerSessionInfo.mId_num=this.userID;
+        this.userID = game.multiplayerSessionInfo.mParticipantsId.indexOf(game.multiplayerSessionInfo.mId);
+        numOfPlayers =  game.multiplayerSessionInfo.mParticipants.size();
+        game.multiplayerSessionInfo.mId_num=this.userID;
         //Background and Character assets
         texture = new Texture("map.png");
         //Game map and Game View
@@ -216,7 +216,7 @@ public class PlayScreen implements Screen {
 
         //Setscreen in androidLauncher
         //uncomment this
-//        game.playServices.setScreen(this);
+        game.playServices.setScreen(this);
         if (this.userID==0){
             server=new Server(game);
         }
@@ -233,7 +233,9 @@ public class PlayScreen implements Screen {
             coolDown = 0;
             //start of fire ball
             mainCharacter.fire();
-            //game.playServices.BroadcastMessage("fire:"+userID+":"+s[0]+":"+s[1]+":"+lastX+":"+lastY);
+            game.playServices.BroadcastMessage("fire:" + userID + ":" + mainCharacter.b2body.getPosition().x + ":"
+                    + mainCharacter.b2body.getPosition().y + ":" + mainCharacter.getLastXPercent() + ":" +
+                    mainCharacter.getLastYPercent());
             //end of fireball
 
             mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.5),
@@ -253,7 +255,7 @@ public class PlayScreen implements Screen {
             }
             mainCharacter.setxSpeedPercent((float) (touchpad.getKnobPercentX() * speedreduction));
             mainCharacter.setySpeedPercent((float) (touchpad.getKnobPercentY() * speedreduction));
-            System.out.println("speed: " + mainCharacter.getxSpeedPercent() + " " + mainCharacter.getySpeedPercent());
+//            System.out.println("speed: " + mainCharacter.getxSpeedPercent() + " " + mainCharacter.getySpeedPercent());
             mainCharacter.b2body.applyLinearImpulse(new Vector2(mainCharacter.getxSpeedPercent(), mainCharacter.getySpeedPercent()), mainCharacter.b2body.getWorldCenter(), true);
         }
 
@@ -495,6 +497,7 @@ public class PlayScreen implements Screen {
             }
             else if (data[0].equals("Serverpoints") && userID==0){
                 addscore(data[1], Integer.parseInt(data[2]));
+                System.out.println(data[0]+":"+data[1]+":"+data[2]);
             }
             else if (data[0].equals("UpdateScoreAll")){
                 Hud.updatescore(Integer.parseInt(data[1]), Integer.parseInt(data[2]));
@@ -512,7 +515,8 @@ public class PlayScreen implements Screen {
         }
     }
     public void addscore(String id,int data){
-        if (id.equals("0")){
+        int num = Integer.parseInt(id);
+        if (num<numOfPlayers/2){
             server.addRedScore(data);
         } else {
             server.addBlueScore(data);
