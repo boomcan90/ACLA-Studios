@@ -102,6 +102,7 @@ public class PlayScreen implements Screen {
     private ResourceManager resourceManager;
     //Server
     Server server;
+    private int time;
 
     private Texture red;
     private Texture health;
@@ -113,6 +114,7 @@ public class PlayScreen implements Screen {
         this.gsm = gsm;
         this.userID=0;
         this.numOfPlayers = 2;
+        this.time = 300;
         //uncomment this
         this.userID = game.multiplayerSessionInfo.mParticipantsId.indexOf(game.multiplayerSessionInfo.mId);
         numOfPlayers =  game.multiplayerSessionInfo.mParticipants.size();
@@ -126,7 +128,7 @@ public class PlayScreen implements Screen {
         gamePort = new FitViewport(SpaceConquest.V_WIDTH,SpaceConquest.V_HEIGHT,gamecam);
 
         //create our game HUD for scores/timers/level info
-        hud = new Hud(game.batch);
+        hud = new Hud(game.batch,this);
 
         //Load our map and setup our map renderer
         maploader = new TmxMapLoader();
@@ -298,7 +300,7 @@ public class PlayScreen implements Screen {
         }
 
         //check if fireballs is destroyed or not
-        synchronized (networkFireballs) {
+//        synchronized (networkFireballs) {
             try {
                 for (FireBall ball : networkFireballs) {
                     ball.update(dt);
@@ -306,7 +308,7 @@ public class PlayScreen implements Screen {
                         networkFireballs.removeValue(ball, true);
                 }
             }catch (Exception e){}
-        }
+//        }
         while ((resourceManager.getIron_count()+resourceManager.getGunpowder_count()+resourceManager.getOil_count())<21)
             resourceManager.generateResources(this.x, this.y, this.width, this.height);
 
@@ -422,6 +424,11 @@ public class PlayScreen implements Screen {
             if (hud.isTimeUp() == true) {
                 gsm.set(new GameOver(game, gsm));
             }
+            if (userID==0){
+                game.playServices.BroadcastMessage("Time:"+hud.getTime());
+            } else {
+                hud.setTime(time);
+            }
 
         }catch (Exception e){
             e.printStackTrace();
@@ -507,9 +514,12 @@ public class PlayScreen implements Screen {
             else if (data[0].equals("fire")){
                 FireBall f = new FireBall(this, Float.parseFloat(data[2]),
                         Float.parseFloat(data[3]), Float.parseFloat(data[4]), Float.parseFloat(data[5]),true);
-                synchronized (networkFireballs) {
+//                synchronized (networkFireballs) {
                     networkFireballs.add(f);
-                }
+//                }
+            }
+            else if (data[0].equals("Time")){
+                this.time = Integer.parseInt(data[1]);
             }
 
         } catch (Exception e) {
@@ -532,7 +542,6 @@ public class PlayScreen implements Screen {
     public int getUserID() {
         return userID;
     }
-
 
 }
 
