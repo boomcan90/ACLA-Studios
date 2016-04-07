@@ -42,13 +42,13 @@ public class FireBall extends Sprite {
         }
         fireAnimation = new Animation(0.2f, frames);
         setRegion(fireAnimation.getKeyFrame(0));
-        setBounds(x, y, 6, 6 );
+        setBounds(x, y, 6, 6);
         defineFireBall();
     }
 
     public void defineFireBall(){
         BodyDef bdef = new BodyDef();
-        bdef.position.set(getX() + (this.xSpd*15), getY() + (this.ySpd*15 ));
+        bdef.position.set(getX() + (this.xSpd), getY() + (this.ySpd));
         bdef.type = BodyDef.BodyType.DynamicBody;
         bdef.bullet = true;
         //if(!world.isLocked())
@@ -57,9 +57,19 @@ public class FireBall extends Sprite {
         FixtureDef fdef = new FixtureDef();
         CircleShape shape = new CircleShape();
         shape.setRadius(3 );
-        short characterBit = (this.enemyFire)?SpaceConquest.MAIN_CHARACTER_BIT:SpaceConquest.CHARACTER_BIT;
-        fdef.filter.categoryBits = SpaceConquest.FIREBALL_BIT;
-        fdef.filter.maskBits = (short) (SpaceConquest.OBSTACLE_BIT |characterBit);
+        if(enemyFire){
+            fdef.filter.categoryBits = SpaceConquest.FIREBALL_BIT;
+            fdef.filter.maskBits = SpaceConquest.OBSTACLE_BIT
+                    |SpaceConquest.MAIN_CHARACTER_BIT;
+        }
+        else {
+            fdef.filter.categoryBits = SpaceConquest.FRIENDLY_FIREBALL_BIT;
+            fdef.filter.maskBits = SpaceConquest.OBSTACLE_BIT
+                    |SpaceConquest.CHARACTER_BIT;
+        }
+//        short characterBit = (this.enemyFire)?SpaceConquest.MAIN_CHARACTER_BIT:SpaceConquest.CHARACTER_BIT;
+//        fdef.filter.categoryBits = SpaceConquest.FIREBALL_BIT;
+//        fdef.filter.maskBits = (short) (SpaceConquest.OBSTACLE_BIT |characterBit);
 
         fdef.shape = shape;
         fdef.restitution = 1;

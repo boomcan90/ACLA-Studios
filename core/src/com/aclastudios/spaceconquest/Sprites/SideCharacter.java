@@ -118,7 +118,7 @@ public class SideCharacter extends Sprite{
                 |SpaceConquest.STATION_BIT
                 |SpaceConquest.OBJECT_BIT
                 |SpaceConquest.MAIN_CHARACTER_BIT
-                |SpaceConquest.FIREBALL_BIT; //What can the character collide with?
+                |SpaceConquest.FRIENDLY_FIREBALL_BIT; //What can the character collide with?
 
         //Body
         fdef.shape = shape;

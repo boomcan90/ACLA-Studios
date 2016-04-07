@@ -97,7 +97,7 @@ public class MainCharacter extends Sprite {
         setRegion(character);
         fireballs = new Array<FireBall>();
 
-        lastXPercent = 0;
+        lastXPercent = 1;
         lastYPercent = 0;
         xSpeedPercent = 0;
         ySpeedPercent = 0;
@@ -246,7 +246,7 @@ public class MainCharacter extends Sprite {
         this.charWeight += charWeight;
         Array<Fixture> fix = b2body.getFixtureList();
         Shape shape = fix.get(0).getShape();
-        shape.setRadius( radius + (this.charWeight*scale*7));
+        shape.setRadius(radius + (this.charWeight * scale * 7));
 //        System.out.println(shape.getRadius());
 //
 //        System.out.println("charweight: "+this.charWeight);
@@ -272,7 +272,7 @@ public class MainCharacter extends Sprite {
     public float[] fire(){
         ammunition-=1;
         float[] s = {b2body.getPosition().x,b2body.getPosition().y};
-        FireBall f = new FireBall(screen, s[0], s[1], lastXPercent , lastYPercent,false);
+        FireBall f = new FireBall(screen, s[0], s[1], lastXPercent * (radius +1) , lastYPercent * (radius +1),false);
         fireballs.add(f);
 //        System.out.println("ammunition left: "+ ammunition);
         return s;
@@ -419,6 +419,10 @@ public class MainCharacter extends Sprite {
 
     public float getLastYPercent() {
         return lastYPercent;
+    }
+
+    public float getRadius() {
+        return radius;
     }
 }
 

@@ -234,8 +234,8 @@ public class PlayScreen implements Screen {
             //start of fire ball
             mainCharacter.fire();
             game.playServices.BroadcastMessage("fire:" + userID + ":" + mainCharacter.b2body.getPosition().x + ":"
-                    + mainCharacter.b2body.getPosition().y + ":" + mainCharacter.getLastXPercent() + ":" +
-                    mainCharacter.getLastYPercent());
+                    + mainCharacter.b2body.getPosition().y + ":" + (mainCharacter.getLastXPercent()*(mainCharacter.getRadius()+1)) + ":" +
+                    (mainCharacter.getLastYPercent()*(mainCharacter.getRadius()+1)));
             //end of fireball
 
             mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.5),
@@ -424,7 +424,7 @@ public class PlayScreen implements Screen {
             }
 
         }catch (Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 
@@ -513,7 +513,7 @@ public class PlayScreen implements Screen {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
     public void addscore(String id,int data){
