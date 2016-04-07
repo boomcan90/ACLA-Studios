@@ -222,10 +222,15 @@ public class PlayScreen implements Screen {
         if (this.userID==0){
             server=new Server(game);
         }
+        show();
     }
     @Override
     public void show() {
-
+        if (userID==0) {
+            //  while ((resourceManager.getIron_count() + resourceManager.getGunpowder_count() + resourceManager.getOil_count()) < 21)
+            resourceManager.generateResources(this.x, this.y, this.width, this.height);
+        }
+        System.out.println("SHOW CALLED");
     }
 
 
@@ -310,13 +315,6 @@ public class PlayScreen implements Screen {
             }catch (Exception e){}
 //        }
         
-        if (userID==0) {
-            while ((resourceManager.getIron_count() + resourceManager.getGunpowder_count() + resourceManager.getOil_count()) < 21)
-                resourceManager.generateResources(this.x, this.y, this.width, this.height);
-        }
-
-
-
         resourceManager.updateIron(dt);
         resourceManager.updateGunPowder(dt);
         resourceManager.updateOil(dt);
@@ -529,6 +527,14 @@ public class PlayScreen implements Screen {
                 System.out.println("Data 1:"+data[1]);
                 resourceManager.getResourceString(data[1]);
                 resourceManager.generateResources(this.x, this.y, this.width, this.height);
+            }
+            else if (data[0].equals("Delete")){
+                if (data[1].equals("Iron"))
+                    resourceManager.delIron(Integer.parseInt(data[2]), Float.parseFloat(data[3]));
+                else if (data[1].equals("GunPowder"))
+                    resourceManager.delGunPowder(Integer.parseInt(data[2]), Float.parseFloat(data[3]));
+                else if (data[1].equals("Oil"))
+                    resourceManager.delOil(Integer.parseInt(data[2]), Float.parseFloat(data[3]));
             }
 
         } catch (Exception e) {

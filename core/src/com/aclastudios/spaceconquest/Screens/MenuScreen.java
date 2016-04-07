@@ -92,10 +92,9 @@ public class MenuScreen implements Screen {
         }
         //AssetLoader.menuMusic.play();
 
-        System.out.println("batch");
         batch = new SpriteBatch();
         background = new Texture("basic/menu.png");
-        System.out.println("got bg");
+
         background.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         sprite = new Sprite(background);
         sprite.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -123,7 +122,6 @@ public class MenuScreen implements Screen {
         story.setPosition(300, 0);
         stage.addActor(story);
 
-        System.out.println("mute");
         mute.setPosition(0, 0);
         unmute.setPosition(0, 100);
         if (AssetLoader.VOLUME == 1) {

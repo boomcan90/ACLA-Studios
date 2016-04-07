@@ -37,7 +37,6 @@ public class ResourceManager {
         oil_count = 0;
         oil_array = new ArrayList<Oil>();
         this.userID = userID;
-
     }
 
 
@@ -73,11 +72,11 @@ public class ResourceManager {
     public void generateResources(float x, float y, float width, float height){
         if (userID==0){
             Random rand = new Random();
-            if (iron_count<7)
+            while (iron_count<7)
                 generateIron(x, y, width, height, rand);
-            if (gunpowder_count<7)
+            while (gunpowder_count<7)
                 generateGunPowder(x, y, width, height, rand);
-            if (oil_count<7)
+            while (oil_count<7)
                 generateOil(x, y, width, height, rand);
             game.playServices.BroadcastMessage("Resources:" + coordinatesR());
 
@@ -87,9 +86,6 @@ public class ResourceManager {
                 System.out.println("in generate resources for player");
                 System.out.println("Allres: "+allres);
                 String[] igo = allres.split("R");
-                System.out.println("IGO 0:"+igo[1]);
-                System.out.println("IGO 1:"+igo[2]);
-                System.out.println("IGO 2:"+igo[3]);
                 String[] irons = igo[1].split(",");
                 String[] gunps = igo[2].split(",");
                 String[] oils = igo[3].split(",");
@@ -141,33 +137,56 @@ public class ResourceManager {
             Iron I = iron_array.get(n);
             I.update(dt);
             if (I.ifDestroyed()){
-                System.out.println("iron");
                 iron_array.remove(n);
                 iron_count--;
+                game.playServices.BroadcastMessage("Delete:Iron:" + n + ":" +dt);
             }
         }
+    }
+    public void delIron(int n, float dt){
+        Iron I = iron_array.get(n);
+        I.destroy();
+        I.update(dt);
+        iron_array.remove(n);
+        iron_count--;
+
+
     }
     public void updateGunPowder(float dt){
         for (int n=0; n<gunpowder_array.size();n++){
             GunPowder gp = gunpowder_array.get(n);
             gp.update(dt);
             if (gp.ifDestroyed()){
-                System.out.println("gp");
                 gunpowder_array.remove(n);
                 gunpowder_count--;
+                game.playServices.BroadcastMessage("Delete:GunPowder:" + n + ":" +dt);
             }
         }
+    }
+    public void delGunPowder(int n, float dt){
+        GunPowder gp = gunpowder_array.get(n);
+        gp.destroy();
+        gp.update(dt);
+        gunpowder_array.remove(n);
+        gunpowder_count--;
     }
     public void updateOil(float dt){
         for (int n=0; n<oil_array.size();n++){
             Oil ol = oil_array.get(n);
             ol.update(dt);
             if (ol.ifDestroyed()){
-                System.out.println("oil");
                 oil_array.remove(n);
                 oil_count--;
+                game.playServices.BroadcastMessage("Delete:Oil:" + n + ":" +dt);
             }
         }
+    }
+    public void delOil(int n, float dt){
+        Oil oil = oil_array.get(n);
+        oil.destroy();
+        oil.update(dt);
+        oil_array.remove(n);
+        oil_count--;
     }
 
     public String coordinatesR (){
