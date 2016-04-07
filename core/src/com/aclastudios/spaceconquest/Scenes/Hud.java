@@ -1,7 +1,9 @@
 package com.aclastudios.spaceconquest.Scenes;
 
+import com.aclastudios.spaceconquest.Screens.PlayScreen;
 import com.aclastudios.spaceconquest.SpaceConquest;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -44,8 +46,9 @@ public class Hud implements Disposable {
     float smallScale = (float) 0.75;
     float largeScale = (float) 1.25;
     private Integer width;
+    private PlayScreen screen;
 
-    public Hud(SpriteBatch sb){
+    public Hud(SpriteBatch sb,PlayScreen screen){
         worldTimer = 300;
         timeCount = 0;
         RedScore = 0;
@@ -57,6 +60,7 @@ public class Hud implements Disposable {
         ammunition =0;
         jetpackTime=0;
         width = 30;
+        this.screen = screen;
 
         viewport = new FitViewport(SpaceConquest.V_WIDTH,SpaceConquest.V_HEIGHT,new OrthographicCamera());
         stage = new Stage(viewport, sb);
@@ -159,10 +163,26 @@ public class Hud implements Disposable {
         ammunition=ammo;
         jetpackTime = jpTime;
         timeCount += dt;
-        if(timeCount >= 1){
-            if (worldTimer > 0) {
-                worldTimer--;
-            } else {
+        if (screen.getUserID()==0) {
+            if (timeCount >= 1) {
+                if (worldTimer > 0) {
+                    worldTimer--;
+                } else {
+                    timeUp = true;
+                }
+                if (backuphud) {
+                    countdownLabel.setText(String.format("%03d", worldTimer));
+                } else {
+                    time.setText(String.format("time: %3d \nKnapsack: %3d", worldTimer, teamKnapsack));
+                    resourcesLabel.setText(String.format("oil: %2d gp: %2d iron: %2d\nAmmo: %03d Jet Pack: %.1f", oilScore, gunpowderScore, ironScore, ammunition, jetpackTime));
+                }
+//            gadgetsLabel.setText(String.format("Ammunition: %-3d Boost Time: %.1f", ammunition, jetpackTime));
+//            resourcesLabel.setText(String.format("Ammunition: %-3d Boost Time: %.1f", ammunition, jetpackTime));
+                timeCount = 0;
+            }
+        }
+        else {
+            if(worldTimer<=0){
                 timeUp = true;
             }
             if (backuphud) {
@@ -171,9 +191,6 @@ public class Hud implements Disposable {
                 time.setText(String.format("time: %3d \nKnapsack: %3d", worldTimer, teamKnapsack));
                 resourcesLabel.setText(String.format("oil: %2d gp: %2d iron: %2d\nAmmo: %03d Jet Pack: %.1f", oilScore, gunpowderScore, ironScore, ammunition, jetpackTime));
             }
-//            gadgetsLabel.setText(String.format("Ammunition: %-3d Boost Time: %.1f", ammunition, jetpackTime));
-//            resourcesLabel.setText(String.format("Ammunition: %-3d Boost Time: %.1f", ammunition, jetpackTime));
-            timeCount = 0;
         }
     }
     public static void updatescore(int redScore, int blueScore){
@@ -201,4 +218,12 @@ public class Hud implements Disposable {
     }
 
     public boolean isTimeUp() { return timeUp; }
+
+    public void setTime(int time){
+        worldTimer=time;
+    }
+    public int getTime(){
+        return worldTimer;
+    }
+
 }
