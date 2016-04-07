@@ -154,7 +154,7 @@ public class PlayScreen implements Screen {
             }
         }
         mainCharacter.setOriginCenter();
-        resourceManager = new ResourceManager(this);
+        resourceManager = new ResourceManager(this, game, userID);
 
         //Initialize FireBalls Array
         networkFireballs = new Array<FireBall>();
@@ -309,8 +309,12 @@ public class PlayScreen implements Screen {
                 }
             }catch (Exception e){}
 //        }
-        while ((resourceManager.getIron_count()+resourceManager.getGunpowder_count()+resourceManager.getOil_count())<21)
-            resourceManager.generateResources(this.x, this.y, this.width, this.height);
+        
+        if (userID==0) {
+            while ((resourceManager.getIron_count() + resourceManager.getGunpowder_count() + resourceManager.getOil_count()) < 21)
+                resourceManager.generateResources(this.x, this.y, this.width, this.height);
+        }
+
 
 
         resourceManager.updateIron(dt);
@@ -520,6 +524,11 @@ public class PlayScreen implements Screen {
             }
             else if (data[0].equals("Time")){
                 this.time = Integer.parseInt(data[1]);
+            }
+            else if (data[0].equals("Resources")){
+                System.out.println("Data 1:"+data[1]);
+                resourceManager.getResourceString(data[1]);
+                resourceManager.generateResources(this.x, this.y, this.width, this.height);
             }
 
         } catch (Exception e) {
