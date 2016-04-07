@@ -26,8 +26,12 @@ public class ResourceManager {
     private int userID;
     private SpaceConquest game;
     private String allres;
+    float x;
+    float y;
+    float width;
+    float height;
 
-    public ResourceManager(PlayScreen screen, SpaceConquest game, int userID){
+    public ResourceManager(PlayScreen screen, SpaceConquest game, int userID, float x, float y, float width, float height){
         this.game = game;
         this.screen = screen;
         iron_count=0;
@@ -37,6 +41,10 @@ public class ResourceManager {
         oil_count = 0;
         oil_array = new ArrayList<Oil>();
         this.userID = userID;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
     }
 
 
@@ -69,15 +77,15 @@ public class ResourceManager {
         System.out.println("Broadcast msg: "+allres);
     }
 
-    public void generateResources(float x, float y, float width, float height){
+    public void generateResources(){
         if (userID==0){
             Random rand = new Random();
             while (iron_count<7)
-                generateIron(x, y, width, height, rand);
+                generateIron(rand);
             while (gunpowder_count<7)
-                generateGunPowder(x, y, width, height, rand);
+                generateGunPowder(rand);
             while (oil_count<7)
-                generateOil(x, y, width, height, rand);
+                generateOil(rand);
             game.playServices.BroadcastMessage("Resources:" + coordinatesR());
 
         }
@@ -91,19 +99,13 @@ public class ResourceManager {
                 String[] oils = igo[3].split(",");
 
                 for (int i = 0; i < irons.length; i++) {
-                    Iron iron = new Iron(screen, Float.parseFloat(irons[i].split(" ")[0]), Float.parseFloat(irons[i].split(" ")[1]));
-                    iron_array.add(iron);
-                    iron_count++;
+                    addIron(Float.parseFloat(irons[i].split(" ")[0]),Float.parseFloat(irons[i].split(" ")[1]));
                 }
                 for (int i = 0; i < gunps.length; i++) {
-                    GunPowder gunpd = new GunPowder(screen, Float.parseFloat(gunps[i].split(" ")[0]), Float.parseFloat(gunps[i].split(" ")[1]));
-                    gunpowder_array.add(gunpd);
-                    gunpowder_count++;
+                    addGunPowder(Float.parseFloat(gunps[i].split(" ")[0]), Float.parseFloat(gunps[i].split(" ")[1]));
                 }
                 for (int i = 0; i < oils.length; i++) {
-                    Oil oil = new Oil(screen, Float.parseFloat(oils[i].split(" ")[0]), Float.parseFloat(oils[i].split(" ")[1]));
-                    oil_array.add(oil);
-                    oil_count++;
+                    addOil(Float.parseFloat(oils[i].split(" ")[0]), Float.parseFloat(oils[i].split(" ")[1]));
                 }
             }catch (Exception e){
                 System.out.println("Check resource if error: ");
@@ -112,20 +114,34 @@ public class ResourceManager {
         }
 
     }
-
-    private void generateIron(float x, float y, float width, float height, Random rand){
+    public void addIron(float xc, float yc){
+        Iron iron = new Iron(screen, xc, yc);
+        iron_array.add(iron);
+        iron_count++;
+    }
+    public void addGunPowder(float xc, float yc){
+        GunPowder gp = new GunPowder(screen, xc, yc);
+        gunpowder_array.add(gp);
+        gunpowder_count++;
+    }
+    public void addOil(float xc, float yc){
+        Oil oil = new Oil(screen, xc, yc);
+        oil_array.add(oil);
+        oil_count++;
+    }
+    private void generateIron(Random rand){
         Iron iron = new Iron(screen, (int) ((rand.nextInt((int) width) + x) * SpaceConquest.MAP_SCALE), (int) ((rand.nextInt((int) (height * SpaceConquest.MAP_SCALE)) + y) * SpaceConquest.MAP_SCALE));
         System.out.println("IRON: "+userID+": " + iron.getX() + ", " + iron.getY());
         iron_array.add(iron);
         iron_count++;
     }
-    private void generateGunPowder(float x, float y, float width, float height, Random rand){
+    private void generateGunPowder(Random rand){
         GunPowder gunpd = new GunPowder(screen, (int) ((rand.nextInt((int) width) + x) * SpaceConquest.MAP_SCALE), (int) ((rand.nextInt((int) (height * SpaceConquest.MAP_SCALE)) + y) * SpaceConquest.MAP_SCALE));
         System.out.println("GUNPD: " + gunpd.getX() + ", " + gunpd.getY());
         gunpowder_array.add(gunpd);
         gunpowder_count++;
     }
-    private void generateOil(float x, float y, float width, float height, Random rand){
+    private void generateOil(Random rand){
         Oil oil = new Oil(screen, (int) ((rand.nextInt((int) width) + x) * SpaceConquest.MAP_SCALE), (int) ((rand.nextInt((int) (height * SpaceConquest.MAP_SCALE)) + y) * SpaceConquest.MAP_SCALE));
         System.out.println("OIL: " + oil.getX() + ", " + oil.getY());
         oil_array.add(oil);
@@ -140,8 +156,15 @@ public class ResourceManager {
                 iron_array.remove(n);
                 iron_count--;
                 game.playServices.BroadcastMessage("Delete:Iron:" + n + ":" +dt);
+                genIron();
             }
         }
+    }
+    public void genIron(){
+        Random rand = new Random();
+        generateIron(rand);
+        Iron iron = iron_array.get(iron_count-1);
+        game.playServices.BroadcastMessage("Generate:Iron:"+iron.getX()+":"+iron.getY());
     }
     public void delIron(int n, float dt){
         Iron I = iron_array.get(n);
@@ -149,8 +172,6 @@ public class ResourceManager {
         I.update(dt);
         iron_array.remove(n);
         iron_count--;
-
-
     }
     public void updateGunPowder(float dt){
         for (int n=0; n<gunpowder_array.size();n++){
@@ -160,8 +181,15 @@ public class ResourceManager {
                 gunpowder_array.remove(n);
                 gunpowder_count--;
                 game.playServices.BroadcastMessage("Delete:GunPowder:" + n + ":" +dt);
+                genGunPowder();
             }
         }
+    }
+    public void genGunPowder(){
+        Random rand = new Random();
+        generateGunPowder(rand);
+        GunPowder gp = gunpowder_array.get(gunpowder_count-1);
+        game.playServices.BroadcastMessage("Generate:GunPowder:"+gp.getX()+":"+gp.getY());
     }
     public void delGunPowder(int n, float dt){
         GunPowder gp = gunpowder_array.get(n);
@@ -178,6 +206,7 @@ public class ResourceManager {
                 oil_array.remove(n);
                 oil_count--;
                 game.playServices.BroadcastMessage("Delete:Oil:" + n + ":" +dt);
+                genOil();
             }
         }
     }
@@ -187,6 +216,12 @@ public class ResourceManager {
         oil.update(dt);
         oil_array.remove(n);
         oil_count--;
+    }
+    public void genOil(){
+        Random rand = new Random();
+        generateOil(rand);
+        Oil oil = oil_array.get(oil_count-1);
+        game.playServices.BroadcastMessage("Generate:Oil:"+oil.getX()+":"+oil.getY());
     }
 
     public String coordinatesR (){

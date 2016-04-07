@@ -154,7 +154,7 @@ public class PlayScreen implements Screen {
             }
         }
         mainCharacter.setOriginCenter();
-        resourceManager = new ResourceManager(this, game, userID);
+
 
         //Initialize FireBalls Array
         networkFireballs = new Array<FireBall>();
@@ -173,6 +173,8 @@ public class PlayScreen implements Screen {
         }
         //set world listener
         world.setContactListener(new WorldContactListener(this,game));
+
+        resourceManager = new ResourceManager(this, game, userID, x, y, width, height);
 
         //touchpad setup
         //Create a touchpad skin
@@ -228,7 +230,7 @@ public class PlayScreen implements Screen {
     public void show() {
         if (userID==0) {
             //  while ((resourceManager.getIron_count() + resourceManager.getGunpowder_count() + resourceManager.getOil_count()) < 21)
-            resourceManager.generateResources(this.x, this.y, this.width, this.height);
+            resourceManager.generateResources();
         }
         System.out.println("SHOW CALLED");
     }
@@ -526,7 +528,7 @@ public class PlayScreen implements Screen {
             else if (data[0].equals("Resources")){
                 System.out.println("Data 1:"+data[1]);
                 resourceManager.getResourceString(data[1]);
-                resourceManager.generateResources(this.x, this.y, this.width, this.height);
+                resourceManager.generateResources();
             }
             else if (data[0].equals("Delete")){
                 if (data[1].equals("Iron"))
@@ -535,6 +537,14 @@ public class PlayScreen implements Screen {
                     resourceManager.delGunPowder(Integer.parseInt(data[2]), Float.parseFloat(data[3]));
                 else if (data[1].equals("Oil"))
                     resourceManager.delOil(Integer.parseInt(data[2]), Float.parseFloat(data[3]));
+            }
+            else if (data[0].equals("Generate")) {
+                if (data[1].equals("Iron"))
+                    resourceManager.addIron(Float.parseFloat(data[2]), Float.parseFloat(data[3]));
+                else if (data[1].equals("GunPowder"))
+                    resourceManager.addGunPowder(Float.parseFloat(data[2]), Float.parseFloat(data[3]));
+                else if (data[1].equals("Oil"))
+                    resourceManager.addOil(Float.parseFloat(data[2]), Float.parseFloat(data[3]));
             }
 
         } catch (Exception e) {
