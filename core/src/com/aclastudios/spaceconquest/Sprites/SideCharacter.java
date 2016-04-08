@@ -57,12 +57,13 @@ public class SideCharacter extends Sprite{
         this.world = world;
         this.enemyID = ID;
         map =screen.getMap();
+        Array<TextureRegion> frames = new Array<TextureRegion>();
+        for (int i = 0; i < 4; i++) {
+            frames.add(new TextureRegion(getTexture(), getRegionX() + i * 200, getRegionY(), 200, 200));
+        }
+        running =new Animation(0.2f, frames);
         defineCharacter();
-//        character = new TextureRegion(getTexture(),338,26,16,24);
-//        character = new TextureRegion(getTexture(), getRegionX() + 195, getRegionY(), 200, 200);
-//        //setBounds(0, 0, 16, 24);
-//        setBounds(0, 0, 25, 25);
-        character = new TextureRegion(getTexture(), getRegionX() + 190, getRegionY(), 170, 190);
+        character = new TextureRegion(getTexture(), getRegionX() + 200, getRegionY(), 200, 200);
         setBounds(0, 0, 25, 25);
         setRegion(character);
         stateTime = 0;
@@ -76,17 +77,6 @@ public class SideCharacter extends Sprite{
         x=0;
         y=0;
         angle=0;
-        Array<TextureRegion> frames = new Array<TextureRegion>();
-        // animation for walking
-        // frames.add(new TextureRegion(getTexture(), getRegionX(), getRegionY(), 168, 190));
-        // frames.add(new TextureRegion(getTexture(), getRegionX() + 195 , getRegionY(), 168, 190));
-        // frames.add(new TextureRegion(getTexture(), getRegionX() + 195*2, getRegionY(), 168, 190));
-        // frames.add(new TextureRegion(getTexture(), getRegionX() + 195 * 3, getRegionY(), 168, 190));
-        //
-        for (int i = 0; i < 4; i++) {
-            frames.add(new TextureRegion(getTexture(), getRegionX() + i * 200, getRegionY(), 200, 200));
-        }
-        running =new Animation(0.2f, frames);
         setOriginCenter();
         defineCharacter();
 
@@ -214,7 +204,7 @@ public class SideCharacter extends Sprite{
         }
         Array<Fixture> fix = b2body.getFixtureList();
         Shape shape = fix.get(0).getShape();
-        shape.setRadius( radius + (this.weight*scale*7));
+        shape.setRadius(radius + (this.weight * scale * 7));
 //        System.out.println(shape.getRadius());
         setRotation(angle);
     }

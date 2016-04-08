@@ -45,6 +45,8 @@ import com.badlogic.gdx.utils.Array;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import sun.rmi.runtime.Log;
+
 /*
 **********************************declare number of players, first 3 players are team 1,
  */
@@ -314,7 +316,9 @@ public class PlayScreen implements Screen {
                     if (ball.isDestroyed())
                         networkFireballs.removeValue(ball, true);
                 }
-            }catch (Exception e){}
+            }catch (Exception e){
+                System.out.println("error here");
+            }
 //        }
         
         resourceManager.updateIron(dt);
@@ -518,9 +522,7 @@ public class PlayScreen implements Screen {
             else if (data[0].equals("fire")){
                 FireBall f = new FireBall(this, Float.parseFloat(data[2]),
                         Float.parseFloat(data[3]), Float.parseFloat(data[4]), Float.parseFloat(data[5]),true);
-//                synchronized (networkFireballs) {
-                    networkFireballs.add(f);
-//                }
+                networkFireballs.add(f);
             }
             else if (data[0].equals("Time")){
                 this.time = Integer.parseInt(data[1]);
