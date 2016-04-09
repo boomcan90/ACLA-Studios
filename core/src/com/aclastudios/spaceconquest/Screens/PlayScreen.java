@@ -7,12 +7,10 @@ import com.aclastudios.spaceconquest.SpaceConquest;
 import com.aclastudios.spaceconquest.Sprites.SideCharacter;
 import com.aclastudios.spaceconquest.Sprites.MainCharacter;
 import com.aclastudios.spaceconquest.Sprites.ResourceManager;
-import com.aclastudios.spaceconquest.Sprites.Space;
 import com.aclastudios.spaceconquest.SupportThreads.Server;
 import com.aclastudios.spaceconquest.Tools.B2WorldCreator;
 import com.aclastudios.spaceconquest.Tools.HealthBar;
 import com.aclastudios.spaceconquest.Tools.WorldContactListener;
-import com.aclastudios.spaceconquest.Weapons.FireBall;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -46,8 +44,6 @@ import com.badlogic.gdx.utils.Array;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import sun.rmi.runtime.Log;
-
 /*
 **********************************declare number of players, first 3 players are team 1,
  */
@@ -59,7 +55,7 @@ public class PlayScreen implements Screen {
 
     private SpaceConquest game;
     private TextureAtlas atlas;
-    Texture texture;
+    Texture mapTexture;
     private OrthographicCamera gamecam;
     private Viewport gamePort;
     private Hud hud;
@@ -123,7 +119,7 @@ public class PlayScreen implements Screen {
         numOfPlayers =  game.multiplayerSessionInfo.mParticipants.size();
         game.multiplayerSessionInfo.mId_num=this.userID;
         //Background and Character assets
-        texture = new Texture("map.png");
+        mapTexture = new Texture("map.png");
         //Game map and Game View
         //camera of the map
         gamecam  = new OrthographicCamera();
@@ -197,7 +193,8 @@ public class PlayScreen implements Screen {
         //Create new TouchPad with the created style
         touchpad = new Touchpad(10, touchpadStyle);
         //setBounds(x,y,width,height)
-        touchpad.setBounds(15 / SpaceConquest.PPM, 15 / SpaceConquest.PPM, 70 / SpaceConquest.PPM, 70 / SpaceConquest.PPM);
+        touchpad.setBounds(15/ SpaceConquest.PPM, 15/ SpaceConquest.PPM, 70/ SpaceConquest.PPM, 70/ SpaceConquest.PPM);
+        //touchpad.setScale(1 / SpaceConquest.PPM);
 
         buttonsAtlas = new TextureAtlas("button/button.pack");
         buttonSkin = new Skin(buttonsAtlas);
@@ -355,9 +352,10 @@ public class PlayScreen implements Screen {
         gamecam.update();
         renderer.setView(gamecam); //render only what the gamecam can see
 
-        button.setPosition(gamecam.position.x + gamePort.getWorldWidth() / 4 + 40/ SpaceConquest.PPM, gamecam.position.y - gamePort.getWorldHeight() / 2 + 10/ SpaceConquest.PPM);
+        button.setPosition(gamecam.position.x + gamePort.getWorldWidth() / 4 + 40 / SpaceConquest.PPM, gamecam.position.y - gamePort.getWorldHeight() / 2 + 10 / SpaceConquest.PPM);
         jetpack_Button.setPosition(gamecam.position.x+gamePort.getWorldWidth() / 4 ,gamecam.position.y-gamePort.getWorldHeight()/2+10/ SpaceConquest.PPM);
         touchpad.setPosition(gamecam.position.x-gamePort.getWorldWidth() / 2+10/ SpaceConquest.PPM,gamecam.position.y-gamePort.getWorldHeight()/2+10/ SpaceConquest.PPM);
+
 
     }
     //render
@@ -381,8 +379,8 @@ public class PlayScreen implements Screen {
             renderer.render();
             game.batch.setProjectionMatrix(gamecam.combined);
             game.batch.begin(); //opens the "box"
-            game.batch.draw(texture, 0, 0, (texture.getWidth() * SpaceConquest.MAP_SCALE)/ SpaceConquest.PPM,
-                    (texture.getHeight() * SpaceConquest.MAP_SCALE)/ SpaceConquest.PPM);
+            game.batch.draw(mapTexture, 0, 0, (mapTexture.getWidth() * SpaceConquest.MAP_SCALE)/ SpaceConquest.PPM,
+                    (mapTexture.getHeight() * SpaceConquest.MAP_SCALE)/ SpaceConquest.PPM);
 
             mainCharacter.draw(game.batch);
 
