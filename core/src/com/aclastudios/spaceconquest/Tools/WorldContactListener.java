@@ -94,12 +94,12 @@ public class WorldContactListener implements ContactListener {
                     screen.addscore("0",score);
                 }
                 break;
-//            case SpaceConquest.OBJECT_BIT| SpaceConquest.IRON_BIT:
-//                if(fixA.getFilterData().categoryBits == SpaceConquest.IRON_BIT)
-//                    ((Iron)fixA.getUserData()).use((MainCharacter) fixB.getUserData());
-//                else
-//                    ((Iron)fixB.getUserData()).use((MainCharacter) fixA.getUserData());
-//                break;
+            case SpaceConquest.FRIENDLY_FIREBALL_BIT | SpaceConquest.OBSTACLE_BIT:
+                if(fixA.getFilterData().categoryBits == SpaceConquest.FRIENDLY_FIREBALL_BIT)
+                    ((FireBall)fixA.getUserData()).setToDestroy();
+                else
+                    ((FireBall)fixB.getUserData()).setToDestroy();
+                break;
             case SpaceConquest.FIREBALL_BIT | SpaceConquest.OBSTACLE_BIT:
                 if(fixA.getFilterData().categoryBits == SpaceConquest.FIREBALL_BIT)
                     ((FireBall)fixA.getUserData()).setToDestroy();
@@ -131,6 +131,7 @@ public class WorldContactListener implements ContactListener {
                         }
                     }
                     try {
+                        ((MainCharacter) fixB.getUserData()).setKilledBy(((FireBall) fixA.getUserData()).getFirerID());
                         ((FireBall) fixA.getUserData()).setToDestroy();
                         ((MainCharacter) fixB.getUserData()).reduceHP();
                     }catch (Exception e){
@@ -153,6 +154,7 @@ public class WorldContactListener implements ContactListener {
                         }
                     }
                     try {
+                        ((MainCharacter) fixA.getUserData()).setKilledBy(((FireBall) fixB.getUserData()).getFirerID());
                         ((FireBall) fixB.getUserData()).setToDestroy();
                         ((MainCharacter) fixA.getUserData()).reduceHP();
                     }catch (Exception e){
