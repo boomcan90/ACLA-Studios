@@ -29,12 +29,14 @@ public class FireBall extends Sprite {
     float xSpd;
     float ySpd;
     Body b2body;
-    public FireBall(PlayScreen screen, float x, float y, float xSpd,float ySpd, boolean enemyFire){
+    int id;
+    public FireBall(PlayScreen screen, float x, float y, float xSpd,float ySpd, boolean enemyFire, int id){
         this.xSpd = xSpd;
         this.ySpd = ySpd;
         this.screen = screen;
         this.world = screen.getWorld();
         this.enemyFire = enemyFire;
+        this.id=id;
         frames = new Array<TextureRegion>();
         fb=new TextureAtlas("Mario_and_Enemies.pack").findRegion("fireball");
         for(int i = 0; i < 4; i++){
@@ -86,6 +88,7 @@ public class FireBall extends Sprite {
         setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
         if((stateTime > 3 || setToDestroy) && !destroyed) {
             world.destroyBody(b2body);
+
             destroyed = true;
         }
 //        if(b2body.getLinearVelocity().y > 2f)
@@ -102,5 +105,7 @@ public class FireBall extends Sprite {
         return destroyed;
     }
 
-
+    public int getid() {
+        return id;
+    }
 }

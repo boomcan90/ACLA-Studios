@@ -35,7 +35,7 @@ public class MainCharacter extends Sprite {
     private int charWeight = 0;
     private float radius = 13;
     private int charScore;
-    private int playerHP = 20;
+    private float playerHP = 20;
 
     private Array<FireBall> fireballs;
 
@@ -110,7 +110,7 @@ public class MainCharacter extends Sprite {
 
     public void defineCharacter(){
         ammunition = 100;
-        jetpack_time = 4;
+        jetpack_time = 8;
         BodyDef bdef = new BodyDef();
         //Array<RectangleMapObject> object = map.getLayers().get(7).getObjects().getByType(RectangleMapObject.class);
         for (MapLayer layer : map.getLayers()) {
@@ -148,6 +148,9 @@ public class MainCharacter extends Sprite {
 //        fixture = b2body.createFixture(fdef);
     }
     public void update(float dt){
+        if (playerHP<20){
+            playerHP+=0.01;
+        }
         stateTime += dt;
         if (setToDestroy ) {
             destroyed = true;
@@ -272,7 +275,7 @@ public class MainCharacter extends Sprite {
     public float[] fire(){
         ammunition-=1;
         float[] s = {b2body.getPosition().x,b2body.getPosition().y};
-        FireBall f = new FireBall(screen, s[0], s[1], lastXPercent * (radius +1) , lastYPercent * (radius +1),false);
+        FireBall f = new FireBall(screen, s[0], s[1], lastXPercent * (radius +1) , lastYPercent * (radius +1),false,screen.getUserID());
         fireballs.add(f);
 //        System.out.println("ammunition left: "+ ammunition);
         return s;
@@ -294,7 +297,7 @@ public class MainCharacter extends Sprite {
         gun_powder_count=0;
         oil_count = 0;
         ammunition +=  ((iron_storage>=gun_powder_storage)?gun_powder_storage:iron_storage)*15;
-        jetpack_time += oil_storage;
+        jetpack_time += oil_storage * 2;
         //destroying the exhausted resource
         oil_storage=0;
         int lesserone=(iron_storage>=gun_powder_storage)?gun_powder_storage:iron_storage;
@@ -376,7 +379,7 @@ public class MainCharacter extends Sprite {
             playerHP=20;
         }
     }
-    public int getHP(){
+    public float getHP(){
         return playerHP;
     }
 

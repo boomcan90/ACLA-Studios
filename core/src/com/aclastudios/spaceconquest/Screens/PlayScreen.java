@@ -242,15 +242,15 @@ public class PlayScreen implements Screen {
         coolDown +=dt;
         if (button.isPressed() && coolDown >rateOfFire && mainCharacter.getAmmunition()>0) {
             coolDown = 0;
-            //start of fire ball
-            mainCharacter.fire();
             game.playServices.BroadcastMessage("fire:" + userID + ":" + mainCharacter.b2body.getPosition().x + ":"
-                    + mainCharacter.b2body.getPosition().y + ":" + (mainCharacter.getLastXPercent()*(mainCharacter.getRadius()+1)) + ":" +
-                    (mainCharacter.getLastYPercent()*(mainCharacter.getRadius()+1)));
+                    + mainCharacter.b2body.getPosition().y + ":" + (mainCharacter.getLastXPercent() * (mainCharacter.getRadius() + 1)) + ":" +
+                    (mainCharacter.getLastYPercent() * (mainCharacter.getRadius() + 1)));
+            //start of fire ball
             //end of fireball
 
             mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x * -0.5),
                     (float) (mainCharacter.b2body.getLinearVelocity().y * -0.5)), mainCharacter.b2body.getWorldCenter(), true);
+            mainCharacter.fire();
 
         }
         else {
@@ -273,6 +273,12 @@ public class PlayScreen implements Screen {
     }
 
     public void update(float dt){
+//        if (!game.playServices.checkhost()){
+//            game.playServices.leaveRoom();
+//            game.multiplayerSessionInfo.mState = game.multiplayerSessionInfo.ROOM_NULL;
+//            dispose();
+//            gsm.set(new MenuScreen(game, gsm));
+//        }
         //input updates
         handleInput(dt);
 
@@ -358,7 +364,11 @@ public class PlayScreen implements Screen {
     public void render(float delta) {
         try {
             if (hud.isTimeUp() == true) {
+                game.playServices.leaveRoom();
+                game.multiplayerSessionInfo.mState = game.multiplayerSessionInfo.ROOM_NULL;
+                game.playServices.submitScoreGPGS(hud.getkills());
                 gsm.set(new GameOver(game, gsm));
+                dispose();
             }
 
             //make sure that everything is updated
@@ -388,7 +398,7 @@ public class PlayScreen implements Screen {
                                 sideCharacter.draw(game.batch);
                                 //sideCharacter healthbar
                                 HealthBar SC_healthBar = new HealthBar(new TextureRegion(health), sideCharacter);
-                                int SC_hp = Integer.parseInt(positionvalues.get(i)[6]);
+                                float SC_hp = Float.parseFloat(positionvalues.get(i)[6]);
                                 SC_healthBar.setWidth(SC_hp);
                                 SC_healthBar.draw(game.batch, SC_hp);
                             }
@@ -407,11 +417,17 @@ public class PlayScreen implements Screen {
 
             //render the fireballs over the network
             for (FireBall ball : networkFireballs)
-                ball.draw(game.batch);
+                try {
+                    if (ball!=null) {
+                        ball.draw(game.batch);
+                    }
+                } catch (Exception e){
+                    System.out.println("*********************************: "+e.getMessage());
+                }
 
             //maincharacter healthbay
             HealthBar healthBar = new HealthBar(new TextureRegion(health),mainCharacter);
-            int hp = mainCharacter.getHP();
+            float hp = mainCharacter.getHP();
             healthBar.setWidth(hp);
             healthBar.draw(game.batch,hp);
             game.batch.end(); //close the "box" and draw it on the screen
@@ -433,7 +449,7 @@ public class PlayScreen implements Screen {
                 gsm.set(new GameOver(game, gsm));
             }
             if (userID==0){
-                game.playServices.BroadcastMessage("Time:"+hud.getTime());
+                game.playServices.BroadcastUnreliableMessage("Time:" + hud.getTime());
             } else {
                 hud.setTime(time);
             }
@@ -481,7 +497,6 @@ public class PlayScreen implements Screen {
         world.dispose();
         b2dr.dispose();
         hud.dispose();
-
     }
     public TextureAtlas getAtlas() {
         return atlas;
@@ -521,7 +536,7 @@ public class PlayScreen implements Screen {
             }
             else if (data[0].equals("fire")){
                 FireBall f = new FireBall(this, Float.parseFloat(data[2]),
-                        Float.parseFloat(data[3]), Float.parseFloat(data[4]), Float.parseFloat(data[5]),true);
+                        Float.parseFloat(data[3]), Float.parseFloat(data[4]), Float.parseFloat(data[5]),true,Integer.parseInt(data[1]));
                 networkFireballs.add(f);
             }
             else if (data[0].equals("Time")){
@@ -547,6 +562,9 @@ public class PlayScreen implements Screen {
                     resourceManager.addGunPowder(Float.parseFloat(data[2]), Float.parseFloat(data[3]));
                 else if (data[1].equals("Oil"))
                     resourceManager.addOil(Float.parseFloat(data[2]), Float.parseFloat(data[3]));
+            }
+            else if (data[0].equals("KillBonus")){
+                hud.addkill();
             }
 
         } catch (Exception e) {

@@ -139,9 +139,9 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
 	@Override
 	public void onDisconnectedFromRoom(Room room) {
 		System.out.println("Disconnected from GPS room");
-		// activity.mMultiplayerSeisson.endSession();
-		// activity.mMultiplayerSeisson.mState=activity.mMultiplayerSeisson.ROOM_MENU;
-		// showGameError();
+		 activity.MultiplayerSession.endSession();
+		 activity.MultiplayerSession.mState=activity.MultiplayerSession.ROOM_MENU;
+//		 showGameError();
 	}
 
 	// We treat most of the room update callbacks in the same way: we update our list of

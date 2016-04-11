@@ -40,6 +40,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 	final static int RC_SELECT_PLAYERS = 10000;
 	final static int RC_INVITATION_INBOX = 10001;
 	final static int RC_WAITING_ROOM = 10002;
+	final static int RC_LEADER = 10003;
 	private static final int RC_SIGN_IN = 9001;
 
 
@@ -91,7 +92,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 	@Override
 	public void onStop(){
 		super.onStop();
-		gameHelper.onStop();
+//		gameHelper.onStop();
 	}
 
 	@Override
@@ -129,6 +130,10 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 			case RC_SIGN_IN:
 				gameHelper.onActivityResult(requestCode, responseCode, intent);
 				break;
+			case RC_LEADER:
+				if (responseCode == Activity.RESULT_CANCELED){
+					MultiplayerSession.mState= MultiplayerSession.ROOM_MENU;
+				}
 		}
 	}
 
@@ -169,7 +174,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 
 	@Override
 	public void submitScoreGPGS(int score) {
-		Games.Leaderboards.submitScore(gameHelper.getApiClient(), "CgkI6574wJUXEAIQBw", score);
+		Games.Leaderboards.submitScore(gameHelper.getApiClient(), "CgkI8bDhycAZEAIQAQ", score);
 
 	}
 
@@ -181,7 +186,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 	@Override
 	public void getLeaderboardGPGS() {
 		if (gameHelper.isSignedIn()) {
-			startActivityForResult(Games.Leaderboards.getLeaderboardIntent(gameHelper.getApiClient(), "CgkI6574wJUXEAIQBw"), 100);
+			startActivityForResult(Games.Leaderboards.getLeaderboardIntent(gameHelper.getApiClient(), "CgkI8bDhycAZEAIQAQ"), RC_LEADER);
 		}
 		else if (!gameHelper.isConnecting()) {
 			loginGPGS();
@@ -191,7 +196,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 	@Override
 	public void getAchievementsGPGS() {
 		if (gameHelper.isSignedIn()) {
-			startActivityForResult(Games.Achievements.getAchievementsIntent(gameHelper.getApiClient()), 101);
+			startActivityForResult(Games.Achievements.getAchievementsIntent(gameHelper.getApiClient()), RC_LEADER);
 		}
 		else if (!gameHelper.isConnecting()) {
 			loginGPGS();
@@ -217,6 +222,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 			RoomConfig.Builder rtmConfigBuilder = RoomConfig.builder(mGooglePlayListeners);
 			rtmConfigBuilder.setMessageReceivedListener(this);
 			rtmConfigBuilder.setRoomStatusUpdateListener(mGooglePlayListeners);
+
 
 			rtmConfigBuilder.setAutoMatchCriteria(autoMatchCriteria);
 			Games.RealTimeMultiplayer.create(mGoogleApiClient, rtmConfigBuilder.build());
@@ -363,6 +369,12 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		Games.RealTimeMultiplayer.sendReliableMessage(mGoogleApiClient, null, bytes,
 				MultiplayerSession.mRoomId, p.getParticipantId());
 	}
+	public void MessagetoParticipant(int id, String message){
+		byte[] bytes = message.getBytes(Charset.forName("UTF-8"));
+		Participant p = (Participant) MultiplayerSession.mParticipants.get(id);
+		Games.RealTimeMultiplayer.sendReliableMessage(mGoogleApiClient, null, bytes,
+				MultiplayerSession.mRoomId, p.getParticipantId());
+	}
 
 	@Override
 	public void onRealTimeMessageReceived(RealTimeMessage rtm) {
@@ -375,5 +387,15 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 	@Override
 	public void setScreen(PlayScreen screen) {
 		this.screen = screen;
+	}
+
+	@Override
+	public boolean checkhost() {
+		Participant p = (Participant) MultiplayerSession.mParticipants.get(0);
+		if (!p.isConnectedToRoom()){
+			return false;
+		} else {
+			return true;
+		}
 	}
 }
