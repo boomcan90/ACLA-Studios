@@ -11,9 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-/**
- * Created by Lakshita on 3/26/2016.
- */
+
 public class ResourceManager {
 
     private int iron_count;
@@ -167,11 +165,13 @@ public class ResourceManager {
         game.playServices.BroadcastMessage("Generate:Iron:"+iron.getX()+":"+iron.getY());
     }
     public void delIron(int n, float dt){
-        Iron I = iron_array.get(n);
-        I.destroy();
-        I.update(dt);
-        iron_array.remove(n);
-        iron_count--;
+        try {
+            Iron I = iron_array.get(n);
+            I.destroy();
+            I.update(dt);
+            iron_array.remove(n);
+            iron_count--;
+        }catch (Exception e){}
     }
     public void updateGunPowder(float dt){
         for (int n=0; n<gunpowder_array.size();n++){

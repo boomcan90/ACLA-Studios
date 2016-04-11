@@ -54,7 +54,7 @@ public class GameOver implements Screen {
     public void render(float delta) {
         if(Gdx.input.justTouched()) {
             //dispose();
-            gsm.set(new PlayScreen((SpaceConquest) game, gsm));
+            gsm.set(new MenuScreen((SpaceConquest) game, gsm));
             dispose();
         }
         Gdx.gl.glClearColor(0, 0, 0, 1);

@@ -117,6 +117,7 @@ public class WorldContactListener implements ContactListener {
             case SpaceConquest.FIREBALL_BIT | SpaceConquest.MAIN_CHARACTER_BIT:
                 if(fixA.getFilterData().categoryBits == SpaceConquest.FIREBALL_BIT) {
                     if(((MainCharacter) fixB.getUserData()).getHP()<=4){
+                        game.playServices.MessagetoParticipant(((FireBall) fixA.getUserData()).getid(), "KillBonus:"+1);
                         int team = 0;
                         if (game.multiplayerSessionInfo.mId_num<screen.getNumOfPlayers()/2){
                             team=team+game.multiplayerSessionInfo.mParticipants.size()/2;
@@ -140,6 +141,7 @@ public class WorldContactListener implements ContactListener {
                 }
                 else {
                     if(((MainCharacter) fixA.getUserData()).getHP()<=4){
+                        game.playServices.MessagetoParticipant(((FireBall) fixB.getUserData()).getid(), "KillBonus:"+1);
                         int team = 0;
                         if (game.multiplayerSessionInfo.mId_num<screen.getNumOfPlayers()/2){
                             team=team+game.multiplayerSessionInfo.mParticipants.size()/2;

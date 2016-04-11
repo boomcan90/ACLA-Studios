@@ -2,8 +2,6 @@ package com.aclastudios.spaceconquest.Screens;
 
 import com.aclastudios.spaceconquest.Helper.AssetLoader;
 import com.aclastudios.spaceconquest.SpaceConquest;
-import com.aclastudios.spaceconquest.Sprites.Space;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -17,8 +15,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -149,29 +145,28 @@ public class MenuScreen implements Screen {
         });
 
         login.addListener(new ClickListener() {
-            //  @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                AssetLoader.clickSound.play(AssetLoader.VOLUME);
-//                game.actionResolver.loginGPGS();
-//                login.remove();
-//                stage.addActor(logout);
-//            }
+              @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.playServices.loginGPGS();
+                login.remove();
+                stage.addActor(logout);
+            }
         });
 
         logout.addListener(new ClickListener() {
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                AssetLoader.clickSound.play(AssetLoader.VOLUME);
-//                game.playServices.logoutGPGS();
-//                logout.remove();
-//                stage.addActor(login);
-//            }
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.playServices.logoutGPGS();
+                logout.remove();
+                stage.addActor(login);
+            }
         });
 
         tutorial.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                AssetLoader.clickSound.play(AssetLoader.VOLUME);
+                game.multiplayerSessionInfo.mState = game.multiplayerSessionInfo.ROOM_LEADER;
+                gsm.set(new LeadersBoardScreen(game, gsm));
                 // TODO Set to tutorial screen
               //  gsm.set(new TutorialScreen(game, gsm));
             }

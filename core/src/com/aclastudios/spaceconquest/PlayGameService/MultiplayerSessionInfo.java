@@ -28,6 +28,7 @@ public class MultiplayerSessionInfo {
 	public final int ROOM_WAIT=1001;
 	public final int ROOM_PLAY=1002;
 	public final int ROOM_MENU=1003;
+	public final int ROOM_LEADER=1004;
 	
 	public MultiplayerSessionInfo(){
 	}
