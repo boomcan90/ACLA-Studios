@@ -191,9 +191,9 @@ public class PlayScreen implements Screen {
         touchpadStyle.background = touchBackground;
         touchpadStyle.knob = touchKnob;
         //Create new TouchPad with the created style
-        touchpad = new Touchpad(10, touchpadStyle);
+        touchpad = new Touchpad(10/ SpaceConquest.PPM, touchpadStyle);
         //setBounds(x,y,width,height)
-        touchpad.setBounds(15/ SpaceConquest.PPM, 15/ SpaceConquest.PPM, 70/ SpaceConquest.PPM, 70/ SpaceConquest.PPM);
+        touchpad.setBounds((float)7.5, (float)7.5, 35, 35);
         //touchpad.setScale(1 / SpaceConquest.PPM);
 
         buttonsAtlas = new TextureAtlas("button/button.pack");
@@ -354,8 +354,8 @@ public class PlayScreen implements Screen {
 
         button.setPosition(gamecam.position.x + gamePort.getWorldWidth() / 4 + 40 / SpaceConquest.PPM, gamecam.position.y - gamePort.getWorldHeight() / 2 + 10 / SpaceConquest.PPM);
         jetpack_Button.setPosition(gamecam.position.x+gamePort.getWorldWidth() / 4 ,gamecam.position.y-gamePort.getWorldHeight()/2+10/ SpaceConquest.PPM);
-        touchpad.setPosition(gamecam.position.x-gamePort.getWorldWidth() / 2+10/ SpaceConquest.PPM,gamecam.position.y-gamePort.getWorldHeight()/2+10/ SpaceConquest.PPM);
-
+        touchpad.setPosition((gamecam.position.x-(gamePort.getWorldWidth() / 2))+(10/ SpaceConquest.PPM),
+                (gamecam.position.y-gamePort.getWorldHeight()/2)+(10/ SpaceConquest.PPM));
 
     }
     //render
