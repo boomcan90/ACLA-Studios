@@ -11,6 +11,7 @@ import com.aclastudios.spaceconquest.SupportThreads.Server;
 import com.aclastudios.spaceconquest.Tools.B2WorldCreator;
 import com.aclastudios.spaceconquest.Tools.HealthBar;
 import com.aclastudios.spaceconquest.Tools.WorldContactListener;
+import com.aclastudios.spaceconquest.Weapons.FireBall;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -242,7 +243,6 @@ public class PlayScreen implements Screen {
             coolDown = 0;
             //start of fire ball
             System.out.println("I am firing");
-            mainCharacter.fire();
 //            game.playServices.BroadcastMessage("fire:" + userID + ":" + mainCharacter.b2body.getPosition().x + ":"
 //                    + mainCharacter.b2body.getPosition().y + ":" + (mainCharacter.getLastXPercent()*(mainCharacter.getRadius()+1)) + ":" +
 //                    (mainCharacter.getLastYPercent()*(mainCharacter.getRadius()+1)));
@@ -250,7 +250,7 @@ public class PlayScreen implements Screen {
 
             mainCharacter.b2body.applyLinearImpulse(new Vector2((float) (mainCharacter.b2body.getLinearVelocity().x *-1),
                     (float) (mainCharacter.b2body.getLinearVelocity().y * -1)), mainCharacter.b2body.getWorldCenter(), true);
-
+            mainCharacter.fire();
         }
         else {
             double speedreduction = Math.pow(0.9, mainCharacter.getCharWeight()*0.4);
@@ -272,6 +272,12 @@ public class PlayScreen implements Screen {
     }
 
     public void update(float dt){
+//        if (!game.playServices.checkhost()){
+//            game.playServices.leaveRoom();
+//            game.multiplayerSessionInfo.mState = game.multiplayerSessionInfo.ROOM_NULL;
+//            dispose();
+//            gsm.set(new MenuScreen(game, gsm));
+//        }
         //input updates
         handleInput(dt);
 
@@ -305,7 +311,10 @@ public class PlayScreen implements Screen {
                         }
                     }
                     sideCharacter.b2body.setLinearVelocity(Float.parseFloat(values[7]),Float.parseFloat(values[8]));
-                }catch (Exception e){}
+                }catch (Exception e){
+                    System.out.println("error while updating character coordinate");
+                    e.printStackTrace();
+                }
             }
             sideCharacter.update(dt);
         }
@@ -341,12 +350,17 @@ public class PlayScreen implements Screen {
 
         //SendMessage
         try {
-            game.playServices.BroadcastUnreliableMessage(userID + ":" + x + ":" + y + ":" + mainCharacter.getAngle() + ":"+
-                    String.valueOf(!mainCharacter.isDestroyed())+":" +mainCharacter.getCharWeight()+":"+mainCharacter.getHP()+
-                   ":"+mainCharacter.getLastXPercent() + ":"+mainCharacter.getLastYPercent() + ":" +
+            System.out.println("sending character's coordinate");
+            game.playServices.BroadcastUnreliableMessage(userID + ":" + x + ":" + y + ":" + mainCharacter.getAngle() + ":" +
+                    String.valueOf(!mainCharacter.isDestroyed()) + ":" + mainCharacter.getCharWeight() + ":" + mainCharacter.getHP() +
+                    ":" + mainCharacter.getLastXPercent() + ":" + mainCharacter.getLastYPercent() + ":" +
                     mainCharacter.getFireCount());
+            System.out.println("finished sending character's coordinate");
 
-        }catch (Exception e){}
+        }catch (Exception e){
+            System.out.println("error while sending message");
+            e.printStackTrace();
+        }
 
         //gamecam updates
         gamecam.update();
@@ -354,8 +368,10 @@ public class PlayScreen implements Screen {
 
         button.setPosition(gamecam.position.x + gamePort.getWorldWidth() / 4 + 40 / SpaceConquest.PPM, gamecam.position.y - gamePort.getWorldHeight() / 2 + 10 / SpaceConquest.PPM);
         jetpack_Button.setPosition(gamecam.position.x+gamePort.getWorldWidth() / 4 ,gamecam.position.y-gamePort.getWorldHeight()/2+10/ SpaceConquest.PPM);
-        touchpad.setPosition((gamecam.position.x-(gamePort.getWorldWidth() / 2))+(10/ SpaceConquest.PPM),
-                (gamecam.position.y-gamePort.getWorldHeight()/2)+(10/ SpaceConquest.PPM));
+        touchpad.setPosition((gamecam.position.x-(gamePort.getWorldWidth() / 2)),
+                (gamecam.position.y-gamePort.getWorldHeight()/2));
+//        touchpad.setPosition((gamecam.position.x-(gamePort.getWorldWidth() / 2))+(10/ SpaceConquest.PPM),
+//                (gamecam.position.y-gamePort.getWorldHeight()/2)+(10/ SpaceConquest.PPM));
 
     }
     //render
@@ -363,7 +379,11 @@ public class PlayScreen implements Screen {
     public void render(float delta) {
         try {
             if (hud.isTimeUp() == true) {
+                game.playServices.leaveRoom();
+                game.multiplayerSessionInfo.mState = game.multiplayerSessionInfo.ROOM_NULL;
+                game.playServices.submitScoreGPGS(hud.getkills());
                 gsm.set(new GameOver(game, gsm));
+                dispose();
             }
 
             //make sure that everything is updated
@@ -394,13 +414,16 @@ public class PlayScreen implements Screen {
                                 sideCharacter.draw(game.batch);
                                 //sideCharacter healthbar
                                 HealthBar SC_healthBar = new HealthBar(new TextureRegion(health), sideCharacter);
-                                int SC_hp = Integer.parseInt(positionvalues.get(i)[6]);
+                                float SC_hp = Float.parseFloat(positionvalues.get(i)[6]);
                                 SC_healthBar.setWidth(SC_hp);
                                 SC_healthBar.draw(game.batch, SC_hp);
                             }
                         }
                     }
-                }catch (Exception e){}
+                }catch (Exception e){
+                    e.printStackTrace();
+                    System.out.println("error updating enemies coordinate");
+                }
             }
             for (int i = 0; i < resourceManager.getIron_count(); i++)
                 resourceManager.getIron_array(i).draw(game.batch);
@@ -417,7 +440,7 @@ public class PlayScreen implements Screen {
 
             //maincharacter healthbay
             HealthBar healthBar = new HealthBar(new TextureRegion(health),mainCharacter);
-            int hp = mainCharacter.getHP();
+            float hp = mainCharacter.getHP();
             healthBar.setWidth(hp);
             healthBar.draw(game.batch,hp);
             game.batch.end(); //close the "box" and draw it on the screen
@@ -439,13 +462,15 @@ public class PlayScreen implements Screen {
                 gsm.set(new GameOver(game, gsm));
             }
             if (userID==0){
-                game.playServices.BroadcastMessage("Time:"+hud.getTime());
+                System.out.println("updating time");
+                game.playServices.BroadcastUnreliableMessage("Time:" + hud.getTime());
             } else {
                 hud.setTime(time);
             }
 
         }catch (Exception e){
-            //e.printStackTrace();
+            System.out.println("error in render");
+            e.printStackTrace();
         }
     }
 
@@ -487,7 +512,6 @@ public class PlayScreen implements Screen {
         world.dispose();
         b2dr.dispose();
         hud.dispose();
-
     }
     public TextureAtlas getAtlas() {
         return atlas;
@@ -510,19 +534,28 @@ public class PlayScreen implements Screen {
     }
 
     public void MessageListener(byte[] bytes){
+
         try {
             String message = new String (Arrays.copyOfRange(bytes, 0, bytes.length),"UTF-8");
-            String[] data = message.split(":");
+            final String[] data = message.split(":");
+            Gdx.app.postRunnable(new Runnable() {
+                @Override
+                public void run() {
+                    // Your crashing code here
 
             if (data[0].equals("0") || data[0].equals("1") || data[0].equals("2")|| data[0].equals("3")|| data[0].equals("4")|| data[0].equals("5")) {
+                System.out.println("received enemies's coordinate");
                 String[] position = data.clone();
                 positionvalues.put(Integer.parseInt(data[0]), position);
+                System.out.println("finished updating ");
             }
             else if (data[0].equals("Serverpoints") && userID==0){
+                System.out.println("received points update from other players");
                 addscore(data[1], Integer.parseInt(data[2]));
                 System.out.println(data[0]+":"+data[1]+":"+data[2]);
             }
             else if (data[0].equals("UpdateScoreAll")){
+                System.out.println("received point update from server");
                 Hud.updatescore(Integer.parseInt(data[1]), Integer.parseInt(data[2]));
             }
 //            else if (data[0].equals("fire")){
@@ -531,7 +564,8 @@ public class PlayScreen implements Screen {
 //                networkFireballs.add(f);
 //            }
             else if (data[0].equals("Time")){
-                this.time = Integer.parseInt(data[1]);
+                System.out.println("received time update");
+                time = Integer.parseInt(data[1]);
             }
             else if (data[0].equals("Resources")){
                 System.out.println("Data 1:"+data[1]);
@@ -539,6 +573,7 @@ public class PlayScreen implements Screen {
                 resourceManager.generateResources();
             }
             else if (data[0].equals("Delete")){
+                System.out.println("delete resource"+data[2]+" "+data[3]);
                 if (data[1].equals("Iron"))
                     resourceManager.delIron(Integer.parseInt(data[2]), Float.parseFloat(data[3]));
                 else if (data[1].equals("GunPowder"))
@@ -547,16 +582,35 @@ public class PlayScreen implements Screen {
                     resourceManager.delOil(Integer.parseInt(data[2]), Float.parseFloat(data[3]));
             }
             else if (data[0].equals("Generate")) {
-                if (data[1].equals("Iron"))
-                    resourceManager.addIron(Float.parseFloat(data[2]), Float.parseFloat(data[3]));
-                else if (data[1].equals("GunPowder"))
-                    resourceManager.addGunPowder(Float.parseFloat(data[2]), Float.parseFloat(data[3]));
-                else if (data[1].equals("Oil"))
-                    resourceManager.addOil(Float.parseFloat(data[2]), Float.parseFloat(data[3]));
+                System.out.println("generate resources" + data[1] +" "+data[2] + " "+data[3]);
+                try {
+                    if (data[1].equals("Iron")) {
+                        System.out.println("generate iron");
+                        resourceManager.addIron(Float.parseFloat(data[2]), Float.parseFloat(data[3]));
+                    }
+                    else if (data[1].equals("GunPowder")) {
+                        System.out.println("generate gunpowder");
+                        resourceManager.addGunPowder(Float.parseFloat(data[2]), Float.parseFloat(data[3]));
+                    }
+                    else if (data[1].equals("Oil")) {
+                        System.out.println("generate oil");
+                        resourceManager.addOil(Float.parseFloat(data[2]), Float.parseFloat(data[3]));
+                    }
+                }
+                catch (Exception e){
+                    System.out.println("resource crash");
+                    e.printStackTrace();
+                }
             }
+            else if (data[0].equals("KillBonus")){
+                hud.addkill();
+            }
+                }
+            });
 
         } catch (Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
+            System.out.println("error in receiving message");
         }
     }
     public void addscore(String id,int data){

@@ -31,6 +31,7 @@ public class Hud implements Disposable {
     private static Integer ironScore;
     private static Integer teamKnapsack;
     private static Integer ammunition;
+    private static Integer kills;
     private static float jetpackTime;
 
     private Label countdownLabel;
@@ -60,6 +61,7 @@ public class Hud implements Disposable {
         ammunition =0;
         jetpackTime=0;
         width = 30;
+        kills = 0;
         this.screen = screen;
 
         viewport = new FitViewport(SpaceConquest.V_WIDTH,SpaceConquest.V_HEIGHT,new OrthographicCamera());
@@ -97,8 +99,8 @@ public class Hud implements Disposable {
         } else {
 
             // Personal Knapsack
-            resourcesLabel = new Label(String.format("oil: %2d gp: %2d iron: %2d\nAmmo: %03d Boost Time: %.1f",
-                    oilScore, gunpowderScore, ironScore, ammunition, jetpackTime), new Label.LabelStyle(new BitmapFont(Gdx.files.internal("fonts/visitor.fnt"), false), Color.WHITE));
+            resourcesLabel = new Label(String.format("oil: %2d gp: %2d iron: %2d\nAmmo: %03d Boost Time: %.1f\nkills: %2d",
+                    oilScore, gunpowderScore, ironScore, ammunition, jetpackTime, kills), new Label.LabelStyle(new BitmapFont(Gdx.files.internal("fonts/visitor.fnt"), false), Color.WHITE));
 //            Label oilLabel = new Label(String.format("%3d", oilScore), new Label.LabelStyle(new BitmapFont(Gdx.files.internal("fonts/visitor.fnt"), false), Color.WHITE));
 //            Label gunpowder = new Label("gp: ", new Label.LabelStyle(new BitmapFont(Gdx.files.internal("fonts/visitor.fnt"), false), Color.WHITE));
 //            Label gunPowderLabel = new Label(String.format("%3d", gunpowderScore), new Label.LabelStyle(new BitmapFont(Gdx.files.internal("fonts/visitor.fnt"), false), Color.WHITE));
@@ -174,7 +176,7 @@ public class Hud implements Disposable {
                     countdownLabel.setText(String.format("%03d", worldTimer));
                 } else {
                     time.setText(String.format("time: %3d \nKnapsack: %3d", worldTimer, teamKnapsack));
-                    resourcesLabel.setText(String.format("oil: %2d gp: %2d iron: %2d\nAmmo: %03d Jet Pack: %.1f", oilScore, gunpowderScore, ironScore, ammunition, jetpackTime));
+                    resourcesLabel.setText(String.format("oil: %2d gp: %2d iron: %2d\nAmmo: %03d Jet Pack: %.1f\nKills: %3d", oilScore, gunpowderScore, ironScore, ammunition, jetpackTime,kills));
                 }
 //            gadgetsLabel.setText(String.format("Ammunition: %-3d Boost Time: %.1f", ammunition, jetpackTime));
 //            resourcesLabel.setText(String.format("Ammunition: %-3d Boost Time: %.1f", ammunition, jetpackTime));
@@ -189,7 +191,7 @@ public class Hud implements Disposable {
                 countdownLabel.setText(String.format("%03d", worldTimer));
             } else {
                 time.setText(String.format("time: %3d \nKnapsack: %3d", worldTimer, teamKnapsack));
-                resourcesLabel.setText(String.format("oil: %2d gp: %2d iron: %2d\nAmmo: %03d Jet Pack: %.1f", oilScore, gunpowderScore, ironScore, ammunition, jetpackTime));
+                resourcesLabel.setText(String.format("oil: %2d gp: %2d iron: %2d\nAmmo: %03d Jet Pack: %.1f\nKills: %3d", oilScore, gunpowderScore, ironScore, ammunition, jetpackTime,kills));
             }
         }
     }
@@ -224,6 +226,12 @@ public class Hud implements Disposable {
     }
     public int getTime(){
         return worldTimer;
+    }
+    public void addkill(){
+        kills++;
+    }
+    public int getkills(){
+        return kills;
     }
 
 }
