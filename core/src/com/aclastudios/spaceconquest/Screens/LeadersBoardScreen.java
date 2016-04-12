@@ -1,7 +1,6 @@
 package com.aclastudios.spaceconquest.Screens;
 
 import com.aclastudios.spaceconquest.SpaceConquest;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -10,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 
-public class WaitScreen implements Screen {
+public class LeadersBoardScreen implements Screen {
 
 	private Stage stage;
 	private SpriteBatch batcher;
@@ -21,7 +20,7 @@ public class WaitScreen implements Screen {
 	private float gameWidth;
 	private float gameHeight;
 
-	public WaitScreen(SpaceConquest game, GameScreenManager gsm) {
+	public LeadersBoardScreen(SpaceConquest game, GameScreenManager gsm) {
 		this.game = game;
 		this.gsm = gsm;
 	}
@@ -34,18 +33,10 @@ public class WaitScreen implements Screen {
 	public void render(float delta) {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		if ((game.multiplayerSessionInfo.mState == game.multiplayerSessionInfo.ROOM_PLAY))
-			//	&& (game.multiplayerSessionInfo.serverAddress != null)
-			//	&& (game.multiplayerSessionInfo.serverPort != 0))
-		{
-			// Create MMClient and connect to server
-			try {
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			gsm.set(new PlayScreen(game, gsm));
-
-		} else if (game.multiplayerSessionInfo.mState == game.multiplayerSessionInfo.ROOM_MENU) {
+		if (game.multiplayerSessionInfo.mState == game.multiplayerSessionInfo.ROOM_LEADER) {
+			game.playServices.getLeaderboardGPGS();
+		}
+		else if (game.multiplayerSessionInfo.mState == game.multiplayerSessionInfo.ROOM_MENU) {
 			game.multiplayerSessionInfo.mState = game.multiplayerSessionInfo.ROOM_NULL;
 			gsm.set(new MenuScreen(game, gsm));
 		}

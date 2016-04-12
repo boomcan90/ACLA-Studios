@@ -84,6 +84,7 @@ public class FireBall extends Sprite {
         setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
         if((stateTime > 3 || setToDestroy) && !destroyed) {
             world.destroyBody(b2body);
+
             destroyed = true;
         }
 //        if(b2body.getLinearVelocity().y > 2f)

@@ -32,7 +32,10 @@ public interface PlayServices {
 
     public void MessagetoServer(String message);
 
+    public void MessagetoParticipant(int id, String message);
+
     public void setScreen(PlayScreen screen);
 
+    public boolean checkhost();
 
 }

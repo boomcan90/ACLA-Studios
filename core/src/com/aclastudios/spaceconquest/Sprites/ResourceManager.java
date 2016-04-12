@@ -11,9 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-/**
- * Created by Lakshita on 3/26/2016.
- */
+
 public class ResourceManager {
 
     private int iron_count;
@@ -115,19 +113,43 @@ public class ResourceManager {
 
     }
     public void addIron(float xc, float yc){
-        Iron iron = new Iron(screen, xc, yc);
-        iron_array.add(iron);
-        iron_count++;
+        try {
+            System.out.println("creating iron");
+            Iron iron = new Iron(screen, xc, yc);
+            System.out.println("iron added");
+            iron_array.add(iron);
+            System.out.println("iron added in resource manager");
+            iron_count++;
+        }catch (Exception e){
+            System.out.println("problem in adding iron");
+            e.printStackTrace();
+        }
     }
     public void addGunPowder(float xc, float yc){
-        GunPowder gp = new GunPowder(screen, xc, yc);
-        gunpowder_array.add(gp);
-        gunpowder_count++;
+        try{
+            System.out.println("creating GP");
+            GunPowder gp = new GunPowder(screen, xc, yc);
+            System.out.println("gunpowder added");
+            gunpowder_array.add(gp);
+            System.out.println("gunpowder added in resource manager");
+            gunpowder_count++;
+        }catch (Exception e){
+            System.out.println("problem in adding gunpowder");
+            e.printStackTrace();
+        }
     }
     public void addOil(float xc, float yc){
-        Oil oil = new Oil(screen, xc, yc);
-        oil_array.add(oil);
-        oil_count++;
+        try{
+            System.out.println("creating oil");
+            Oil oil = new Oil(screen, xc, yc);
+            System.out.println("oil added");
+            oil_array.add(oil);
+            System.out.println("oil added in resource manager");
+            oil_count++;
+        }catch (Exception e){
+            System.out.println("problem in adding oil");
+            e.printStackTrace();
+        }
     }
     private void generateIron(Random rand){
         Iron iron = new Iron(screen, (int) ((rand.nextInt((int) width) + x) * SpaceConquest.MAP_SCALE), (int) ((rand.nextInt((int) (height * SpaceConquest.MAP_SCALE)) + y) * SpaceConquest.MAP_SCALE));
@@ -167,11 +189,19 @@ public class ResourceManager {
         game.playServices.BroadcastMessage("Generate:Iron:"+iron.getX()+":"+iron.getY());
     }
     public void delIron(int n, float dt){
-        Iron I = iron_array.get(n);
-        I.destroy();
-        I.update(dt);
-        iron_array.remove(n);
-        iron_count--;
+        try {
+            System.out.println("deleting iron");
+            Iron I = iron_array.get(n);
+            System.out.println("deleting iron2");
+            I.destroy();
+            System.out.println("deleted iron");
+            I.update(dt);
+            iron_array.remove(n);
+            System.out.println("deleted iron from iron array");
+            iron_count--;
+        }catch (Exception e){
+            System.out.println("delete iron got problem");
+        }
     }
     public void updateGunPowder(float dt){
         for (int n=0; n<gunpowder_array.size();n++){
@@ -192,11 +222,17 @@ public class ResourceManager {
         game.playServices.BroadcastMessage("Generate:GunPowder:"+gp.getX()+":"+gp.getY());
     }
     public void delGunPowder(int n, float dt){
+
+        System.out.println("deleting GP");
         GunPowder gp = gunpowder_array.get(n);
         gp.destroy();
+        System.out.println("deleted GP");
         gp.update(dt);
+        System.out.println("removing GP");
         gunpowder_array.remove(n);
+        System.out.println("removed GP");
         gunpowder_count--;
+
     }
     public void updateOil(float dt){
         for (int n=0; n<oil_array.size();n++){
