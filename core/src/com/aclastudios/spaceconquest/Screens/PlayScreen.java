@@ -11,7 +11,6 @@ import com.aclastudios.spaceconquest.SupportThreads.Server;
 import com.aclastudios.spaceconquest.Tools.B2WorldCreator;
 import com.aclastudios.spaceconquest.Tools.HealthBar;
 import com.aclastudios.spaceconquest.Tools.WorldContactListener;
-import com.aclastudios.spaceconquest.Weapons.FireBall;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -194,7 +193,7 @@ public class PlayScreen implements Screen {
         //Create new TouchPad with the created style
         touchpad = new Touchpad(10/ SpaceConquest.PPM, touchpadStyle);
         //setBounds(x,y,width,height)
-        touchpad.setBounds((float)7.5, (float)7.5, 35, 35);
+        touchpad.setBounds(0, 0, 70/SpaceConquest.PPM, 70/SpaceConquest.PPM);
         //touchpad.setScale(1 / SpaceConquest.PPM);
 
         buttonsAtlas = new TextureAtlas("button/button.pack");
@@ -253,7 +252,7 @@ public class PlayScreen implements Screen {
             mainCharacter.fire();
         }
         else {
-            double speedreduction = Math.pow(0.9, mainCharacter.getCharWeight()*0.4);
+            double speedreduction = Math.pow(0.9, mainCharacter.getAdditionalWeight()*0.4);
             if(jetpack_Button.isPressed() && mainCharacter.getJetpack_time()>0.05){
                 mainCharacter.exhaustJetPack(dt);
                 speedreduction = 3;
@@ -304,7 +303,9 @@ public class PlayScreen implements Screen {
                                 Float.parseFloat(values[5]),
                                 Float.parseFloat(values[7]),
                                 Float.parseFloat(values[8]),
-                                Integer.parseInt(values[9]));
+                                Integer.parseInt(values[9]),
+                                Float.parseFloat(values[10]),
+                                Float.parseFloat(values[11]));
 //                  sideCharacter.setRotation(Float.parseFloat(values[3]));
                         if (values[4].equals("false")) {
                             sideCharacter.dead();
@@ -352,9 +353,10 @@ public class PlayScreen implements Screen {
         try {
             System.out.println("sending character's coordinate");
             game.playServices.BroadcastUnreliableMessage(userID + ":" + x + ":" + y + ":" + mainCharacter.getAngle() + ":" +
-                    String.valueOf(!mainCharacter.isDestroyed()) + ":" + mainCharacter.getCharWeight() + ":" + mainCharacter.getHP() +
+                    String.valueOf(!mainCharacter.isDestroyed()) + ":" + mainCharacter.getAdditionalWeight() + ":" + mainCharacter.getHP() +
                     ":" + mainCharacter.getLastXPercent() + ":" + mainCharacter.getLastYPercent() + ":" +
-                    mainCharacter.getFireCount());
+                    mainCharacter.getFireCount() + ":" +mainCharacter.b2body.getLinearVelocity().x +
+                    ":"+mainCharacter.b2body.getLinearVelocity().y);
             System.out.println("finished sending character's coordinate");
 
         }catch (Exception e){
@@ -442,7 +444,7 @@ public class PlayScreen implements Screen {
             HealthBar healthBar = new HealthBar(new TextureRegion(health),mainCharacter);
             float hp = mainCharacter.getHP();
             healthBar.setWidth(hp);
-            healthBar.draw(game.batch,hp);
+            healthBar.draw(game.batch, hp);
             game.batch.end(); //close the "box" and draw it on the screen
 
 
@@ -453,7 +455,7 @@ public class PlayScreen implements Screen {
             game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
             hud.stage.draw();
 
-            //Draw the touch pad
+            //Draw the touch pad and buttons
             stage.act(Gdx.graphics.getDeltaTime());
             stage.draw();
 
@@ -523,15 +525,12 @@ public class PlayScreen implements Screen {
         }
     }
 
-    public void increaseCharWeight(int w){
-        mainCharacter.addCharWeight(w);
-    }
 
-    public int depositResource(){
-        int res = mainCharacter.getCharWeight();
-        mainCharacter.depositResource();
-        return res;
-    }
+//    public void depositResource(){
+//        int res = mainCharacter.getAdditionalWeight();
+//        mainCharacter.depositResource();
+//        return res;
+//    }
 
     public void MessageListener(byte[] bytes){
 

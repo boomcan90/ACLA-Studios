@@ -216,9 +216,10 @@ public class SideCharacter extends Sprite{
     public boolean isDestroyed() {
         return destroyed;
     }
-    public void updateEnemy(float x,float y, float angle,float weight,float xPercent,float yPercent,int actualFireCount){
+    public void updateEnemy(float x,float y, float angle,float weight,float xPercent,float yPercent,int actualFireCount, float xSpeed,float ySpeed){
         this.x=x;
         this.y=y;
+        b2body.setLinearVelocity(xSpeed,ySpeed);
         this.angle = angle;
         this.weight = weight;
         this.actualFireCount = actualFireCount;
@@ -261,7 +262,7 @@ public class SideCharacter extends Sprite{
         this.ySpeed = ySpeed;
     }
 
-    public Integer getCharWeight() {
+    public Integer getAdditionalWeight() {
         return charWeight;
     }
 
@@ -269,11 +270,11 @@ public class SideCharacter extends Sprite{
         return charScore;
     }
 
-    public void addCharWeight(int charWeight) {
+    public void increaseKnapSack(int charWeight) {
         this.charWeight += charWeight;
     }
 
-    public void setCharWeight(int w){
+    public void setAdditionalWeight(int w){
         this.charWeight=w;
     }
     */
