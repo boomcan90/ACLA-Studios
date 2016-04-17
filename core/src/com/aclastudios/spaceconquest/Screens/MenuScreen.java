@@ -4,6 +4,7 @@ import com.aclastudios.spaceconquest.Helper.AssetLoader;
 import com.aclastudios.spaceconquest.SpaceConquest;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -45,6 +46,8 @@ public class MenuScreen implements Screen {
     private Image mute;
     private Image unmute;
 
+    private Music menuMusic;
+
     public MenuScreen(SpaceConquest game, GameScreenManager gsm){
         this.gsm = gsm;
         this.game = game;
@@ -73,6 +76,12 @@ public class MenuScreen implements Screen {
 
         mute = new Image(new TextureRegionDrawable(new TextureRegion(new Texture("basic/sound_on.png"))));
         unmute = new Image(new TextureRegionDrawable(new TextureRegion(new Texture("basic/sound_off.png"))));
+
+        // adding the music
+        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("menuMusic/!in-game.mp3"));
+        menuMusic.setLooping(false);
+        menuMusic.play();
+
 
         System.out.println("constructor");
         show();

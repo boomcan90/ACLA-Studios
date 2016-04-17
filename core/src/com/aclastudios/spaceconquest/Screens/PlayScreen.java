@@ -13,6 +13,7 @@ import com.aclastudios.spaceconquest.Tools.HealthBar;
 import com.aclastudios.spaceconquest.Tools.WorldContactListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -107,6 +108,8 @@ public class PlayScreen implements Screen {
     private Texture health;
     private Texture orange;
 
+    private Music music;
+
     public PlayScreen(SpaceConquest game, GameScreenManager gsm){
         atlas = new TextureAtlas("sprite.txt");
         this.game = game;
@@ -172,6 +175,11 @@ public class PlayScreen implements Screen {
         }
         //set world listener
         world.setContactListener(new WorldContactListener(this,game));
+
+        // adding the music
+        music = Gdx.audio.newMusic(Gdx.files.internal("menuMusic/In-game.mp3"));
+        music.setLooping(false);
+        music.play();
 
         resourceManager = new ResourceManager(this, game, userID, x, y, width, height);
 
@@ -332,7 +340,7 @@ public class PlayScreen implements Screen {
 //                System.out.println("error here");
 //            }
 //        }
-        
+
         resourceManager.updateIron(dt);
         resourceManager.updateGunPowder(dt);
         resourceManager.updateOil(dt);
